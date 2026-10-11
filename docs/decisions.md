@@ -435,3 +435,18 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   creditcardfraud ROC-AUC 0.99997 vs 0.99996.
 - The run folder now also holds `leaks.json`, `plans.json` (every version), `checks.json` (data checks
   and verify), `gate.json`, `verify/` and, in benchmark mode, `prepared.parquet`.
+
+## 2026-10-11 · P6.1 · Dataset registry
+
+- Checked against OpenML on 2026-10-11: all ids of Appendix D exist and their names, default targets
+  and tasks match (binary datasets have 2 classes, multi-class 3). Versions, licences, sizes,
+  readable-name shares and table hashes are in `benchmark/results/datasets.json`; data cards in
+  `docs/datasets.md` are generated from it by `benchmark/datacards.py`. No spare was needed.
+- Licences: all allow research use; miami_housing is CC BY-NC-SA (non-commercial; kept, because the
+  thesis is non-commercial research). "Public" (OpenML's label) is taken as usable.
+- Readable names: SDSS17 (54%: `u g r i z` photometric bands) and diamonds (67%: `x y z` dimensions) are
+  below an 80% word-like share, but these are standard names with a known meaning, so both stay in
+  Group A. credit-approval (spare C) is fully anonymized (`A1`...`A15`) and is not a usable replacement.
+- Fixed samples: SDSS17 and diamonds 30,000 rows (as planned); also Food_Delivery_Time and adult 30,000
+  rows (large natural-mess tables; same rule).
+- The TabArena bank-marketing (did 46910) has no `duration` column, so its known leak is not there.

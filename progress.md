@@ -79,7 +79,7 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P5.4 Compiler, data checks, verify integration · 2026-10-11 · 47a805b · wrong unit map -> "parse_units on Weight: 40.0% of values could not be parsed, examples: \"800 g\", ..."; verify resolves C02 after replace_values
 - [x] P5.5 Leak guard · 2026-10-11 · c00c5ff · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
 - [x] P5.6 Gate · 2026-10-11 · 160b245 · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
-- [x] P5.7 Variant rules end to end · 2026-10-11 · (next) · complete run folders on the 4 local datasets; rules >= generic on ibmchurn and kinghousedata (table below); worse on winequality (explained)
+- [x] P5.7 Variant rules end to end · 2026-10-11 · 380f8e1 · complete run folders on the 4 local datasets; rules >= generic on ibmchurn and kinghousedata (table below); worse on winequality (explained)
 
 P5.7 table (benchmark mode, 4 local datasets, seed 0, 120 s budget, benchmark/results/p5-rules.csv):
 
@@ -91,7 +91,7 @@ P5.7 table (benchmark mode, 4 local datasets, seed 0, 120 s budget, benchmark/re
 winequality: `rules` drops 240 exact duplicate training rows (a protected step); they look like genuine repeated wines, and without them the class weights change (CV log-loss 0.894 vs 0.876 for `generic`). creditcardfraud: equal within noise.
 
 ## P6. Benchmark data
-- [ ] P6.1 Dataset registry
+- [x] P6.1 Dataset registry · 2026-10-11 · (next) · 31 OpenML datasets downloaded and checked (ids, targets, tasks, licences); manifest + data cards; no spare needed
 - [ ] P6.2 Corruptor
 - [ ] P6.3 Leak generator
 - [ ] P6.4 Materialize the dev pool
