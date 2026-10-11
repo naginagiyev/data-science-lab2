@@ -1,8 +1,8 @@
 import sys
 import skrub
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 from benchmark.systems.common import run_adapter
+from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 
 # baseline "dirty data without an LLM": skrub's tabular pipeline...
 # (TableVectorizer + HistGradientBoosting) on pd.read_csv input

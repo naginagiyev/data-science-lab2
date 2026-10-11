@@ -1,8 +1,8 @@
 import re
 import sys
 import pandas as pd
-from lightgbm import LGBMClassifier, LGBMRegressor
 from benchmark.systems.common import run_adapter
+from lightgbm import LGBMClassifier, LGBMRegressor
 
 # baseline "a quick data scientist": pd.read_csv defaults, text columns as...
 # pandas categories (test categories aligned to training), default LightGBM
