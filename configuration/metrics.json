@@ -1,4 +1,15 @@
 {
-  "classification": ["Accuracy", "F1", "Precision", "Recall", "ROC-AUC", "Log-Loss", "Matthews-Corrcoef"],
-  "regression": ["R2", "MAE", "MSE", "RMSE", "MAPE", "Explained-Variance"]
+  "binary-classification": {
+    "primary": "roc_auc",
+    "reported": ["roc_auc", "log_loss", "pr_auc", "accuracy", "balanced_accuracy", "f1"]
+  },
+  "multi-class-classification": {
+    "primary": "log_loss",
+    "reported": ["log_loss", "roc_auc_ovr", "accuracy", "balanced_accuracy", "f1_macro"]
+  },
+  "regression": {
+    "primary": "rmse",
+    "reported": ["rmse", "mae", "r2", "mape"]
+  },
+  "lower_is_better": ["log_loss", "rmse", "mae", "mape"]
 }

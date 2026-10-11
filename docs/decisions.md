@@ -82,3 +82,15 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   tabulate 0.10.0, smolagents 1.26.0, skrub 0.11.0, matplotlib 3.11.2, autorank 1.3.0, openml 0.15.1;
   dev: pytest 9.1.1, ruff 0.17.0, psutil 7.2.2. autorank installed without conflicts.
 - Alternatives: none needed; the `uv venv` fallback of the plan was not required.
+
+## 2026-10-11 · P1.3 · Core files
+
+- Decision: `schemas.py` defines the `Task` literal itself until edatool is vendored (P3.1), then it
+  imports it from `edatool.schemas`. Settings sections forbid unknown keys, and `--set` only changes
+  keys that exist, so a typo fails at once. The settings hash is the first 16 hex digits of a SHA-256
+  of the canonical JSON. `metrics.json` has the primary and reported metrics per task and the list of
+  "lower is better" metrics.
+- Decision: the style test requires a `#` comment above every top-level function and class, not
+  above methods or nested functions. This is exactly what the vendored edatool code does (§0.6 says
+  to copy its style).
+- Decision: `main.py` is a placeholder until P1.6 rewrites it, so the style test passes now.
