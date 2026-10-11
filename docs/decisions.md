@@ -341,3 +341,12 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - New hidden-missing tokens: `n.a.`, `not available`, `--`, `#N/A`, `nil`. The two agent prompts now
   contain `{fix_actions}`, filled from `FixAction` by `session.prompt_text` (C4).
 - The 4 local datasets give no B07, B08 or B09 issue (no new false alarms).
+
+## 2026-10-11 · P4.6 · Auditor re-benchmark
+
+- Decision: the four new injected kinds run after the old ones with `default_rng(seed + 1000)` on unused
+  positive numeric columns, so the old kinds' data and random choices are unchanged; old-kind precision
+  is computed without issues on the new columns (scratch re-scoring, numbers in
+  `docs/edatool-baseline.md`).
+- Decision: B07's number-with-unit pattern accepts an exponent (`1.2e+06kg`); found because the first
+  re-run missed 2 of 3 mixed-unit columns.

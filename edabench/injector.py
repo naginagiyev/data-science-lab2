@@ -176,6 +176,62 @@ def add_leak(raw, target, rng):
     found.append(truth("G01", ["final_assessment"], None, "drop_column", "leakage"))
     return found
 
+# numeric columns with only positive values that no earlier injection or added...
+# column uses (for the semantic-mess kinds)
+def free_numeric(raw, target, ground_truth):
+    taken = {column for item in ground_truth for column in item["columns"]}
+    columns = []
+    for column in numeric_columns(raw, target):
+        numbers = pd.to_numeric(raw[column], errors="coerce")
+        if column not in taken and (numbers > 0).all():
+            columns.append(column)
+    return columns
+
+# writes a numeric column with one unit, "12.5 kg" (expected: B07)
+def inject_units(raw, column, rng):
+    unit = ["kg", "cm", "GB", "km", "h"][int(rng.integers(5))]
+    raw[column] = [f"{float(value):g} {unit}" for value in pd.to_numeric(raw[column])]
+    return [truth("B07", [column], None, "convert_type", "units")]
+
+# writes a numeric column in kg or g at random, "1.37kg" and "1370 g" (expected: B07)
+def inject_mixed_units(raw, column, rng):
+    numbers = pd.to_numeric(raw[column])
+    grams = rng.random(len(raw)) < 0.5
+    raw[column] = [f"{value * 1000:.0f} g" if gram else f"{value:g}kg" for value, gram in zip(numbers, grams)]
+    return [truth("B07", [column], None, "convert_type", "mixed_units")]
+
+# packs two numeric columns into one text column "a / b" and removes them...
+# (expected: B08)
+def inject_packed(raw, first, second, rng):
+    name = f"{first}_{second}_packed"
+    raw[name] = [f"{a} / {b}" for a, b in zip(raw[first], raw[second])]
+    raw.drop(columns=[first, second], inplace=True)
+    return [truth("B08", [name], None, "extract_pattern", "packed")]
+
+# turns a numeric column into dates written in two formats, ISO and...
+# dd/mm/yyyy (expected: B09)
+def inject_mixed_dates(raw, column, rng):
+    days = pd.to_numeric(raw[column]).rank(method="dense").astype(int) % 1500
+    dates = pd.Timestamp("2015-01-01") + pd.to_timedelta(days, unit="D")
+    other = rng.random(len(raw)) < 0.3
+    raw[column] = [date.strftime("%d/%m/%Y") if flag else date.strftime("%Y-%m-%d") for date, flag in zip(dates, other)]
+    return [truth("B09", [column], None, "convert_type", "mixed_dates")]
+
+# the semantic-mess kinds (P4.6): they run after all other injections, with...
+# their own random generator and on columns nobody used, so the other kinds...
+# see exactly the same data as before
+def inject_semantic(raw, target, seed, ground_truth):
+    rng = np.random.default_rng(seed + 1000)
+    columns = free_numeric(raw, target, ground_truth)
+    rng.shuffle(columns)
+    found = []
+    for injector in [inject_units, inject_mixed_units, inject_mixed_dates]:
+        if columns:
+            found.extend(injector(raw, columns.pop(), rng))
+    if len(columns) >= 2:
+        found.extend(inject_packed(raw, columns.pop(), columns.pop(), rng))
+    return found
+
 # picks a random column that no other injection used yet
 def next_column(candidates, used, rng):
     free = [column for column in candidates if column not in used]
@@ -208,6 +264,7 @@ def inject(raw, target, strength, seed=0):
         ground_truth.extend(injector(raw, target, rng, share, used))
     ground_truth.extend(add_columns(raw, target, rng, used))
     ground_truth.extend(add_leak(raw, target, rng))
+    ground_truth.extend(inject_semantic(raw, target, seed, ground_truth))
     raw, found = inject_duplicates(raw, target, rng, share)
     ground_truth.extend(found)
     raw, found = inject_conflicts(raw, target, rng, share)

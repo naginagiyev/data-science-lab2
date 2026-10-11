@@ -20,5 +20,9 @@ Recall per injected issue kind. cleanlab works on rows: an injected row issue co
 | linear_relation          |     1.000 |             1.000 |           0.750 |      0.000 |
 | one_to_one               |     1.000 |             0.000 |           0.000 |      0.000 |
 | leakage                  |     1.000 |             1.000 |           0.000 |      0.000 |
-| all injected             |     0.983 |             0.433 |           0.317 |      0.158 |
-| precision (column-level) |     0.905 |             0.683 |           0.446 |      -     |
+| units                    |     1.000 |             0.000 |           0.000 |      0.000 |
+| mixed_units              |     1.000 |             0.000 |           0.000 |      0.000 |
+| packed                   |     1.000 |             0.000 |           0.000 |      0.000 |
+| mixed_dates              |     1.000 |             0.000 |           0.000 |      0.000 |
+| all injected             |     0.984 |             0.416 |           0.304 |      0.152 |
+| precision (column-level) |     0.857 |             0.648 |           0.423 |      -     |

@@ -3,7 +3,7 @@ import pandas as pd
 from collections import Counter
 
 PLAIN_NUMBER = re.compile(r"^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$")
-NUMBER_UNIT = re.compile(r"^([+-]?\d[\d,]*\.?\d*|[+-]?\.\d+)\s*([A-Za-z°µ\"'][A-Za-z°µ/²³\"'.]*)$")
+NUMBER_UNIT = re.compile(r"^((?:[+-]?\d[\d,]*\.?\d*|[+-]?\.\d+)(?:[eE][+-]?\d+)?)\s*([A-Za-z°µ\"'][A-Za-z°µ/²³\"'.]*)$")
 CURRENCY = re.compile(r"^([$€£¥]\s*[+-]?[\d,]+(\.\d+)?|[+-]?[\d,]+(\.\d+)?\s*([$€£¥]|USD|EUR|GBP))$")
 PERCENT = re.compile(r"^[+-]?\d[\d,]*\.?\d*\s*%$")
 NUMBERS = re.compile(r"\d+(?:[.,]\d+)?")

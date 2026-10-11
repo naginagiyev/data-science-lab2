@@ -33,6 +33,10 @@ accepted_codes = {
     "linear_relation": {"E07", "E08", "D04"},
     "one_to_one": {"E06"},
     "leakage": {"G01", "G02", "G03"},
+    "units": {"B07"},
+    "mixed_units": {"B07"},
+    "packed": {"B08"},
+    "mixed_dates": {"B09"},
 }
 categories = {
     "A": "structure",

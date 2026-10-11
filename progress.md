@@ -69,8 +69,8 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P4.2 Windows-safe output · 2026-10-11 · 3eb03e2 · SafeConsoleText filter on the edatool logger; cp1252 test: 0 logging errors (2 without the filter)
 - [x] P4.3 Loader robustness · 2026-10-11 · 60d2dc9 · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
 - [x] P4.4 Semantic-mess detectors · 2026-10-11 · 830bb36 · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
-- [x] P4.5 Policy and cost · 2026-10-11 · (next) · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
-- [ ] P4.6 Benchmark the auditor again
+- [x] P4.5 Policy and cost · 2026-10-11 · bfa1258, b438abe · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
+- [x] P4.6 Benchmark the auditor again · 2026-10-11 · (next) · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
 
 ## P5. Toolbox and verification (variant rules)
 - [ ] P5.1 Operations
@@ -183,3 +183,13 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
   edatool's advice, pandas-like typing, skrub's generic stage, a model engine with Optuna under a time
   budget, one use of the test set, a saved model that predicts raw input, and a report. In benchmark
   mode it beats the LightGBM and skrub baselines on the 4 local datasets.
+- **P4 (2026-10-11).** Created: `docs/edatool-baseline.md`, `benchmark/envs/edabench.txt`,
+  `llms/agentmodel.py`, `edabench/results/*`, tests (`testedatooloutput`, `testloader`, `testdetectors`,
+  `testauditpolicy`). Edited: edatool (`core/progress.py`, `core/loader.py`, `core/patterns.py`,
+  `detectors/formats.py`, `detectors/structure.py`, `detectors/leakage.py`, `agent/session.py`,
+  `agent/gate.py`, `agent/prompts/*.md`, `config/*.json`, `schemas.py`, `api.py`, `__main__.py`),
+  `edabench/injector.py`, `edabench/evaluate.py`. Deleted: nothing. What changed: the auditor no longer
+  breaks a cp1252 console; it reads BOM, UTF-16 and cp1252 files, other delimiters, title rows and footer
+  notes; it finds numbers with units, packed values and mixed date formats; it never proposes to change
+  the target's label space; on anonymized data its agent costs 6% of the tokens it used before. On the
+  injection benchmark the old results are unchanged and the new kinds are all found. LLM spend: $0.0247.
