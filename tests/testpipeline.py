@@ -2,6 +2,8 @@ import json
 import numpy as np
 import pandas as pd
 from orchestrator import run
+from benchmark.systems import v2
+from types import SimpleNamespace
 from settings import load_settings
 from modelling.evaluator import score
 from modelling.fittedmodel import FittedModel
@@ -60,3 +62,19 @@ def test_unseen_test_class():
     values = np.array([[0.9, 0.1], [0.2, 0.8], [0.5, 0.5]])
     result = score("multi-class-classification", truth, values, ["a", "b"])
     assert np.isfinite(result["score"])
+
+# the v2 benchmark adapter trains in benchmark mode, keeps the run folder in...
+# the output folder and predicts every test file
+def test_v2_adapter(tmp_path):
+    path = churn_file(tmp_path)
+    raw = pd.read_csv(path, dtype=str, keep_default_na=False)
+    raw.iloc[:300].to_csv(tmp_path / "train.csv", index=False)
+    raw.iloc[300:].drop(columns="Churn").to_csv(tmp_path / "test.csv", index=False)
+    arguments = SimpleNamespace(
+        train=str(tmp_path / "train.csv"), tests=[str(tmp_path / "test.csv")], target="Churn", task="binary-classification",
+        budget=20.0, seed=0, variant="generic", out=str(tmp_path / "out"), set=FAST[2:],
+    )
+    result = v2.fit_predict(arguments)
+    assert result["classes"] == ["No", "Yes"] and result["predictions"][0].shape == (100, 2)
+    assert (tmp_path / "out" / "run" / "model.joblib").exists()
+    assert result["meta"]["llm_calls"] == 0 and result["meta"]["run_dir"].endswith("run")

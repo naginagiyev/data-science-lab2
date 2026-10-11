@@ -50,8 +50,19 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 - [x] P3.3 Splitter · 2026-10-11 · b92e81e · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
 - [x] P3.4 Typing step and generic stage · 2026-10-11 · 0e99f20 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
 - [x] P3.5 Engine · 2026-10-11 · 75d6853 · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
-- [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · (next) · generic run folders complete for the 4 local datasets; predict works on test features
-- [ ] P3.7 v2 adapter
+- [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · e5956db · generic run folders complete for the 4 local datasets; predict works on test features
+- [x] P3.7 v2 adapter · 2026-10-11 · (next) · generic is at least as good as lightgbm and skrub on all 4 local datasets (table below)
+
+P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `generic` from p3-generic.csv, the rest from p2-smoke.csv):
+
+| system | ibmchurn (roc_auc) | kinghousedata (rmse) | winequality (log_loss) | creditcardfraud (roc_auc) |
+|---|---|---|---|---|
+| dummy | 0.5000 | 345120 | 1.1818 | 0.5000 |
+| lightgbm | 0.8386 | 111720 | 1.0082 | 0.9384 |
+| skrub | 0.8417 | 109407 | 1.1541 | 0.7668 |
+| flaml | 0.8506 | 104370 | 0.7583 | 0.9998 |
+| autogluon | 0.8499 | 101097 | 0.7824 | 1.0000 |
+| generic | 0.8510 | 103896 | 0.8067 | 1.0000 |
 
 ## P4. edatool improvements
 - [ ] P4.1 Baseline numbers before changing anything
@@ -160,3 +171,15 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
   (fixed splits, text files, subprocess systems with hard time-outs, scoring with a dummy fallback);
   five baselines that all work on the four local datasets; a v1 adapter that is ready but never run;
   TabPFN skipped because its weights are gated.
+- **P3 (2026-10-11).** Created: `edatool/` and `edabench/` (vendored), `edatool/core/patterns.py`,
+  `edatool/README.md`, `tools/reader.py`, `tools/glance.py`, `tools/splitter.py`, `tools/report.py`,
+  `operations/generic.py`, `modelling/cv.py`, `engine.py`, `fittedmodel.py`, `evaluator.py`,
+  `agents/framer.py` (rules part), `benchmark/systems/v2.py`, grid `p3-generic.json`, results
+  `p3-generic.csv`, and tests (`testreader`, `testglance`, `testsplitter`, `testgeneric`, `testengine`,
+  `testpipeline`). Edited: `orchestrator.py` (real stages), `main.py`, `schemas.py`, `settings.py`,
+  `configuration/settings.json` (framer section, `engine.max_search_rows`), `paths.py`,
+  `benchmark/systems/registry.json`. Deleted: `edabench/paths.py` (paths moved to the root). What
+  changed: the `generic` variant runs end to end: raw text in, quick look, rule framing, split by
+  edatool's advice, pandas-like typing, skrub's generic stage, a model engine with Optuna under a time
+  budget, one use of the test set, a saved model that predicts raw input, and a report. In benchmark
+  mode it beats the LightGBM and skrub baselines on the 4 local datasets.
