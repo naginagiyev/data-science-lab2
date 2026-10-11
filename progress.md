@@ -46,8 +46,8 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 
 ## P3. v2 core without LLM (variant generic)
 - [x] P3.1 Vendor edatool · 2026-10-11 · 72d3773 · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
-- [x] P3.2 Reader and glance · 2026-10-11 · (next) · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
-- [ ] P3.3 Splitter
+- [x] P3.2 Reader and glance · 2026-10-11 · ad36fa1 · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
+- [x] P3.3 Splitter · 2026-10-11 · (next) · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
 - [ ] P3.4 Typing step and generic stage
 - [ ] P3.5 Engine
 - [ ] P3.6 Evaluator, FittedModel, report, predict

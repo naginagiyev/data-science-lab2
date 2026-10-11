@@ -215,3 +215,13 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Glance uses edatool's `infer_schema` on at most 50,000 rows (target unknown at that point). Missing
   share = blank cells and edatool's hidden-missing tokens. The prompt line per column has the type,
   missing share and tokens, uniques, up to 4 examples, the range and the pattern shares above 5%.
+
+## 2026-10-11 · P3.3 · Splitter
+
+- Decision: `SplitInfo.test_rows` are positions in the read table (after rows with an empty target and,
+  in demo mode, exact duplicates are removed); `SplitInfo.folds` are the validation positions of each
+  fold in the training frame (the table without the test rows, re-indexed from 0).
+- Decision: time folds are contiguous blocks of the time-sorted training rows (`KFold` without shuffle
+  on the sorted order); the time key is parsed as numbers when at least 90% parse, otherwise as dates
+  (`format="mixed"`); unparseable values sort first. Group folds use `GroupKFold(shuffle=True)`
+  (scikit-learn 1.9). If edatool's `presplit` fails, classification is stratified and regression random.
