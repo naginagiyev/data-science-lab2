@@ -2,6 +2,7 @@ import sys
 import json
 import hashlib
 import argparse
+from benchmark.leaks import add_leak
 from paths import benchmark_files_dir
 from tools.metrics import primary_metric
 from benchmark.corruptor import corrupt, write_layout
@@ -43,6 +44,9 @@ def materialize(name, level, seed, overwrite=False, mess="mixed", group=None):
     target = spec["target"]
     train_rows, test_rows = dataset_split(name, raw, target, spec["task"], seed)
     types = None if mess in {"mixed", "layout"} else [mess]
+    leak = None
+    if group == "D":
+        raw, leak = add_leak(raw, name, target, spec["task"], seed)
     table, corruption, cells = corrupt(raw, target, name, seed, level if mess != "layout" else 0, types)
     folder.mkdir(parents=True, exist_ok=True)
     train = table.iloc[train_rows]
@@ -50,6 +54,10 @@ def materialize(name, level, seed, overwrite=False, mess="mixed", group=None):
     if mess == "layout":
         write_layout(train, folder / "train.csv", level)
         write_layout(test.drop(columns=[target]), folder / "test_features.csv", level)
+    elif leak is not None:
+        write_text_csv(train, folder / "train.csv")
+        write_text_csv(test.drop(columns=[target]).assign(**{leak["column"]: ""}), folder / "test_features.csv")
+        write_text_csv(test.drop(columns=[target]), folder / "test_features_naive.csv")
     else:
         write_text_csv(train, folder / "train.csv")
         write_text_csv(test.drop(columns=[target]), folder / "test_features.csv")
@@ -60,7 +68,7 @@ def materialize(name, level, seed, overwrite=False, mess="mixed", group=None):
     truth = {
         "dataset": name, "group": group, "level": level, "seed": seed, "target": target,
         "task": spec["task"], "metric": primary_metric(spec["task"]), "rows": {"train": len(train), "test": len(test)},
-        "mess": corruption["items"], "mess_kind": mess, "positions": positions,
+        "mess": corruption["items"], "mess_kind": mess, "leak": leak, "positions": positions,
         "files": {file.name: file_hash(file) for file in sorted(folder.glob("*.csv"))},
     }
     (folder / "truth.json").write_text(json.dumps(truth, indent=2) + "\n", encoding="utf-8", newline="\n")
@@ -74,11 +82,12 @@ def main():
     parser.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2])
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--mess", default="mixed")
+    parser.add_argument("--group")
     arguments = parser.parse_args()
     for name in arguments.datasets:
         for level in arguments.levels:
             for seed in arguments.seeds:
-                folder = materialize(name, level, seed, arguments.overwrite, arguments.mess)
+                folder = materialize(name, level, seed, arguments.overwrite, arguments.mess, arguments.group)
                 print(f"{name} level {level} seed {seed}: {folder}")
     return 0
 

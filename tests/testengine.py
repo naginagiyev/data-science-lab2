@@ -45,8 +45,8 @@ def run_engine(task, seconds, candidates=None, rows=600):
 
 # the engine respects its time budget within 10% and beats the dummy model
 def test_deadline_and_quality():
-    model, summary, log, seconds, features = run_engine("binary-classification", 20)
-    assert seconds <= 22
+    model, summary, log, seconds, features = run_engine("binary-classification", 12)
+    assert seconds <= 13.2
     assert summary["cv"]["lightgbm"] > summary["cv"]["dummy"] + 0.2
     assert model.predict_values(features.head(7)).shape == (7, 2)
     assert {entry["family"] for entry in log} >= {"dummy", "linear", "lightgbm", "catboost"}

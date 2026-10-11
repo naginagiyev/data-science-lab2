@@ -8,7 +8,7 @@ from settings import load_settings
 from modelling.evaluator import score
 from modelling.fittedmodel import FittedModel
 
-FAST = ["budget.total_seconds=20", "budget.min_model_seconds=8", "engine.candidates=[\"dummy\", \"linear\", \"lightgbm\"]"]
+FAST = ["budget.total_seconds=12", "budget.min_model_seconds=6", "engine.candidates=[\"dummy\", \"linear\", \"lightgbm\"]"]
 RUN_FILES = ["settings.json", "context.json", "run.log", "glance.json", "task.json", "split.json", "decisions.jsonl", "optuna.csv", "model.joblib", "scores.json", "report.md"]
 
 # writes a small churn-like CSV with an id, a blank token, text and numbers
@@ -52,7 +52,7 @@ def test_generic_run(tmp_path):
 # from the values
 def test_rules_framing(tmp_path):
     path = churn_file(tmp_path)
-    context = run(path, load_settings(assignments=FAST), variant="generic", out_dir=tmp_path / "runs", console=False)
+    context = run(path, load_settings(assignments=FAST + ["engine.candidates=[\"dummy\"]"]), variant="generic", out_dir=tmp_path / "runs", console=False)
     assert context.task.target == "Churn" and context.task.task == "binary-classification"
     assert context.task.source == "rules" and context.task.id_columns == ["customerID"]
 

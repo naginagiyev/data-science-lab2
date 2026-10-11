@@ -474,3 +474,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   decimal commas and cp1252 (level 3); the robust loader reads all three back (test).
 - Files of a single type live in `level<k>-<type>/`; `truth.json` has the items, the train and test row
   positions and the file hashes.
+
+## 2026-10-11 · P6.3 · Leak generator
+
+- Decision: "the leak agrees with the positive class in 98% (strong) or 80% (moderate) of rows" is
+  read as: the flag or date exists for 98% / 80% of the positive rows and never for negative rows
+  (it is written after the event, like a refund after a confirmed fraud). With 2% of all rows flipped
+  instead, the one-feature AUC of a strong flag is about 0.98, exactly G01's threshold, and detection
+  would be chance. The multi-class grade style keeps 98% / 80% correct grades. Regression: target x
+  U(0.97, 1.03) (strong) or target plus normal noise with sd = 0.75 x sd(target) (correlation about 0.8).
+- Strengths: strong for credit-g, Fitness_Club, Bank_Customer_Churn, maternal_health_risk,
+  Another-Dataset-on-used-Fiat-500; moderate for Marketing_Campaign, E-CommereShippingData,
+  concrete_compressive_strength, healthcare_insurance_expenses, diamonds (the pilot strengths of
+  Appendix D are kept).
+- Check (deterministic audit of each Group D table with its leak): G01 finds all 5 strong leaks (G02
+  also for two flags); of the moderate ones only the date leak is found (G04); the other four are not
+  found by statistics alone, so they need the agent's name review (G03), which is what E3 measures.
+- Speed: the pipeline tests now use a 12 s budget and the engine deadline test 12 s (fast suite under
+  the 3-minute limit).
