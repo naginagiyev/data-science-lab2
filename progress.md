@@ -73,9 +73,9 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P4.6 Benchmark the auditor again · 2026-10-11 · 57cbcd2 · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
 
 ## P5. Toolbox and verification (variant rules)
-- [x] P5.1 Operations · 2026-10-11 · (next) · 17 column operations + registry/catalog text; contract tests (index, unseen rows, NaN, unicode, empty column, one row, pickle) pass
-- [x] P5.2 Row and target operations · 2026-10-11 · (next, same commit as P5.1) · row filters never transform; map_target_labels never merges classes; log_target exact inverse
-- [ ] P5.3 Translator
+- [x] P5.1 Operations · 2026-10-11 · d981c3e · 17 column operations + registry/catalog text; contract tests (index, unseen rows, NaN, unicode, empty column, one row, pickle) pass
+- [x] P5.2 Row and target operations · 2026-10-11 · d981c3e · row filters never transform; map_target_labels never merges classes; log_target exact inverse
+- [x] P5.3 Translator · 2026-10-11 · (next) · Appendix C default plans look right on churn, kinghousedata and wine (see decisions.md)
 - [ ] P5.4 Compiler, data checks, verify integration
 - [ ] P5.5 Leak guard
 - [ ] P5.6 Gate

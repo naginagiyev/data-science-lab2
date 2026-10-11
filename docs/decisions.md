@@ -365,3 +365,22 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   100; `parse_units` reads values without a unit with `default_factor` (else they fail);
   `date_difference` treats 4-digit numbers as years and other values as dates (fractional years);
   `as_category` outputs the pandas `category` dtype (the typing step leaves it alone).
+
+## 2026-10-11 · P5.3 · Translator
+
+- Decision: the protected codes (A02 saved index, C02 hidden missing tokens, A04 exact duplicates, F03
+  target spellings) stay protected even when their issue is still an open review item (no agent in the
+  `rules` variant): these steps are safe by construction. Other open review items become gated steps.
+- Decision: A05 (conflicting duplicates) names the target but is translated as a gated, training-only
+  row step (`drop_conflicting_rows`); every other issue on the target is skipped (rule 12).
+- Decision: `consider` issues are not translated; D02 limits come from the flagged values in the
+  evidence (`above` just under the smallest flagged high value, `below` just over the largest flagged
+  low value); B07 with one unit gets factor 1; B07 with two or more units and no factors is skipped and
+  left to the cleaner; steps are ordered replace/missing first, then parsing, then categories,
+  indicators, grouping, text features and drops.
+- Check on deterministic audits: ibmchurn gives replace_values `" "` → missing (protected),
+  parse_number TotalCharges (gated), drop_duplicate_rows (protected), drop_conflicting_rows (gated);
+  customerID is dropped by the leak guard (protected). kinghousedata gives parse_datetime `date`,
+  as_category `zipcode`, set_missing_where for `yr_renovated` 0 + indicator, D02 limits, drop
+  `waterfront` (gated); `id` is dropped by the leak guard and used as the group key. winequality gives
+  no target step (F05 is no_action).
