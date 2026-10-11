@@ -14,15 +14,15 @@ from modelling.cv import encode_target
 from llms.agentmodel import AgentModel
 from modelling.evaluator import evaluate
 from edatool.schemas import Meta, Report
+from checks.datachecks import verify_plan
 from tools.glance import glance, glance_text
 from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
 from operations.translator import default_plan
 from tools.splitter import holdout, make_folds, split
-from checks.datachecks import check_steps, verify_plan
 from checks.gate import gate_data, protected_only, run_gate
-from agents.cleaner import clean_plan, issues_text, protected_part
 from tools.runfolder import RunFolder, close_logging, now_text, setup_logging
+from agents.cleaner import clean_plan, issues_text, protected_part, repair_plan
 from schemas import Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
 from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
@@ -354,21 +354,22 @@ def check_data(state):
         state.objects["check_data"] = (sample.drop(columns=[task.target]), sample[task.target].to_numpy(), folds)
     return state.objects["check_data"]
 
-# stage 08: data checks of every step on the folds of a sample (failing steps...
-# are dropped; the LLM variants repair them first) and edatool verify of the plan
+# stage 08: data checks of every step on the folds of a sample; the LLM...
+# variants repair failing steps (at most max_repairs times), the others drop...
+# them; then edatool verify of the plan
 def stage_compile(state):
     task = state.context.task
     plan = state.objects["plan"]
     frame, values, folds = check_data(state)
-    results, failing = check_steps(plan, frame, values, folds, task.target, state.settings.checks)
-    for position in failing:
-        step = plan.steps[position]
-        decide(state, "compile", "check", step.op, False, "; ".join(results[position]["problems"]), "checks", proposal=step.model_dump())
-    compiled = plan.model_copy(deep=True)
-    compiled.steps = [step for position, step in enumerate(plan.steps) if position not in failing]
-    compiled = valid_steps(state, compiled, list(state.objects["train"].columns))
+    llm = state.options["cleaner"] and state.settings.cleaner.enabled
+    repaired, results, records = repair_plan(plan, frame, values, folds, task.target, task.task, state.settings, state.client if llm else None, state.context, state.options["repair"])
+    for record in records:
+        kind = "repair" if record["reason"].startswith("repair") else "check"
+        decide(state, "compile", kind, record["subject"], record["accepted"], record["reason"], "llm" if kind == "repair" else "checks", proposal=record["proposal"])
+    failing = [record["subject"] for record in records if not record["accepted"]]
+    compiled = valid_steps(state, repaired, list(state.objects["train"].columns))
     compiled.version = plan.version + 1
-    compiled.notes = "compiled: failing steps dropped"
+    compiled.notes = "compiled: failing steps repaired or dropped"
     verification = None
     if state.settings.verify.enabled and compiled.steps:
         train = state.objects["train"]
@@ -381,7 +382,8 @@ def stage_compile(state):
     state.objects["plan"] = compiled
     state.context.plans.append(compiled)
     save_plans(state)
-    return f"{len(failing)} failing steps dropped" + (f", verify: {verification.get('resolved', 0)} resolved" if verification and "resolved" in verification else "")
+    repairs = sum(record["accepted"] for record in records)
+    return f"{repairs} repaired, {len(failing)} dropped" + (f", verify: {verification.get('resolved', 0)} resolved" if verification and "resolved" in verification else "")
 
 # fallback of stage 08: the protected steps only
 def fallback_compile(state):

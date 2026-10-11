@@ -100,8 +100,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 ## P7. LLM agents (variant full)
 - [x] P7.1 Framer · 2026-10-11 · a6b3189 · fake-provider tests and --ask pass; real nano check: 4/4 targets right
 - [x] P7.2 edatool agent integration · 2026-10-11 · 54f6c6d · agent calls in llm.jsonl and the ledger (real nano run: 14 calls, 81k tokens, $0.0085); provider failure falls back to the deterministic audit (test)
-- [x] P7.3 Cleaner · 2026-10-11 · (next) · fake-provider tests pass; real nano run on a level-3 churn sample: valid plan with parse_boolean and map_categories on the first try
-- [ ] P7.4 Repair loop
+- [x] P7.3 Cleaner · 2026-10-11 · a26b73d · fake-provider tests pass; real nano run on a level-3 churn sample: valid plan with parse_boolean and map_categories on the first try
+- [x] P7.4 Repair loop · 2026-10-11 · (next) · wrong unit map repaired from the structured error (test); capped at 3 attempts; no-repair ablation drops at once
 - [ ] P7.5 Refine loop
 - [ ] P7.6 Sandbox and custom operation
 - [ ] P7.7 Free-code variant

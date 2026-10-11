@@ -555,3 +555,14 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   cleaner call ($0.0011) gave a valid plan on the first try with parse_boolean for 3 yes/no columns and
   map_categories for spelling variants; test ROC-AUC 0.8255. The leak guard again dropped `TotalCharges`
   by nano's name review (open problem for P7.9).
+
+## 2026-10-11 · P7.4 · Repair loop
+
+- The compile stage checks the plan, sends each failing step to the LLM (`prompts/repair.md`: the step,
+  the structured error, the failed examples, the value counts of its column and the catalog entries of
+  the step and of related operations), puts the corrected or replacing step in place (source `repair`)
+  and checks the plan again; a step gets at most `cleaner.max_repairs` (3) attempts, then it is
+  dropped. Protected steps are never sent to repair (they are dropped with a decision if they fail).
+  The `rules` variant and `full-norepair` drop failing steps at once. Every attempt is a decision.
+- An identical repair prompt (same step, same error) comes from the LLM cache, so a repeated attempt
+  costs nothing.
