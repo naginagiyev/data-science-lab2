@@ -50,19 +50,20 @@ def test_free_code_gives_up(tmp_path):
     client, provider = fake_client(tmp_path, [{"code": "class CleaningStep:\n    def fit(self, frame):\n        pass\n    def transform(self, frame):\n        return frame.head(1)\n"}])
     assert free_code_plan(client, None, train, glance(train), TASK, Plan(), "", load_settings()) is None and len(provider.calls) == 3
 
-# the freecode variant runs end to end with a fake provider; the saved model...
-# predicts raw rows through the sandbox
+# the freecode variant runs end to end with a fake provider; the report has the...
+# summary paragraph; the saved model predicts raw rows through the sandbox
 def test_freecode_run(tmp_path, monkeypatch):
     monkeypatch.setattr(llms.client, "spend_file", tmp_path / "spend.json")
     monkeypatch.setattr(llms.client, "llm_cache_dir", tmp_path / "cache")
     path = churn_file(tmp_path)
-    provider = FakeProvider([{"code": CODE}], model="gpt-4.1-nano")
+    provider = FakeProvider(lambda prompt, count: {"text": "The run finished with a model."} if "data scientist" in prompt else {"code": CODE}, model="gpt-4.1-nano")
     settings = load_settings(assignments=FAST + ["gate.max_rows=400", "audit.use_agent=false"])
     context = run(path, settings, "Churn", "binary-classification", variant="freecode", out_dir=tmp_path / "runs", provider=provider, console=False)
     folder = next((tmp_path / "runs").iterdir())
     decisions = [json.loads(line) for line in (folder / "decisions.jsonl").read_text(encoding="utf-8").splitlines()]
     assert any(item["kind"] == "freecode" and item["accepted"] for item in decisions)
     assert all(stage.ok for stage in context.stages)
+    assert "## Summary\n\nThe run finished with a model." in (folder / "report.md").read_text(encoding="utf-8")
     model = FittedModel.load(folder / "model.joblib")
     raw = pd.read_csv(path, dtype=str, keep_default_na=False).head(5)
     assert set(model.predict(raw.drop(columns="Churn"))) <= {"Yes", "No"}

@@ -105,7 +105,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P7.5 Refine loop · 2026-10-11 · 7af39ad · a plan with a harmful step is revised from the gate evidence (test); best gated round wins
 - [x] P7.6 Sandbox and custom operation · 2026-10-11 · 0b4368b · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
 - [x] P7.7 Free-code variant · 2026-10-11 · 82f41a9 · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
-- [x] P7.8 Summary paragraph · 2026-10-11 · (next) · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
+- [x] P7.8 Summary paragraph · 2026-10-11 · 55e6a8b · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
 - [ ] P7.9 Dev iteration
 
 ## P8. Robustness and performance
