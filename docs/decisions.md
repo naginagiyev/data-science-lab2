@@ -193,3 +193,13 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Test (`tests/testv1adapter.py`, marked `slow`): with `OPENAI_BASE_URL=http://127.0.0.1:9/v1`, v1's EDA
   runs and the first LLM call (ConfigFiller) raises `APIConnectionError`; the adapter exits with code
   1 and writes `meta.json` with `ok: false` and the error. No real LLM call was made.
+
+## 2026-10-11 · P2.5 · TabPFN skipped
+
+- Decision: the optional `tabpfn` baseline is skipped (`[-]`), as the plan says for gated weights.
+- Reason: `tabpfn==9.1.0` installs on Windows x86_64, but the first `fit` calls
+  `ensure_license_accepted` for its Hugging Face weights and starts a browser login (it may have
+  opened a browser tab); without an accepted license and a token, no weights download. The
+  environment (about 1 GB) was deleted. `benchmark/envs/tabpfn.txt` stays, so the user can install it
+  later with `uv run python -m benchmark.envs.install tabpfn` after accepting the license.
+- AIDE is not installed in this plan (§2.5).

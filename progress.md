@@ -28,8 +28,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P2.1 Harness skeleton · 2026-10-11 · 4ef5d7a · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
 - [x] P2.2 Main-environment baselines (dummy, lightgbm, skrub) · 2026-10-11 · 81f7f0e, 929e78b · all 3 score on the 4 local datasets (benchmark/results/p2-local.csv)
 - [x] P2.3 Separate environments (flaml, autogluon) · 2026-10-11 · 80be799 · flaml 2.7.0 and autogluon 1.6.3 in own uv envs (no WSL needed); both score on the 4 local datasets with 60 s
-- [x] P2.4 v1 adapter (optional, never run) · 2026-10-11 · (next) · v1 env from frozen lock (3.10); headless.py fails cleanly with a refused OPENAI_BASE_URL (slow test)
-- [ ] P2.5 Optional baseline (tabpfn)
+- [x] P2.4 v1 adapter (optional, never run) · 2026-10-11 · b1d7b1c · v1 env from frozen lock (3.10); headless.py fails cleanly with a refused OPENAI_BASE_URL (slow test)
+- [-] P2.5 Optional baseline (tabpfn) · 2026-10-11 · (next) · skipped: tabpfn 9.1.0 weights are gated (license acceptance via browser login)
 - [ ] P2.6 Baseline smoke table
 
 ## P3. v2 core without LLM (variant generic)
