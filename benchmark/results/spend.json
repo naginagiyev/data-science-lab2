@@ -1,6 +1,6 @@
 {
   "totals": {
-    "dev": 0.024713499999999996,
+    "dev": 0.025996399999999996,
     "experiments": 0.0
   },
   "calls": [
@@ -462,6 +462,69 @@
       "input_tokens": 7780,
       "output_tokens": 24,
       "cost_usd": 0.0007876000000000001
+    },
+    {
+      "time": "2026-10-11T17:43:59+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1056,
+      "output_tokens": 55,
+      "cost_usd": 0.0001276
+    },
+    {
+      "time": "2026-10-11T17:44:01+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1379,
+      "output_tokens": 64,
+      "cost_usd": 0.0001635
+    },
+    {
+      "time": "2026-10-11T17:44:03+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1033,
+      "output_tokens": 91,
+      "cost_usd": 0.0001397
+    },
+    {
+      "time": "2026-10-11T17:44:16+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 2491,
+      "output_tokens": 53,
+      "cost_usd": 0.0002703
+    },
+    {
+      "time": "2026-10-11T17:44:52+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1366,
+      "output_tokens": 53,
+      "cost_usd": 0.00015780000000000001
+    },
+    {
+      "time": "2026-10-11T17:44:53+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1221,
+      "output_tokens": 54,
+      "cost_usd": 0.00014370000000000002
+    },
+    {
+      "time": "2026-10-11T17:45:06+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 2595,
+      "output_tokens": 52,
+      "cost_usd": 0.00028030000000000004
     }
   ]
 }

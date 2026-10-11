@@ -5,9 +5,9 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.0247 of $1.50
+- development: $0.0260 of $1.50
 - pilot: $0.00 of $2.75
-- total: $0.0247 (target about $4, hard maximum $5)
+- total: $0.0260 (target about $4, hard maximum $5)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
@@ -95,10 +95,10 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P6.2 Corruptor · 2026-10-11 · 2aa8f7a · 12 types (layout in the writer, leak in P6.3); determinism, nested levels, exact restore, target untouched; one example per type in docs/datasets.md
 - [x] P6.3 Leak generator · 2026-10-11 · a4c88e3 · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
 - [x] P6.4 Materialize the dev pool · 2026-10-11 · 5bef67a · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
-- [x] P6.5 Group C · 2026-10-11 · (next) · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
+- [x] P6.5 Group C · 2026-10-11 · 82019e6 · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
 
 ## P7. LLM agents (variant full)
-- [ ] P7.1 Framer
+- [x] P7.1 Framer · 2026-10-11 · (next) · fake-provider tests and --ask pass; real nano check: 4/4 targets right
 - [ ] P7.2 edatool agent integration
 - [ ] P7.3 Cleaner
 - [ ] P7.4 Repair loop

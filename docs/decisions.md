@@ -505,3 +505,20 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   is cleaned (only trailing spaces in two categories). Group C is now HR_Analytics,
   in_vehicle_coupon_recommendation, heloc, bank-marketing and employee_salaries; the pilot natural
   datasets stay HR_Analytics, in_vehicle_coupon_recommendation and heloc.
+
+## 2026-10-11 · P7.1 · Framer
+
+- The LLM framer runs only in the LLM variants and only when a flag is missing or the rule task is
+  ambiguous (integers with 3 to 20 levels); the benchmark always passes both flags, so it makes no
+  call there. Its answer is checked by code (target in the candidate list, existing column names, a
+  two-valued target is binary, id columns must be id-like) and errors go back to the LLM (2 retries);
+  then the rules win. `--ask` asks the user with questionary when the confidence is below 0.6.
+- Decision: rule candidates weigh earlier name hints more (`target`, `label`, `class`, ... before
+  `grade` or `rating`), and the few-levels bonus is small (0.2). Reason: the first real check picked
+  `grade` instead of `price` on kinghousedata, because both words were hints of equal weight.
+- Decision: an LLM id column is accepted only when the glance types it as id, or when its name contains
+  an id word (id, key, code, number, no, uuid, guid, index, nr) and at least 90% of its values are
+  unique. Reason: nano listed all wine features as ids, and `Time` for creditcardfraud.
+- Real check (gpt-4.1-nano, 5,000-row samples, no flags): ibmchurn → Churn (binary, id customerID),
+  kinghousedata → price (regression, id id), winequality → quality (multi-class), creditcardfraud →
+  Class (binary); 4 of 4 right; two invalid id lists were corrected by the retry.

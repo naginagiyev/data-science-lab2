@@ -5,16 +5,16 @@ import numpy as np
 import pandas as pd
 from edatool import audit
 from modelling import engine
-from tools.glance import glance
 from llms.client import LlmClient
 from settings import settings_hash
+from agents.framer import frame_task
 from tools.report import write_report
 from checks.leakage import leak_guard
 from modelling.cv import encode_target
 from llms.agentmodel import AgentModel
 from modelling.evaluator import evaluate
-from agents.framer import frame_by_rules
 from edatool.schemas import Meta, Report
+from tools.glance import glance, glance_text
 from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
 from operations.translator import default_plan
@@ -152,12 +152,17 @@ def clean_rows(state, task):
     check_target(raw, task.target, task.task, state.settings.split.min_rows)
     state.objects["raw"] = raw
 
-# stage 03: target, task, metric and id columns (flags win; rules otherwise)
+# stage 03: target, task, metric and id columns (flags win; rules, and the...
+# LLM in the LLM variants when a flag is missing or the rule task is ambiguous)
 def stage_frame(state):
-    task = frame_by_rules(state.objects["raw"], state.objects["glance"], state.settings, state.objects["target"], state.objects["task"])
+    uses_llm = state.options["cleaner"] or state.options["review"] or state.options["freecode"]
+    client = state.client if uses_llm else None
+    profile = glance_text(state.objects["glance"], examples=state.options["samples"]) if uses_llm and state.objects["glance"]["columns"] else ""
+    ask = state.objects["options"].get("ask", False)
+    task = frame_task(state.objects["raw"], state.objects["glance"], state.settings, state.objects["target"], state.objects["task"], client, state.context, ask, profile)
     state.context.task = task
     state.folder.write_json("task.json", task.model_dump())
-    decide(state, "frame", "task", task.target, True, task.reason, "user" if task.source == "flags" else "rules", proposal=task.model_dump())
+    decide(state, "frame", "task", task.target, True, task.reason, {"flags": "user", "rules": "rules", "llm": "llm"}[task.source], proposal=task.model_dump())
     clean_rows(state, task)
     return f"{task.target} | {task.task} | {task.metric}"
 
