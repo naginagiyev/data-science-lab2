@@ -13,6 +13,7 @@ from tools.report import write_report
 from checks.leakage import leak_guard
 from modelling.cv import encode_target
 from llms.agentmodel import AgentModel
+from agents.summarizer import summarize
 from modelling.evaluator import evaluate
 from edatool.schemas import Meta, Report
 from checks.datachecks import verify_plan
@@ -519,15 +520,22 @@ def top_issues(state):
     chosen = [issue for issue in report.issues if issue.priority in {"must_fix", "should_fix"}][:10]
     return [f"{issue.id} [{issue.priority}] {issue.title} ({', '.join(issue.columns[:3])}) - {issue.status}" for issue in chosen]
 
-# stage 12: scores.json and report.md
+# stage 12: scores.json and report.md; the LLM variants add a summary...
+# paragraph (the template report stays when the call fails)
 def stage_report(state):
     scores = dict(state.context.scores)
     scores["seconds"] = {stage.name: stage.seconds for stage in state.context.stages}
     scores["llm"] = state.context.llm
     state.folder.write_json("scores.json", scores)
     extras = {"read": state.objects.get("read", {}), "row_notes": state.objects["row_notes"], "top_issues": top_issues(state)}
+    report_text = write_report(state.folder, state.context, extras)
+    uses_llm = state.options["cleaner"] or state.options["review"] or state.options["freecode"]
+    if not (uses_llm and state.settings.report.llm_summary):
+        return "report.md written"
+    extras["summary"] = summarize(state.client, state.context, report_text)
+    state.context.llm = dict(state.client.usage)
     write_report(state.folder, state.context, extras)
-    return "report.md written"
+    return "report.md written" + (" with a summary" if extras["summary"] else " (no summary)")
 
 # the stages in order with their function and fallback for the variant
 def stage_table(state):

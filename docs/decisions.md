@@ -617,3 +617,16 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   the failure. The sandbox error now names the expected and returned rows and index; on the re-run nano
   fixed its code on the second answer, and the gate removed the step (no gain on the clean file).
   Both runs finished with a model and a report; cost about $0.01 for the three runs.
+
+## 2026-10-11 · P7.8 · Summary paragraph
+
+- The facts of `prompts/summary.md` are the template report itself (cut at 6,000 characters): it
+  already holds only checked facts (task, split, audit, leaks, plan, gate, scores, cost). The report is
+  written first, then the summary is asked, then the report is written again with a `## Summary`
+  section, so the summary call is in the cost table.
+- Code checks the answer: at most 120 words, and every number must appear in the facts (thousands
+  commas ignored; counts up to 10 are allowed). A wrong answer goes back to the LLM (schema retries);
+  without a valid answer, or when the provider fails, the template report stays. Only the LLM variants
+  ask for a summary, and only when `report.llm_summary` is true.
+- Real nano check on the churn freecode report: the first answer failed the number check, the second
+  was valid (5 sentences); cost $0.0004.
