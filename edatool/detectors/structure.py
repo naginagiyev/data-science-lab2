@@ -17,6 +17,12 @@ def parsing_problems(context, columns):
         context.ledger.add("A01", [], "bad_field_count", {"skipped_lines": len(lines), "first_lines": lines[:5]})
     if info.get("short_rows"):
         context.ledger.add("A01", [], "short_rows", {"short_rows": info["short_rows"]})
+    layout = {key: info[key] for key in ["title_rows", "footer_rows"] if info.get(key)}
+    if info.get("encoding") not in {None, "utf-8"}:
+        layout["encoding"] = info["encoding"]
+    if layout:
+        layout["delimiter"] = info.get("delimiter")
+        context.ledger.add("A01", [], "file_layout", layout)
     header = [str(name) for name in context.raw.columns]
     first = text_values(context, context.raw.columns[0]) if header else pd.Series(dtype=object)
     candidates = context.raw[first == header[0]] if header else context.raw

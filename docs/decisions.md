@@ -305,3 +305,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   logging free of `UnicodeEncodeError` (the `../II` crash). With a cp1252 console the same audit gave
   2 logging errors without the filter and 0 with it (test `tests/testedatooloutput.py`).
 - Alternative: an ASCII-only output everywhere (loses the symbols on UTF-8 consoles).
+
+## 2026-10-11 · P4.3 · Loader robustness
+
+- Decision: text files are decoded by BOM first (UTF-8 BOM → `utf-8-sig`, UTF-16 BOM → `utf-16`),
+  then strictly as UTF-8, cp1252 and finally latin-1. The delimiter is chosen among the sniffer's
+  guess and `, ; \t |` by the consistency of the field counts on the first 300 lines (a field count
+  above 1 first, then the share of lines with the modal count). The modal width prefers counts above 1,
+  so title and note rows never decide it.
+- Decision: the header is the first row with the modal field count and mostly non-numeric text; the
+  non-empty rows above it are title rows. Below the table, rows (from the end) whose field count
+  differs or that are notes are footer rows. A note is a row whose only non-empty cell is non-numeric
+  text in the first column; so a sparse last data row such as `4,,` is kept. The table is still parsed
+  by pandas (`skiprows` = header line); footer rows are removed afterwards. Excel files use the same
+  logic on the cell grid.
+- Decision: empty files and header-only files raise `ValueError` with a clear message (the pipeline's
+  reader turns it into a hard stop). Title rows, footer rows and a non-UTF-8 encoding are reported in
+  `attrs["edatool"]` and as an A01 `file_layout` issue.
+- Check: the 4 local datasets load with the same shapes as before (creditcardfraud 5.6 s).
