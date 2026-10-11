@@ -49,10 +49,10 @@ OPENML_DATASETS = {
     "in_vehicle_coupon_recommendation": {"did": 46937, "pool": "C", "task": BINARY, "pilot": True},
     "heloc": {"did": 46932, "pool": "C", "task": BINARY, "pilot": True},
     "bank-marketing": {"did": 46910, "pool": "C", "task": BINARY},
-    "Food_Delivery_Time": {"did": 46928, "pool": "C", "task": REGRESSION, "sample_rows": 30000},
+    "Food_Delivery_Time": {"did": 46928, "pool": "spare-C", "task": REGRESSION, "sample_rows": 30000},
     "adult": {"did": 1590, "pool": "spare-C", "task": BINARY, "sample_rows": 30000},
     "Titanic": {"did": 40945, "pool": "spare-C", "task": BINARY},
-    "employee_salaries": {"did": 42125, "pool": "spare-C", "task": REGRESSION},
+    "employee_salaries": {"did": 42125, "pool": "C", "task": REGRESSION},
     "house_prices_nominal": {"did": 42563, "pool": "spare-C", "task": REGRESSION},
     "credit-approval": {"did": 29, "pool": "spare-C", "task": BINARY},
 }

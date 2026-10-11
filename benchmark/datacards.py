@@ -1,8 +1,9 @@
 import sys
 import json
+from edatool import audit
 from paths import docs_dir, results_dir
 from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt, write_layout
-from benchmark.datasets import GROUP_A, LOCAL_DATASETS, MANIFEST, OPENML_DATASETS, dataset_spec, load_dataset
+from benchmark.datasets import GROUP_A, GROUP_C, LOCAL_DATASETS, MANIFEST, OPENML_DATASETS, dataset_spec, load_dataset
 
 CARDS_FILE = docs_dir / "datasets.md"
 TASK_IDS = {
@@ -39,7 +40,8 @@ NOTES = {
     "in_vehicle_coupon_recommendation": ("natural mess (expected)", "income ranges as text; age '50plus', 'below21'; time '10AM'; expiration '1d', '2h'"),
     "heloc": ("natural mess (expected)", "special values -7, -8, -9"),
     "bank-marketing": ("natural mess (expected)", "'unknown' tokens; pdays = -1; the duration leak is not in this version"),
-    "Food_Delivery_Time": ("natural mess (to check)", "text formats may have been cleaned in TabArena; fixed 30,000-row sample"),
+    "Food_Delivery_Time": ("checked for Group C in P6.5 and replaced: the TabArena version is cleaned", "only trailing spaces in categories; fixed 30,000-row sample"),
+    "employee_salaries": ("natural mess; replaces Food_Delivery_Time in Group C (P6.5)", "dates as mm/dd/yyyy text; a mostly empty job-title column; many job titles"),
 }
 
 # one line per dataset for the overview table
@@ -124,8 +126,41 @@ def write_mess_examples():
     lines += ["- **10. layout** (credit-g, level 3: title rows, `;`, decimal commas, cp1252, footer; reader test E6b): first lines:", "", "```", *[line[:110] for line in head], "```"]
     (results_dir / "mess-examples.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
 
+# the columns that show the natural mess of each Group C dataset
+NATURAL_COLUMNS = {
+    "HR_Analytics_Job_Change_of_Data_Scientists": ["experience", "company_size", "last_new_job"],
+    "in_vehicle_coupon_recommendation": ["income", "age", "expiration", "time"],
+    "heloc": ["ExternalRiskEstimate", "MSinceMostRecentDelq"],
+    "bank-marketing": ["contact", "poutcome", "pdays"],
+    "employee_salaries": ["date_first_hired", "underfilled_job_title"],
+    "Food_Delivery_Time": ["Type_of_order", "Type_of_vehicle", "Delivery_person_Ratings"],
+}
+
+# the natural-mess check of P6.5: top values of the messy columns and the...
+# deterministic audit findings (B, C and D codes) of every Group C dataset and...
+# of the replaced Food_Delivery_Time; written to benchmark/results/natural-mess.md
+def write_natural_mess():
+    lines = ["Checked on the downloaded versions (deterministic audit of the first 10,000 rows).", ""]
+    for name in GROUP_C + ["Food_Delivery_Time"]:
+        spec = dataset_spec(name)
+        raw = load_dataset(name)
+        report = audit(raw.head(10000), spec["target"], spec["task"], use_agent=False)
+        codes = {}
+        for issue in report.issues:
+            if issue.code[0] in "BCD":
+                codes[issue.code] = codes.get(issue.code, 0) + 1
+        status = "replaced by employee_salaries (the TabArena version is cleaned)" if name == "Food_Delivery_Time" else ("pilot" if OPENML_DATASETS[name].get("pilot") else "Group C")
+        lines.append(f"- **{name}** ({status}); audit findings: " + ", ".join(f"{code} x{count}" for code, count in sorted(codes.items())))
+        for column in NATURAL_COLUMNS.get(name, []):
+            if column in raw:
+                top = raw[column].value_counts().head(5)
+                lines.append(f"  - `{column}`: " + ", ".join(f"`{value}` ({count})" for value, count in top.items()))
+    (results_dir / "natural-mess.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
 if __name__ == "__main__":
     if "--examples" in sys.argv:
         write_mess_examples()
+    if "--natural" in sys.argv:
+        write_natural_mess()
     write_cards()
     sys.exit(0)

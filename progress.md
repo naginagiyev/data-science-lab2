@@ -94,8 +94,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P6.1 Dataset registry · 2026-10-11 · f581cd9 · 31 OpenML datasets downloaded and checked (ids, targets, tasks, licences); manifest + data cards; no spare needed
 - [x] P6.2 Corruptor · 2026-10-11 · 2aa8f7a · 12 types (layout in the writer, leak in P6.3); determinism, nested levels, exact restore, target untouched; one example per type in docs/datasets.md
 - [x] P6.3 Leak generator · 2026-10-11 · a4c88e3 · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
-- [x] P6.4 Materialize the dev pool · 2026-10-11 · (next) · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
-- [ ] P6.5 Group C
+- [x] P6.4 Materialize the dev pool · 2026-10-11 · 5bef67a · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
+- [x] P6.5 Group C · 2026-10-11 · (next) · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
 
 ## P7. LLM agents (variant full)
 - [ ] P7.1 Framer
@@ -212,3 +212,11 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   Deleted: nothing. What changed: the `rules` variant works without any LLM: edatool audits the training
   rows, the leak guard drops ids and leaks, the translator turns issues into typed operations, data
   checks and edatool verify test them, and the gate keeps only steps that do not hurt cross-validation.
+- **P6 (2026-10-11).** Created: `benchmark/corruptor.py`, `benchmark/leaks.py`, `benchmark/datacards.py`,
+  `docs/datasets.md`, `benchmark/results/datasets.json`, `mess-examples.md`, `leaks.md`, `natural-mess.md`,
+  tests (`testcorruptor`, `testleaks`). Edited: `benchmark/datasets.py` (all OpenML pools),
+  `benchmark/materialize.py` (mess levels, single types, Group D leak files, cells.parquet),
+  `benchmark/runner.py` (mess folders, naive test files). Deleted: nothing. What changed: the benchmark
+  data exists: 31 OpenML datasets are downloaded and documented; a corruptor writes 12 kinds of
+  realistic mess at 4 nested levels with exact ground truth; Group D gets one post-event leak column per
+  dataset; Group C is checked for real mess; the dev pool is written at all levels and seeds.
