@@ -21,6 +21,7 @@ from operations.translator import default_plan
 from tools.splitter import holdout, make_folds, split
 from checks.datachecks import check_steps, verify_plan
 from checks.gate import gate_data, protected_only, run_gate
+from agents.cleaner import clean_plan, issues_text, protected_part
 from tools.runfolder import RunFolder, close_logging, now_text, setup_logging
 from schemas import Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
@@ -308,7 +309,9 @@ def save_plans(state):
     state.folder.write_json("plans.json", [plan.model_dump() for plan in state.context.plans])
 
 # stage 07: the default plan of the translator (Appendix C) after the leak...
-# guard's protected drops; steps on dropped columns are left out
+# guard's protected drops (steps on dropped columns are left out); the LLM...
+# variants then ask the cleaner for a full plan (the translator plan stays...
+# when the cleaner gives no valid answer)
 def stage_plan(state):
     task = state.context.task
     train = state.objects["train"]
@@ -320,10 +323,20 @@ def stage_plan(state):
     steps = [step for step in plan.steps if not ({step.params.get("column")} | set(step.params.get("columns", []))) & dropped]
     combined = Plan(version=0, steps=leak_steps + steps, row_steps=plan.row_steps, target_steps=plan.target_steps, notes="translator")
     combined = valid_steps(state, combined, list(train.columns))
-    state.objects["plan"] = combined
     state.context.plans.append(combined)
+    source = "translator"
+    if state.options["cleaner"] and state.settings.cleaner.enabled:
+        report = state.objects["report"]
+        cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(state.context.audit_dir, report), state.settings, state.options["samples"])
+        if cleaned is not None:
+            combined = valid_steps(state, cleaned, list(train.columns))
+            combined.version = 1
+            state.context.plans.append(combined)
+            source = "llm"
+        decide(state, "plan", "cleaner", "plan", cleaned is not None, "LLM plan used" if cleaned is not None else "no valid LLM plan; translator plan used", "llm" if cleaned is not None else "rules", proposal=combined.model_dump() if cleaned is not None else {})
+    state.objects["plan"] = combined
     save_plans(state)
-    return f"{len(combined.steps)} column, {len(combined.row_steps)} row, {len(combined.target_steps)} target steps"
+    return f"{source}: {len(combined.steps)} column, {len(combined.row_steps)} row, {len(combined.target_steps)} target steps"
 
 # fallback of stage 07: the protected steps of the leak guard only
 def fallback_plan(state):

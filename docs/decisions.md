@@ -537,3 +537,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   `SeniorCitizen_MonthlyCharges` as known only after the event; with `leakage.drop_semantic_only=true`
   the leak guard dropped them. The semantic prompt, the semantic-only policy and the pilot model
   (gpt-4.1-mini) are to be checked in the dev iteration.
+
+## 2026-10-11 · P7.3 · Cleaner
+
+- The cleaner answers with one list of operations (`op`, `params_json`, `issues`, `reason`); code
+  parses `params_json`, sorts each operation into column, row or target steps by its catalog kind,
+  validates parameters and columns in order after the protected steps, and refuses target mappings that
+  merge classes; all errors go back to the LLM (2 retries), then the translator plan is used. Code puts
+  the protected steps (leak guard drops and protected translator steps) first and drops LLM repeats of
+  them; every LLM step is gated.
+- Prompt inputs: the task, the protected steps as JSON lines, `issues.md` of the audit (at most 9,000
+  characters), a columns view from the training rows (type, uniques, empty share, value counts of up
+  to 15 values, pattern stats; names, types and counts only in `full-nosamples`), the gated default
+  plan and the catalog text from `operations/registry.py`.
+- Fix: the spend ledger creates its folder before taking the lock.
+- Real check (gpt-4.1-nano, 5,000 rows of the ibmchurn level-3 train file, demo mode, 180 s): one
+  cleaner call ($0.0011) gave a valid plan on the first try with parse_boolean for 3 yes/no columns and
+  map_categories for spelling variants; test ROC-AUC 0.8255. The leak guard again dropped `TotalCharges`
+  by nano's name review (open problem for P7.9).

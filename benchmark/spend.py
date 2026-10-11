@@ -12,6 +12,7 @@ CATEGORIES = ("dev", "experiments")
 @contextmanager
 def ledger_lock(path):
     lock = path.with_name(path.name + ".lock")
+    path.parent.mkdir(parents=True, exist_ok=True)
     deadline = time.monotonic() + 30
     while True:
         try:
