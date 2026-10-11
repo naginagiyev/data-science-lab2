@@ -244,3 +244,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Decision: output names are sanitized (`[ ] { } " : ,` → `_`, duplicates get `_2`, `_3`), the map to
   the original names is kept in `name_map_`; a table with no usable column gets one constant
   `no_features` column, so every model can still fit (it then predicts the prior or mean).
+
+## 2026-10-11 · P3.5 · Model engine
+
+- Decision: the preparation (agent steps + typing + generic stage) is fitted once per fold and per
+  preparation kind (`tree` or `linear`) and cached; Optuna trials then refit only the model. The final
+  refit fits the preparation and the model again on all training rows (row filters applied).
+- Decision: time: 10% of the stage budget is kept for the ensemble and the refit; the rest is shared in
+  candidate order (dummy, linear, LightGBM, CatBoost), each family getting its plan share (5%, 50%, 35%)
+  of what is left, so unused time passes on. The default parameters are always the first trial and may
+  use the whole stage deadline; later trials stop at the family deadline. Each fold of a trial gets an
+  equal share of the time left (LightGBM callback raises `EarlyStopException`, CatBoost
+  `after_iteration` callback returns False), so a cut treats all folds alike.
+- Decision: boosted models use early stopping (50 rounds) on a 10% inner split of the fold's training
+  part (stratified when possible); the refit uses the mean best number of trees over the folds.
+  Optuna catches `ValueError`, `RuntimeError`, `LightGBMError` and `CatBoostError` per trial; if Optuna
+  itself fails, the family is evaluated once with default parameters.
+- Check on kinghousedata (17,298 training rows, 5 group folds, 60 s): 58.7 s used; CV RMSE dummy 374k,
+  linear 205k, LightGBM 121k, CatBoost 118k; the CatBoost + LightGBM average (117k) was chosen.

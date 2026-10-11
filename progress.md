@@ -48,8 +48,8 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 - [x] P3.1 Vendor edatool · 2026-10-11 · 72d3773 · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
 - [x] P3.2 Reader and glance · 2026-10-11 · ad36fa1 · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
 - [x] P3.3 Splitter · 2026-10-11 · b92e81e · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
-- [x] P3.4 Typing step and generic stage · 2026-10-11 · (next) · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
-- [ ] P3.5 Engine
+- [x] P3.4 Typing step and generic stage · 2026-10-11 · 0e99f20 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
+- [x] P3.5 Engine · 2026-10-11 · (next) · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
 - [ ] P3.6 Evaluator, FittedModel, report, predict
 - [ ] P3.7 v2 adapter
 
