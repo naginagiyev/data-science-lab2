@@ -49,8 +49,8 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 - [x] P3.2 Reader and glance · 2026-10-11 · ad36fa1 · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
 - [x] P3.3 Splitter · 2026-10-11 · b92e81e · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
 - [x] P3.4 Typing step and generic stage · 2026-10-11 · 0e99f20 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
-- [x] P3.5 Engine · 2026-10-11 · (next) · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
-- [ ] P3.6 Evaluator, FittedModel, report, predict
+- [x] P3.5 Engine · 2026-10-11 · 75d6853 · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
+- [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · (next) · generic run folders complete for the 4 local datasets; predict works on test features
 - [ ] P3.7 v2 adapter
 
 ## P4. edatool improvements
@@ -132,7 +132,7 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 - [ ] S4 AutoGluon Assistant baseline
 
 ## Open problems
--
+- Full creditcardfraud (227k training rows): the generic model stage took 79 s for a 60 s budget (refit on all rows); check in P8.3 at 300 s.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,

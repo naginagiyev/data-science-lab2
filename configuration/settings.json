@@ -21,6 +21,7 @@
     "prices_per_million_tokens": {"gpt-4.1-mini": {"input": 0.4, "output": 1.6}, "gpt-4.1-nano": {"input": 0.1, "output": 0.4}}
   },
   "spend": {"category": "dev", "dev_cap_usd": 1.5, "experiments_cap_usd": 2.75, "stop_optional_usd": 4.0, "total_cap_usd": 5.0},
+  "framer": {"candidates": 5, "min_confidence": 0.6, "max_target_levels": 20, "name_hints": ["target", "label", "class", "y", "outcome", "result", "churn", "price", "survived", "fraud", "default", "status", "score", "quality", "response", "diagnosis", "risk", "rating", "grade", "salary", "income", "sales", "revenue", "cost", "charges", "strength", "value", "amount", "attrition", "approved", "dropout", "won", "success"]},
   "audit": {"use_agent": true, "sample_rows": 50000, "session_seconds": 60, "max_sessions": 8, "n_jobs": 4},
   "leakage": {"drop_semantic_only": true},
   "cleaner": {"enabled": true, "show_values": true, "max_values_per_column": 15, "max_repairs": 3, "max_refines": 2},
@@ -34,7 +35,7 @@
     "max_per_op_tests": 10,
     "tolerance": {"roc_auc": {"absolute": 0.002}, "log_loss": {"relative": 0.005}, "rmse": {"relative": 0.005}}
   },
-  "engine": {"candidates": ["dummy", "linear", "lightgbm", "catboost"], "optuna": true, "ensemble": true, "n_jobs": 4, "patience_trials": 30},
+  "engine": {"candidates": ["dummy", "linear", "lightgbm", "catboost"], "optuna": true, "ensemble": true, "n_jobs": 4, "patience_trials": 30, "max_search_rows": 50000},
   "backend": "own",
   "report": {"llm_summary": true}
 }

@@ -46,6 +46,14 @@ class SpendSettings(Section):
     stop_optional_usd: float
     total_cap_usd: float
 
+# options of the framer: number of target candidates shown to the LLM, the...
+# confidence under which --ask asks the user, and the target name hints
+class FramerSettings(Section):
+    candidates: int
+    min_confidence: float
+    max_target_levels: int
+    name_hints: list[str]
+
 # options of the edatool audit stage
 class AuditSettings(Section):
     use_agent: bool
@@ -94,6 +102,7 @@ class EngineSettings(Section):
     ensemble: bool
     n_jobs: int
     patience_trials: int
+    max_search_rows: int
 
 # options of the report stage
 class ReportSettings(Section):
@@ -106,6 +115,7 @@ class Settings(Section):
     budget: BudgetSettings
     llm: LlmSettings
     spend: SpendSettings
+    framer: FramerSettings
     audit: AuditSettings
     leakage: LeakageSettings
     cleaner: CleanerSettings

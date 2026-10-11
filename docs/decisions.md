@@ -262,3 +262,25 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   itself fails, the family is evaluated once with default parameters.
 - Check on kinghousedata (17,298 training rows, 5 group folds, 60 s): 58.7 s used; CV RMSE dummy 374k,
   linear 205k, LightGBM 121k, CatBoost 118k; the CatBoost + LightGBM average (117k) was chosen.
+
+## 2026-10-11 · P3.6 · Evaluator, FittedModel, report, predict
+
+- Decision: `FittedModel` keeps the `TrainedModel` (preparation pipelines + models), the label encoder,
+  the raw input columns, task, metric, plan, an optional target transform, versions and the settings
+  hash. Input (a path or a DataFrame) is read as the raw view; missing input columns become empty and
+  extra columns are ignored, both with a warning. `predict_frame` gives one probability column per
+  class plus `label`, or `prediction`.
+- Decision: the evaluator scores the locked test rows once, after the refit; a test class the model
+  never saw gets a zero probability column (renormalized), so log-loss stays defined. The dummy test
+  score comes from the training labels.
+- Decision: the framer's rule part (`agents/framer.py`: candidate ranking with name hints from
+  `settings.framer.name_hints`, last-column bonus, never an id/constant/empty/text column; rule task)
+  is built now because the frame stage needs it without flags; the LLM part comes in P7.1.
+- Decision: new setting `engine.max_search_rows` (50,000): on larger tables the Optuna search runs on a
+  fixed stratified sample (folds mapped to it) and the final refit uses all rows. Reason: on the full
+  creditcardfraud table (226,980 training rows) the 5-fold preparation alone used the whole 60 s
+  budget and only the dummy model was trained. With the sample: test ROC-AUC 0.983, but the model
+  stage took 79 s instead of about 60 s (the refit on all rows is slow); P8.3 measures this at 300 s.
+- `generic` on the 4 local datasets (60 s budget, demo mode): ibmchurn test ROC-AUC 0.8527 (dummy
+  0.5000), kinghousedata test RMSE 105,029 (dummy 336,712; group split on `id`), winequality test
+  log-loss 0.8753 (dummy 1.2021), creditcardfraud (full table) test ROC-AUC 0.9833 (dummy 0.5000).

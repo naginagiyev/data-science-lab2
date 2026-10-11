@@ -189,6 +189,19 @@ def refit(family, task, best, frame, y, make_prep, seed, n_jobs, row_filter):
         model.fit(x, y)
     return prep, model
 
+# for large tables the search runs on a fixed sample of at most max_rows rows...
+# (stratified for classification); the folds are mapped to the sample
+def search_sample(frame, y, folds, task, max_rows, seed):
+    if len(frame) <= max_rows:
+        return frame, y, folds
+    stratify = y if task != "regression" and np.bincount(y).min() >= 2 else None
+    chosen, _ = train_test_split(np.arange(len(frame)), train_size=max_rows, random_state=seed, stratify=stratify)
+    chosen = np.sort(chosen)
+    position = {old: new for new, old in enumerate(chosen)}
+    sample_folds = [[position[row] for row in fold if row in position] for fold in folds]
+    logger.info(f"Search on a sample of {max_rows} of {len(frame)} rows; the refit uses all rows")
+    return frame.iloc[chosen], y[chosen], [fold for fold in sample_folds if fold]
+
 # the model stage: cross-validated search of every candidate family under the...
 # time budget, an average of the best two families when it beats the best one,...
 # and a refit on all training rows; the dummy model always exists
@@ -196,6 +209,8 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
     start = time.monotonic()
     hard_deadline = start + seconds * (1 - RESERVE_SHARE)
     n_classes = n_classes or (int(y.max()) + 1 if task != "regression" else 0)
+    full_frame, full_y = frame, y
+    frame, y, folds = search_sample(frame, y, folds, task, settings.max_search_rows, seed)
     prepared = {}
     results = {}
     trial_log = []
@@ -231,11 +246,11 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
     members = []
     for family in chosen:
         try:
-            members.append((family, *refit(family, task, results[family], frame, y, make_prep, seed, settings.n_jobs, row_filter)))
+            members.append((family, *refit(family, task, results[family], full_frame, full_y, make_prep, seed, settings.n_jobs, row_filter)))
         except Exception as error:
             logger.warning(f"Refit of {family} failed: {type(error).__name__}: {error}")
     if not members:
-        members.append(("dummy", *refit("dummy", task, {}, frame, y, make_prep, seed, settings.n_jobs, row_filter)))
+        members.append(("dummy", *refit("dummy", task, {}, full_frame, full_y, make_prep, seed, settings.n_jobs, row_filter)))
     summary = {
         "chosen": [family for family, _, _ in members],
         "cv": {family: result["raw_score"] for family, result in results.items()},

@@ -1,0 +1,62 @@
+import json
+import numpy as np
+import pandas as pd
+from orchestrator import run
+from settings import load_settings
+from modelling.evaluator import score
+from modelling.fittedmodel import FittedModel
+
+FAST = ["budget.total_seconds=20", "budget.min_model_seconds=8", "engine.candidates=[\"dummy\", \"linear\", \"lightgbm\"]"]
+RUN_FILES = ["settings.json", "context.json", "run.log", "glance.json", "task.json", "split.json", "decisions.jsonl", "optuna.csv", "model.joblib", "scores.json", "report.md"]
+
+# writes a small churn-like CSV with an id, a blank token, text and numbers
+def churn_file(folder, rows=400, seed=0):
+    rng = np.random.default_rng(seed)
+    tenure = rng.integers(0, 72, rows)
+    contract = rng.choice(["Month-to-month", "One year", "Two year"], rows)
+    churn = np.where((tenure < 12) & (contract == "Month-to-month") | (rng.random(rows) < 0.1), "Yes", "No")
+    frame = pd.DataFrame({
+        "customerID": [f"{i:04d}-ABCD" for i in range(rows)],
+        "tenure": tenure.astype(str),
+        "Contract": contract,
+        "TotalCharges": [f"{value:.2f}" for value in tenure * rng.uniform(20, 100, rows)],
+        "Churn": churn,
+    })
+    frame.loc[tenure == 0, "TotalCharges"] = " "
+    path = folder / "churn.csv"
+    frame.to_csv(path, index=False)
+    return path
+
+# the generic variant finishes with a complete run folder, a model that beats...
+# the dummy, and a saved model that reloads and predicts raw input
+def test_generic_run(tmp_path):
+    path = churn_file(tmp_path)
+    context = run(path, load_settings(assignments=FAST), "Churn", "binary-classification", variant="generic", out_dir=tmp_path / "runs", console=False)
+    folder = next((tmp_path / "runs").iterdir())
+    for name in RUN_FILES:
+        assert (folder / name).exists(), name
+    assert all(stage.ok for stage in context.stages)
+    scores = json.loads((folder / "scores.json").read_text(encoding="utf-8"))
+    assert scores["test"]["test"] > scores["test"]["dummy_test"] + 0.1
+    model = FittedModel.load(folder / "model.joblib")
+    raw = pd.read_csv(path, dtype=str, keep_default_na=False).head(5)
+    labels = model.predict(raw.drop(columns="Churn"))
+    assert set(labels) <= {"Yes", "No"} and len(labels) == 5
+    probabilities = model.predict_proba(raw.drop(columns=["Churn", "Contract"]).assign(extra="x"))
+    assert list(probabilities.columns) == ["No", "Yes"] and np.allclose(probabilities.sum(axis=1), 1)
+    assert model.predict_frame(path).shape[1] == 3
+
+# rules frame the task without flags: the last column with a name hint, task...
+# from the values
+def test_rules_framing(tmp_path):
+    path = churn_file(tmp_path)
+    context = run(path, load_settings(assignments=FAST), variant="generic", out_dir=tmp_path / "runs", console=False)
+    assert context.task.target == "Churn" and context.task.task == "binary-classification"
+    assert context.task.source == "rules" and context.task.id_columns == ["customerID"]
+
+# a test class the model never saw keeps the metrics defined
+def test_unseen_test_class():
+    truth = np.array(["a", "b", "c"], dtype=object)
+    values = np.array([[0.9, 0.1], [0.2, 0.8], [0.5, 0.5]])
+    result = score("multi-class-classification", truth, values, ["a", "b"])
+    assert np.isfinite(result["score"])

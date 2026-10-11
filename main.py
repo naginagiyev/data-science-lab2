@@ -5,6 +5,7 @@ from pathlib import Path
 from schemas import TASK_ALIASES
 from settings import load_settings
 from tools.runfolder import prepare_console
+from modelling.fittedmodel import FittedModel
 from orchestrator import VARIANTS, StopRun, run
 
 # builds the command-line parser with the run, predict and report commands
@@ -53,7 +54,6 @@ def run_command(arguments):
 
 # predicts new rows with a saved model and writes the predictions to a CSV file
 def predict_command(arguments):
-    from modelling.fittedmodel import FittedModel
     model = FittedModel.load(arguments.model)
     predictions = model.predict_frame(arguments.data)
     predictions.to_csv(arguments.out, index=False)

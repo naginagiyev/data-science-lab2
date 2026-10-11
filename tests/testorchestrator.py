@@ -1,5 +1,4 @@
 import pytest
-import orchestrator
 from schemas import RunContext
 from settings import load_settings
 from tools.runfolder import RunFolder
@@ -49,14 +48,6 @@ def test_budget():
     assert budget.stage_limit("plan") == 10
     assert budget.model_seconds() >= 60
     assert Budget(10, {}, 60).stage_limit("audit") == 0
-
-# a run creates its folder with settings, context and run.log
-def test_run_creates_folder(tmp_path):
-    context = run("data/ibmchurn.csv", load_settings(), "Churn", "binary-classification", variant="generic", out_dir=tmp_path, console=False)
-    folder = next(tmp_path.iterdir())
-    for name in ["settings.json", "context.json", "run.log"]:
-        assert (folder / name).exists()
-    assert len(context.stages) == len(orchestrator.STAGES)
 
 # an unknown variant is an error
 def test_unknown_variant(tmp_path):
