@@ -96,7 +96,7 @@ def test_runner_scores_handmade_file(tmp_path, monkeypatch):
     (adapter_dir / "handmade.py").write_text(HANDMADE_ADAPTER)
     registry = tmp_path / "registry.json"
     registry.write_text(json.dumps({"handmade": {"python": "main", "module": "handmade", "args": ["--handmade", str(handmade)], "llm": False}}))
-    monkeypatch.setattr(runner, "system_environment", lambda threads=4: dict(os.environ, PYTHONPATH=str(adapter_dir)))
+    monkeypatch.setattr(runner, "system_environment", lambda threads=4, keep_key=False: dict(os.environ, PYTHONPATH=str(adapter_dir)))
     grid = tmp_path / "toy.json"
     grid.write_text(json.dumps({"name": "toy", "systems": ["handmade"], "datasets": ["toyset"], "levels": [0], "seeds": [0], "budget": 30}))
     monkeypatch.setattr(runner, "load_grid", lambda name: json.loads(grid.read_text()))

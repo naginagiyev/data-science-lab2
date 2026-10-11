@@ -172,3 +172,24 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   results, so the overrun is visible.
 - 60 s check on the 4 local datasets (seed 0): all cells `ok` (`benchmark/results/p2-flaml.csv`,
   `p2-autogluon.csv`).
+
+## 2026-10-11 · P2.4 · v1 adapter (built, never run with the real LLM)
+
+- `benchmark/legacy/v1/.venv` was created from the frozen `uv.lock` with
+  `uv sync --project benchmark/legacy/v1 --locked --no-install-project` (Python 3.10.18 x86_64), so
+  nothing is written into the frozen folder except `.venv`.
+- `benchmark/legacy/v1/headless.py` copies the frozen code to `<workdir>/v1` (without `.venv`), creates
+  `data/`, `models/` and `sandbox/`, makes Python import the v1 modules from the copy, copies the train
+  file to `data/dataset.csv`, and runs EDA, ConfigFiller, the processing plan and code, the v1 split,
+  the training plan and code, and the tuning loop, with the given target and task. It then loads
+  `models/preprocessor.pkl` (cloudpickle) and `models/model.onnx`, transforms the test features (with a
+  placeholder target, because v1 keeps the target in its processed data) and uses the ONNX probability
+  output when there is one, otherwise the labels as hard probabilities (v1's behaviour, B4).
+- Registry: `timeout` 1,200 s (20 minutes) and `needs_key`: the runner passes `OPENAI_API_KEY` in the
+  environment to this system only (v1 reads it from the environment; its copy has no `.env`).
+- Known limitation, kept on purpose: v1 maps text targets to integers outside its pipeline and does
+  not save the mapping (C5), so its class columns may not match the true labels; the scorer then
+  fails the cell and gives it the dummy score. This is v1's real behaviour.
+- Test (`tests/testv1adapter.py`, marked `slow`): with `OPENAI_BASE_URL=http://127.0.0.1:9/v1`, v1's EDA
+  runs and the first LLM call (ConfigFiller) raises `APIConnectionError`; the adapter exits with code
+  1 and writes `meta.json` with `ok: false` and the error. No real LLM call was made.

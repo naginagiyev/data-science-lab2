@@ -10,12 +10,13 @@ import itertools
 import threading
 import subprocess
 from benchmark import spend
+from dotenv import dotenv_values
 from settings import load_settings
 from tools.runfolder import now_text
 from benchmark.scoring import score_cell
 from benchmark.materialize import cell_dir
 from concurrent.futures import ThreadPoolExecutor
-from paths import benchmark_outputs_dir, grids_dir, logs_dir, results_dir, root_dir, systems_registry_file, workdirs_dir
+from paths import benchmark_outputs_dir, env_file, grids_dir, logs_dir, results_dir, root_dir, systems_registry_file, workdirs_dir
 
 COLUMNS = [
     "grid", "system", "variant", "dataset", "group", "level", "mess_types", "seed", "budget_s", "status", "error",
@@ -81,9 +82,12 @@ def kill_tree(process):
         process.kill()
 
 # the environment of a system process: 4 threads, UTF-8 output, the project on...
-# the path, and no API key (LLM adapters read it from .env themselves)
-def system_environment(threads=4):
+# the path, and no API key (LLM adapters read it from .env themselves); a system...
+# that reads the key only from the environment (v1) gets it with keep_key
+def system_environment(threads=4, keep_key=False):
     environment = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
+    if keep_key:
+        environment["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY") or dotenv_values(env_file).get("OPENAI_API_KEY") or ""
     for name in THREAD_VARIABLES:
         environment[name] = str(threads)
     environment["PYTHONIOENCODING"] = "utf-8"
@@ -95,8 +99,9 @@ def system_environment(threads=4):
 def cell_command(entry, cell, files, truth, workdir, out, extra_arguments):
     python = sys.executable if entry["python"] == "main" else str(root_dir / entry["python"])
     tests = [str(files / name) for name in entry.get("tests", ["test_features.csv"])]
+    start = ["-m", entry["module"]] if "module" in entry else [str(root_dir / entry["script"])]
     return [
-        python, "-m", entry["module"], *entry.get("args", []),
+        python, *start, *entry.get("args", []),
         "--train", str(files / "train.csv"), "--test", ",".join(tests), "--target", truth["target"],
         "--task", truth["task"], "--metric", truth["metric"], "--budget", str(cell["budget"]), "--seed", str(cell["seed"]),
         "--workdir", str(workdir), "--out", str(out), *extra_arguments,
@@ -124,11 +129,11 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
         return row
     extra = [argument for item in grid.get("settings", []) for argument in ("--set", item)] if entry.get("settings") else []
     command = cell_command(entry, cell, files, truth, workdir, out, extra)
-    timeout = cell["budget"] * 1.25 + 60
+    timeout = entry.get("timeout", cell["budget"] * 1.25 + 60)
     log_dir.mkdir(parents=True, exist_ok=True)
     start = time.perf_counter()
     with (log_dir / f"{cell_id}.log").open("w", encoding="utf-8") as log:
-        process = subprocess.Popen(command, cwd=root_dir, stdout=log, stderr=subprocess.STDOUT, env=system_environment())
+        process = subprocess.Popen(command, cwd=root_dir, stdout=log, stderr=subprocess.STDOUT, env=system_environment(keep_key=entry.get("needs_key", False)))
         try:
             process.wait(timeout=timeout)
             timed_out = False
