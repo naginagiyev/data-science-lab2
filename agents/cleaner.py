@@ -1,11 +1,14 @@
 import json
+import time
 import pandas as pd
 from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 from schemas import Plan, Step
 from checks.datachecks import check_steps
+from checks.gate import gate_data, run_gate
 from operations.compiler import validate_plan
+from tools.metrics import lower_is_better, oriented
 from edatool.core.patterns import pattern_stats, pattern_text
 from operations.registry import OPERATIONS, catalog_text, operation_class
 
@@ -213,3 +216,62 @@ def repair_plan(plan, frame, values, folds, target, task, settings, client=None,
             records.append({"subject": step.op, "accepted": True, "reason": f"repair {attempts[key]}: {reason}; error was: {error}", "proposal": new_step.model_dump()})
             attempts[id(new_step)] = attempts[key]
             plan.steps[position] = new_step
+
+# true when the gate result leaves room for a refinement: a step was removed,...
+# or the full plan was not accepted
+def needs_refine(result):
+    return bool(result["reduced"]["removed"]) or not result["accepted"]
+
+# asks the LLM for a revised full plan from the gate evidence; returns the plan...
+# (protected steps first) or None
+def refine_plan(client, context, plan, result, task, protected, columns, labels):
+    metric = result["metric"]
+    direction = f"{metric}, higher is better" if not lower_is_better(metric) else f"{metric}, lower is better"
+    effects = [f"{item['op']} {json.dumps(item['params'], ensure_ascii=False)[:120]}: " + (f"{item['effect']:+.5f}" if item["effect"] is not None else item.get("note", "not tested")) for item in result["effects"]]
+    gated = [step for group in [plan.steps, plan.row_steps, plan.target_steps] for step in group if not step.protected]
+    inputs = {
+        "direction": direction,
+        "baseline": f"{result['p0']['score']:.5f}",
+        "full": ", ".join(f"{score:.5f}" for score in result["p1"]["folds"]) + f" (mean {result['p1']['score']:.5f})",
+        "effects": "\n".join(effects) or "not measured",
+        "rejected": ", ".join(result["reduced"]["removed"]) or ("all gated operations (the plan lost to P0)" if not result["accepted"] else "none"),
+        "plan": "\n".join(step_text(step) for step in gated) or "empty",
+        "catalog": catalog_text(),
+    }
+    check = lambda answer: answer_problems(answer, protected, columns, task.target, task.task, labels)
+    answer = client.ask("refine", inputs, CleanerAnswer, "gate", context, check=check)
+    if answer is None:
+        return None
+    revised, _ = to_plan(answer, plan.version + 1)
+    for group in ["steps", "row_steps", "target_steps"]:
+        for step in getattr(revised, group):
+            step.source = "refine"
+    return with_protected(revised, protected)
+
+# the gate with the refine loop: the plan is gated; while steps are rejected...
+# (or the plan loses to P0) the LLM may revise it (at most max_refines rounds);...
+# each revision is checked (failing steps repaired or dropped) and gated; the...
+# best gated plan wins; returns the final plan and every gate result
+def gate_with_refine(plan, train, task, split, settings, seed, client=None, context=None, deadline=None, repair=True):
+    columns = list(train.columns)
+    labels = train[task.target].astype(str).tolist() if task.task != "regression" else []
+    protected = protected_part(plan)
+    final, result = run_gate(plan, train, task.target, task.task, task.metric, split, settings.gate, seed, columns, deadline)
+    results = [result]
+    best = (final, result["final_score"])
+    current = plan
+    for _ in range(settings.cleaner.max_refines if client is not None else 0):
+        if not needs_refine(result) or (deadline is not None and time.monotonic() > deadline):
+            break
+        revised = refine_plan(client, context, current, result, task, protected, columns, labels)
+        if revised is None:
+            break
+        sample, folds, _ = gate_data(train, task.target, task.task, split, settings.gate, seed)
+        revised, _, _ = repair_plan(revised, sample.drop(columns=[task.target]), sample[task.target].to_numpy(), folds, task.target, task.task, settings, client, context, repair)
+        candidate, result = run_gate(revised, train, task.target, task.task, task.metric, split, settings.gate, seed, columns, deadline)
+        result["refined"] = True
+        results.append(result)
+        if oriented(task.metric, result["final_score"]) > oriented(task.metric, best[1]):
+            best = (candidate, result["final_score"])
+        current = revised
+    return best[0], results

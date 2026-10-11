@@ -7,6 +7,7 @@ from edatool import audit
 from modelling import engine
 from llms.client import LlmClient
 from settings import settings_hash
+from tools.metrics import oriented
 from agents.framer import frame_task
 from tools.report import write_report
 from checks.leakage import leak_guard
@@ -19,12 +20,12 @@ from tools.glance import glance, glance_text
 from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
 from operations.translator import default_plan
+from checks.gate import gate_data, protected_only
 from tools.splitter import holdout, make_folds, split
-from checks.gate import gate_data, protected_only, run_gate
 from tools.runfolder import RunFolder, close_logging, now_text, setup_logging
-from agents.cleaner import clean_plan, issues_text, protected_part, repair_plan
 from schemas import Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
+from agents.cleaner import clean_plan, gate_with_refine, issues_text, protected_part, repair_plan
 from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
 
 logger = logging.getLogger("automl")
@@ -390,7 +391,9 @@ def fallback_compile(state):
     state.objects["plan"] = protected_only(state.objects["plan"])
     return "protected steps only"
 
-# stage 09: the validation gate (or, without the gate, every step is accepted)
+# stage 09: the validation gate (or, without the gate, every step is accepted);...
+# the LLM variants may refine the plan from the gate evidence (at most...
+# max_refines rounds; the best gated plan wins)
 def stage_gate(state):
     task = state.context.task
     plan = state.objects["plan"]
@@ -401,18 +404,23 @@ def stage_gate(state):
             decide(state, "gate", "step", step.op, True, "gate off", "gate", proposal=step.model_dump())
     else:
         deadline = time.monotonic() + state.budget.stage_limit("gate")
-        final, result = run_gate(plan, state.objects["train"], task.target, task.task, task.metric, state.context.split, state.settings.gate, state.settings.seed, list(state.objects["train"].columns), deadline)
-        state.context.gate = result
-        state.folder.write_json("gate.json", result)
-        removed = set(result["reduced"]["removed"]) if result["accepted"] else None
-        for item in result["effects"]:
-            kept = result["accepted"] and item["op"] not in removed
-            reason = item.get("note") or ("kept" if kept else "removed by the gate")
-            decide(state, "gate", "step", f"{item['op']} {item['params'].get('column', '')}".strip(), kept, reason, "gate", proposal={"op": item["op"], "params": item["params"]}, evidence={"effect": item["effect"]})
+        llm = state.options["cleaner"] and state.settings.cleaner.enabled
+        final, rounds = gate_with_refine(plan, state.objects["train"], task, state.context.split, state.settings, state.settings.seed, state.client if llm else None, state.context, deadline, state.options["repair"])
+        best = max(rounds, key=lambda result: oriented(task.metric, result["final_score"]))
+        state.context.gate = {"p0": rounds[0]["p0"], "final_score": best["final_score"], "rounds": len(rounds), "accepted": best["accepted"]}
+        state.folder.write_json("gate.json", {"rounds": rounds, "final_score": best["final_score"]})
+        for number, result in enumerate(rounds):
+            removed = set(result["reduced"]["removed"]) if result["accepted"] else None
+            for item in result["effects"]:
+                kept = result["accepted"] and item["op"] not in removed
+                reason = item.get("note") or ("kept" if kept else "removed by the gate")
+                subject = f"{item['op']} {item['params'].get('column', '')}".strip()
+                decide(state, "gate", "step", subject, kept, f"round {number}: {reason}", "gate", proposal={"op": item["op"], "params": item["params"]}, evidence={"effect": item["effect"], "round": number})
     state.context.final_plan = final
     state.context.plans.append(final)
     save_plans(state)
-    return f"{len(final.steps)} column steps kept" + (f" | P0 {state.context.gate['p0']['score']:.4f} -> {state.context.gate['final_score']:.4f}" if state.context.gate else "")
+    rounds_text = f", {state.context.gate['rounds']} rounds" if state.context.gate.get("rounds", 1) > 1 else ""
+    return f"{len(final.steps)} column steps kept" + (f" | P0 {state.context.gate['p0']['score']:.4f} -> {state.context.gate['final_score']:.4f}{rounds_text}" if state.context.gate else "")
 
 # fallback of stage 09: P0 (protected steps only)
 def fallback_gate(state):

@@ -566,3 +566,13 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   The `rules` variant and `full-norepair` drop failing steps at once. Every attempt is a decision.
 - An identical repair prompt (same step, same error) comes from the LLM cache, so a repeated attempt
   costs nothing.
+
+## 2026-10-11 · P7.5 · Refine loop
+
+- After the gate, the LLM variants may revise the plan when a step was removed or the plan lost to P0
+  (`prompts/refine.md`: direction of the metric, the P0 score, the full plan's fold scores, the effect
+  of every step, the rejected steps, the current gated steps and the catalog). The answer is a full
+  plan in the cleaner format with the same code checks; revised steps get source `refine`; protected
+  steps are added by code. Each revision is checked (failing steps repaired or dropped) and gated; at
+  most `cleaner.max_refines` (2) rounds, and the gate stage deadline also stops the loop. The plan with
+  the best gated score of all rounds is the final plan; `gate.json` keeps every round.
