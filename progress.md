@@ -93,8 +93,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 ## P6. Benchmark data
 - [x] P6.1 Dataset registry · 2026-10-11 · f581cd9 · 31 OpenML datasets downloaded and checked (ids, targets, tasks, licences); manifest + data cards; no spare needed
 - [x] P6.2 Corruptor · 2026-10-11 · 2aa8f7a · 12 types (layout in the writer, leak in P6.3); determinism, nested levels, exact restore, target untouched; one example per type in docs/datasets.md
-- [x] P6.3 Leak generator · 2026-10-11 · (next) · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
-- [ ] P6.4 Materialize the dev pool
+- [x] P6.3 Leak generator · 2026-10-11 · a4c88e3 · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
+- [x] P6.4 Materialize the dev pool · 2026-10-11 · (next) · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
 - [ ] P6.5 Group C
 
 ## P7. LLM agents (variant full)
