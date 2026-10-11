@@ -12,8 +12,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
 - [x] P0.2 Git · 2026-10-11 · 73f0f98 · git init, ignores, .gitattributes (LF), tag v1-dslab1
-- [x] P0.3 Memory files · 2026-10-11 · (next) · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
-- [ ] P0.4 Freeze v1
+- [x] P0.3 Memory files · 2026-10-11 · f701d8c · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
+- [x] P0.4 Freeze v1 · 2026-10-11 · (next) · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
 - [ ] P0.5 Check the LLM
 
 ## P1. Foundation

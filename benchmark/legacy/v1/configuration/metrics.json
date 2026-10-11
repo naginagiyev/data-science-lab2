@@ -1,0 +1,4 @@
+{
+  "classification": ["Accuracy", "F1", "Precision", "Recall", "ROC-AUC", "Log-Loss", "Matthews-Corrcoef"],
+  "regression": ["R2", "MAE", "MSE", "RMSE", "MAPE", "Explained-Variance"]
+}
