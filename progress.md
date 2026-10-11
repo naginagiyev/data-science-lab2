@@ -20,8 +20,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P1.1 Environment · 2026-10-11 · 6271716 · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
 - [x] P1.2 Remove v1 from the root · 2026-10-11 · 900fa72 · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
 - [x] P1.3 Core files · 2026-10-11 · f00390e · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
-- [x] P1.4 Run folder, logging, metrics · 2026-10-11 · (next) · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
-- [ ] P1.5 LLM layer
+- [x] P1.4 Run folder, logging, metrics · 2026-10-11 · 9509f16 · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
+- [x] P1.5 LLM layer · 2026-10-11 · (next) · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
 - [ ] P1.6 Orchestrator and CLI skeleton
 
 ## P2. Baselines first

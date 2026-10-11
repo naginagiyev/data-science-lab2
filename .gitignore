@@ -30,3 +30,5 @@ cache/
 *.parquet
 catboost_info/
 AutogluonModels/
+*.json.lock
+*.json.tmp

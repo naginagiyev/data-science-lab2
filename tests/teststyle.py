@@ -59,26 +59,28 @@ def layout_problems(path):
     return problems
 
 # returns the string literals of a python file that use single quotes although...
-# they contain no double quote
+# they contain no double quote; strings inside f-string fields (like...
+# f"{row['name']}") are allowed
 def quote_problems(path):
     problems = []
     tokens = tokenize.generate_tokens(io.StringIO(path.read_text(encoding="utf-8")).readline)
-    fstring_start = None
-    fstring_text = ""
+    starts = []
+    texts = []
     for token in tokens:
-        if token.type == tokenize.STRING:
+        if token.type == tokenize.STRING and not starts:
             body = token.string.lstrip("rbuRBUfF")
             if body.startswith("'") and '"' not in body:
                 problems.append(f"{token.start[0]}: single quotes")
         elif token.type == tokenize.FSTRING_START:
-            fstring_start = token
-            fstring_text = ""
-        elif token.type == tokenize.FSTRING_MIDDLE:
-            fstring_text += token.string
-        elif token.type == tokenize.FSTRING_END and fstring_start is not None:
-            if fstring_start.string.endswith("'") and '"' not in fstring_text:
-                problems.append(f"{fstring_start.start[0]}: single quotes")
-            fstring_start = None
+            starts.append(token)
+            texts.append("")
+        elif token.type == tokenize.FSTRING_MIDDLE and texts:
+            texts[-1] += token.string
+        elif token.type == tokenize.FSTRING_END and starts:
+            start = starts.pop()
+            text = texts.pop()
+            if not starts and start.string.endswith("'") and '"' not in text:
+                problems.append(f"{start.start[0]}: single quotes")
     return problems
 
 # python files and their folders use lowercase letters and digits only

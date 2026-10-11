@@ -1,7 +1,35 @@
 {
-  "totals": {"dev": 5.05e-05, "experiments": 0.0},
+  "totals": {
+    "dev": 6.12e-05,
+    "experiments": 0.0
+  },
   "calls": [
-    {"time": "2026-10-11T00:00:00+00:00", "category": "dev", "source": "P0.5 check", "model": "gpt-4.1-nano", "input_tokens": 65, "output_tokens": 9, "cost_usd": 1.01e-05},
-    {"time": "2026-10-11T00:00:00+00:00", "category": "dev", "source": "P0.5 check", "model": "gpt-4.1-mini", "input_tokens": 65, "output_tokens": 9, "cost_usd": 4.04e-05}
+    {
+      "time": "2026-10-11T00:00:00+00:00",
+      "category": "dev",
+      "source": "P0.5 check",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 65,
+      "output_tokens": 9,
+      "cost_usd": 1.01e-05
+    },
+    {
+      "time": "2026-10-11T00:00:00+00:00",
+      "category": "dev",
+      "source": "P0.5 check",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 65,
+      "output_tokens": 9,
+      "cost_usd": 4.04e-05
+    },
+    {
+      "time": "2026-10-11T11:06:38+00:00",
+      "category": "dev",
+      "source": "llm-test/capital",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 71,
+      "output_tokens": 9,
+      "cost_usd": 1.0700000000000001e-05
+    }
   ]
 }

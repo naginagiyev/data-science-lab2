@@ -94,3 +94,23 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   above methods or nested functions. This is exactly what the vendored edatool code does (§0.6 says
   to copy its style).
 - Decision: `main.py` is a placeholder until P1.6 rewrites it, so the style test passes now.
+
+## 2026-10-11 · P1.5 · LLM layer
+
+- Decision: the OpenAI provider sends strict structured outputs through `chat.completions.create`
+  with `response_format` built by the SDK helper `type_to_response_format_param` (a private module of
+  the pinned openai 3.28), and returns the raw JSON text. The client validates the text itself with
+  Pydantic and with an optional `check` callback of the caller (for example the cleaner's plan
+  checks); both kinds of error are sent back to the LLM (up to `schema_retries`).
+- Reason: one validation path for every provider (the fake provider and, in semester 2, providers
+  without strict schemas), and the raw answer is always logged.
+- Decision: the API key is read from the environment or with `dotenv_values(.env)`; it is never put
+  into `os.environ`, so subprocesses never inherit it.
+- Decision: the ledger `benchmark/results/spend.json` is shared by processes through a lock file
+  (`spend.json.lock`, stale after 60 s) and written atomically. A call is refused when its estimate
+  (prompt characters / 3 input tokens + 1,500 output tokens) would cross the category cap or the
+  total cap, or when the run's call or cost budget is used up. Cached answers cost nothing and are not
+  counted against `max_calls_per_run`.
+- Decision: each line of `llm.jsonl` also stores the rendered messages and the raw answer (research
+  data for decision-quality analysis and debugging).
+- The `llm`-marked real test (`tests/testllmreal.py`) cost $0.0000107 with `gpt-4.1-nano`.
