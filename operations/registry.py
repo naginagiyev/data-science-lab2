@@ -1,8 +1,8 @@
 import json
 from operations.text import TextFeatures
-from operations.custom import CustomOperation
 from operations.target import LogTarget, MapTargetLabels
 from operations.categories import GroupRare, MapCategories
+from operations.custom import CustomOperation, FreeCodeOperation
 from operations.rows import DropConflictingRows, DropDuplicateRows, DropRowsWhere
 from operations.parsing import ParseBoolean, ParseDatetime, ParseNumber, ParseUnits
 from operations.values import ClipValues, ImputeConstant, LogTransform, ReplaceValues, SetMissingWhere
@@ -17,6 +17,8 @@ ROW_OPERATIONS = [DropDuplicateRows, DropConflictingRows, DropRowsWhere]
 TARGET_OPERATIONS = [MapTargetLabels, LogTarget]
 OPERATIONS = {operation.name: operation for operation in COLUMN_OPERATIONS + ROW_OPERATIONS + TARGET_OPERATIONS}
 OPERATIONS[CustomOperation.name] = CustomOperation
+OPERATIONS[FreeCodeOperation.name] = FreeCodeOperation
+HIDDEN = {FreeCodeOperation.name}
 
 # registers more operations (row, target and custom operations add themselves)
 def register(*operations):
@@ -45,5 +47,5 @@ def entry_text(operation):
 
 # the catalog text injected into prompts (prompts never list operations by hand)
 def catalog_text(names=None):
-    chosen = [OPERATIONS[name] for name in (names or OPERATIONS) if name in OPERATIONS]
+    chosen = [OPERATIONS[name] for name in (names or OPERATIONS) if name in OPERATIONS and name not in HIDDEN]
     return "\n".join(entry_text(operation) for operation in chosen)

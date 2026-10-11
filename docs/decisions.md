@@ -592,3 +592,28 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   run (fit on 200 training rows, transform 100 other rows) whose errors go back to the LLM; a custom
   step without valid code is dropped with a decision. It is registered in the catalog but not in the
   17 column operations of the contract tests (it needs a sandbox per transform).
+
+## 2026-10-11 · P7.7 · Free-code variant
+
+- `freecode` keeps the audit, review, leak guard and gate of `full`, but the LLM writes one class
+  `CleaningStep` (`prompts/freecode.md`) that cleans the whole feature table instead of choosing
+  catalog operations. The prompt gets the same task, audit issues and column view (with or without
+  values) as the cleaner. The code is checked by the AST check and a trial run in the sandbox (fit on
+  300 training rows, transform 100 others); errors go back to the LLM (the client's schema retries).
+  This trial loop is the variant's repair: the class is one step, so the catalog repair and refine
+  prompts do not apply (`cleaner` is off in this variant; a step that fails the data checks is
+  dropped, and the gate then compares it with the protected-only plan). Without valid code the plan is
+  the protected steps only, with a decision.
+- The plan is the protected steps, then one gated `freecode` step. The `freecode` operation is in the
+  registry (so plans, the gate and `FittedModel` work) but hidden from the catalog text, and the
+  cleaner refuses it.
+- Sandbox results are cached in the process by (code, training rows, input rows): the CV folds and
+  the engine candidates repeat the same transforms. On the 400-row test run this cut sandbox calls
+  from 53 to 18 (about 0.8 s each under emulation). The same cache serves `custom`.
+- Nano check (5,000-row samples, budget 150 s): churn level 3: valid code on the first try (numbers,
+  yes/no, packed column), the gate removed it (effect -0.004 roc_auc), test roc_auc 0.825.
+  kinghousedata: three answers failed the trial run ("transform changed the number of rows or the
+  index"; the code returned the 300 fit rows), so the run used the protected steps only and logged
+  the failure. The sandbox error now names the expected and returned rows and index; on the re-run nano
+  fixed its code on the second answer, and the gate removed the step (no gain on the clean file).
+  Both runs finished with a model and a report; cost about $0.01 for the three runs.

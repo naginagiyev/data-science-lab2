@@ -1,6 +1,6 @@
 {
   "totals": {
-    "dev": 0.043725299999999995,
+    "dev": 0.05649409999999999,
     "experiments": 0.0
   },
   "calls": [
@@ -795,6 +795,177 @@
       "input_tokens": 4107,
       "output_tokens": 425,
       "cost_usd": 0.0005807000000000001
+    },
+    {
+      "time": "2026-10-11T18:18:05+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 3160,
+      "output_tokens": 732,
+      "cost_usd": 0.0006087999999999999
+    },
+    {
+      "time": "2026-10-11T18:18:09+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 3985,
+      "output_tokens": 700,
+      "cost_usd": 0.0006785
+    },
+    {
+      "time": "2026-10-11T18:18:12+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4766,
+      "output_tokens": 565,
+      "cost_usd": 0.0007026000000000001
+    },
+    {
+      "time": "2026-10-11T18:29:43+00:00",
+      "category": "dev",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 3228,
+      "output_tokens": 2073,
+      "cost_usd": 0.001152
+    },
+    {
+      "time": "2026-10-11T18:32:00+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4058,
+      "output_tokens": 17,
+      "cost_usd": 0.0004126
+    },
+    {
+      "time": "2026-10-11T18:32:00+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4192,
+      "output_tokens": 18,
+      "cost_usd": 0.0004264
+    },
+    {
+      "time": "2026-10-11T18:32:00+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4176,
+      "output_tokens": 18,
+      "cost_usd": 0.0004248
+    },
+    {
+      "time": "2026-10-11T18:32:00+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4322,
+      "output_tokens": 50,
+      "cost_usd": 0.00045220000000000004
+    },
+    {
+      "time": "2026-10-11T18:32:01+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4512,
+      "output_tokens": 70,
+      "cost_usd": 0.00047920000000000005
+    },
+    {
+      "time": "2026-10-11T18:32:01+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4608,
+      "output_tokens": 49,
+      "cost_usd": 0.0004804
+    },
+    {
+      "time": "2026-10-11T18:32:01+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4437,
+      "output_tokens": 35,
+      "cost_usd": 0.00045770000000000007
+    },
+    {
+      "time": "2026-10-11T18:32:01+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4925,
+      "output_tokens": 445,
+      "cost_usd": 0.0006705
+    },
+    {
+      "time": "2026-10-11T18:32:01+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4652,
+      "output_tokens": 51,
+      "cost_usd": 0.00048560000000000004
+    },
+    {
+      "time": "2026-10-11T18:32:02+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4724,
+      "output_tokens": 36,
+      "cost_usd": 0.0004868
+    },
+    {
+      "time": "2026-10-11T18:32:02+00:00",
+      "category": "dev",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 6363,
+      "output_tokens": 24,
+      "cost_usd": 0.0006459000000000001
+    },
+    {
+      "time": "2026-10-11T18:32:12+00:00",
+      "category": "dev",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 3751,
+      "output_tokens": 1665,
+      "cost_usd": 0.0010410999999999999
+    },
+    {
+      "time": "2026-10-11T18:32:19+00:00",
+      "category": "dev",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 5459,
+      "output_tokens": 1184,
+      "cost_usd": 0.0010195
+    },
+    {
+      "time": "2026-10-11T18:32:26+00:00",
+      "category": "dev",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 6686,
+      "output_tokens": 1165,
+      "cost_usd": 0.0011346
+    },
+    {
+      "time": "2026-10-11T18:35:08+00:00",
+      "category": "dev",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 5496,
+      "output_tokens": 1150,
+      "cost_usd": 0.0010096
     }
   ]
 }

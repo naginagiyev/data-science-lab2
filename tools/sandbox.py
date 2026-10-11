@@ -26,7 +26,7 @@ for index in range(int(sys.argv[2])):
     if not isinstance(output, pd.DataFrame):
         raise TypeError("transform must return a DataFrame")
     if len(output) != len(frame) or not output.index.equals(frame.index):
-        raise ValueError("transform changed the number of rows or the index")
+        raise ValueError(f"transform must keep the rows and the index of its input: got {len(frame)} rows (index {frame.index.min()}..{frame.index.max()}), returned {len(output)} rows (index {output.index.min()}..{output.index.max()}); build the output with index=frame.index and never drop rows")
     output.columns = [str(column) for column in output.columns]
     output.to_parquet(f"out{index}.parquet")
 print(json.dumps({"ok": True}))

@@ -11,7 +11,7 @@ from checks.gate import gate_data, run_gate
 from operations.compiler import validate_plan
 from tools.metrics import lower_is_better, oriented
 from edatool.core.patterns import pattern_stats, pattern_text
-from operations.registry import OPERATIONS, catalog_text, operation_class
+from operations.registry import HIDDEN, OPERATIONS, catalog_text, operation_class
 from tools.sandbox import SandboxError, allowed_imports_text, check_code, run_code
 
 # one operation of the cleaner's answer; params_json is a JSON object as text...
@@ -68,7 +68,7 @@ def to_plan(answer, version):
         if not isinstance(params, dict):
             problems.append(f"operation {position + 1} ({item.op}): params_json must be a JSON object")
             continue
-        if item.op not in OPERATIONS:
+        if item.op not in OPERATIONS or item.op in HIDDEN:
             problems.append(f"operation {position + 1}: unknown operation '{item.op}'; use one of the catalog")
             continue
         group = {"column": "steps", "row": "row_steps", "target": "target_steps"}[operation_class(item.op).kind]

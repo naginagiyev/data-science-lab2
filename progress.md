@@ -103,8 +103,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P7.3 Cleaner · 2026-10-11 · a26b73d · fake-provider tests pass; real nano run on a level-3 churn sample: valid plan with parse_boolean and map_categories on the first try
 - [x] P7.4 Repair loop · 2026-10-11 · 9904ca9 · wrong unit map repaired from the structured error (test); capped at 3 attempts; no-repair ablation drops at once
 - [x] P7.5 Refine loop · 2026-10-11 · 7af39ad · a plan with a harmful step is revised from the gate evidence (test); best gated round wins
-- [x] P7.6 Sandbox and custom operation · 2026-10-11 · (next) · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
-- [ ] P7.7 Free-code variant
+- [x] P7.6 Sandbox and custom operation · 2026-10-11 · 0b4368b · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
+- [x] P7.7 Free-code variant · 2026-10-11 · (next) · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
 - [ ] P7.8 Summary paragraph
 - [ ] P7.9 Dev iteration
 

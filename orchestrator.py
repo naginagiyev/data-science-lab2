@@ -16,6 +16,7 @@ from llms.agentmodel import AgentModel
 from modelling.evaluator import evaluate
 from edatool.schemas import Meta, Report
 from checks.datachecks import verify_plan
+from agents.freecoder import free_code_plan
 from tools.glance import glance, glance_text
 from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
@@ -40,7 +41,7 @@ VARIANT_OPTIONS = {
     "full-norepair": dict(BASE, repair=False),
     "full-nosamples": dict(BASE, samples=False),
     "full-noleakguard": dict(BASE, leakguard=False),
-    "freecode": dict(BASE, freecode=True),
+    "freecode": dict(BASE, freecode=True, cleaner=False),
     "full+ag": dict(BASE, engine="autogluon"),
     "rules+ag": dict(BASE, review=False, cleaner=False, engine="autogluon"),
 }
@@ -326,7 +327,14 @@ def stage_plan(state):
     combined = valid_steps(state, combined, list(train.columns))
     state.context.plans.append(combined)
     source = "translator"
-    if state.options["cleaner"] and state.settings.cleaner.enabled:
+    if state.options["freecode"]:
+        report = state.objects["report"]
+        written = free_code_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), issues_text(state.context.audit_dir, report), state.settings, state.options["samples"])
+        decide(state, "plan", "freecode", "code", written is not None, "LLM cleaning code written and tested" if written is not None else "no valid cleaning code; protected steps only", "llm")
+        combined = written if written is not None else protected_part(combined)
+        state.context.plans.append(combined)
+        source = "freecode" if written is not None else "freecode failed"
+    elif state.options["cleaner"] and state.settings.cleaner.enabled:
         report = state.objects["report"]
         cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(state.context.audit_dir, report), state.settings, state.options["samples"])
         if cleaned is not None:
