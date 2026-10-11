@@ -17,8 +17,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P0.5 Check the LLM · 2026-10-11 · 0fa301c · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
 
 ## P1. Foundation
-- [x] P1.1 Environment · 2026-10-11 · (next) · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
-- [ ] P1.2 Remove v1 from the root
+- [x] P1.1 Environment · 2026-10-11 · 6271716 · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
+- [x] P1.2 Remove v1 from the root · 2026-10-11 · (next) · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
 - [ ] P1.3 Core files
 - [ ] P1.4 Run folder, logging, metrics
 - [ ] P1.5 LLM layer
