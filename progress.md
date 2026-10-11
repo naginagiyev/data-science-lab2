@@ -25,8 +25,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · cd982be · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
 
 ## P2. Baselines first
-- [x] P2.1 Harness skeleton · 2026-10-11 · (next) · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
-- [ ] P2.2 Main-environment baselines (dummy, lightgbm, skrub)
+- [x] P2.1 Harness skeleton · 2026-10-11 · 4ef5d7a · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
+- [x] P2.2 Main-environment baselines (dummy, lightgbm, skrub) · 2026-10-11 · (next) · all 3 score on the 4 local datasets (benchmark/results/p2-local.csv)
 - [ ] P2.3 Separate environments (flaml, autogluon)
 - [ ] P2.4 v1 adapter (optional, never run)
 - [ ] P2.5 Optional baseline (tabpfn)

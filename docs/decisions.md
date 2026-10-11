@@ -146,3 +146,12 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   (50,000 rows, stratified, seed 0) is the same for every seed.
 - Decision: the fast tests never read `data/` (it is git-ignored, so a fresh clone has no data);
   they build small synthetic tables. Tests that need the real dev files are marked `slow`.
+
+## 2026-10-11 · P2.2 · Main-environment baselines
+
+- Decision: the `lightgbm` baseline replaces the JSON special characters `[ ] { } " : ,` in column
+  names with `_` (LightGBM refuses them); everything else is the plan's "pd.read_csv defaults, object
+  columns as category, default parameters". The `skrub` baseline is
+  `skrub.tabular_pipeline(HistGradientBoosting*(random_state=seed), n_jobs=4)` (skrub 0.11).
+- Reason: a user would rename such columns at the first error; failing on a name is not what the
+  benchmark measures.
