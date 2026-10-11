@@ -51,7 +51,7 @@ Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move 
 - [x] P3.4 Typing step and generic stage · 2026-10-11 · 0e99f20 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
 - [x] P3.5 Engine · 2026-10-11 · 75d6853 · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
 - [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · e5956db · generic run folders complete for the 4 local datasets; predict works on test features
-- [x] P3.7 v2 adapter · 2026-10-11 · (next) · generic is at least as good as lightgbm and skrub on all 4 local datasets (table below)
+- [x] P3.7 v2 adapter · 2026-10-11 · 49cbb8c · generic is at least as good as lightgbm and skrub on all 4 local datasets (table below)
 
 P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `generic` from p3-generic.csv, the rest from p2-smoke.csv):
 
@@ -65,7 +65,7 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 | generic | 0.8510 | 103896 | 0.8067 | 1.0000 |
 
 ## P4. edatool improvements
-- [ ] P4.1 Baseline numbers before changing anything
+- [x] P4.1 Baseline numbers before changing anything · 2026-10-11 · (next) · recall 0.986, precision 0.896 on 358 injected issues (same as before); baselines: ydata 0.433, old eda.py 0.317, cleanlab 0.158 recall; docs/edatool-baseline.md
 - [ ] P4.2 Windows-safe output
 - [ ] P4.3 Loader robustness
 - [ ] P4.4 Semantic-mess detectors

@@ -284,3 +284,12 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - `generic` on the 4 local datasets (60 s budget, demo mode): ibmchurn test ROC-AUC 0.8527 (dummy
   0.5000), kinghousedata test RMSE 105,029 (dummy 336,712; group split on `id`), winequality test
   log-loss 0.8753 (dummy 1.2021), creditcardfraud (full table) test ROC-AUC 0.9833 (dummy 0.5000).
+
+## 2026-10-11 · P4.1 · Auditor baseline
+
+- Decision: type accuracy is reported on the 4 draft label files (`--drafts`), clearly marked as
+  unreviewed; without `--drafts` the command uses no file.
+- Decision: ydata-profiling and cleanlab live in `benchmark/envs/edabench` (pandas<3, numpy, scipy,
+  scikit-learn, joblib, pydantic, python-dotenv, tabulate, matplotlib, openml, cleanlab[datalab]>=2.9,
+  ydata-profiling>=4.18.4, setuptools<81); the `baselines` experiment runs with that Python and the
+  project root on `PYTHONPATH`.
