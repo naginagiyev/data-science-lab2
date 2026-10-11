@@ -395,3 +395,13 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   check compares every output column with the raw target values (and the target name).
 - Verify runs on all training rows after fitting the agent steps; snapshots carry the raw target; P01
   and P02 are ignored; it returns still-open and new must-fix issues and the resolved count.
+
+## 2026-10-11 · P5.5 · Leak guard
+
+- Evidence: structural = A02 and E03 (not dismissed) and the framer's id columns (plus an id-like group
+  key of the split); statistical = G01, G02, G04 in any status; semantic = G03 (agent name review) or
+  an agent confirmation of G01/G02/G04 (a review item with status `confirmed` and a `drop_column` fix).
+  Decisions follow the §3.6 table; the target is never dropped; all drops form one protected
+  `drop_columns` step with source `leakguard`.
+- Decision: with the guard off (`full-noleakguard`) only the structural drops (ids, saved index)
+  remain, because ids are not leaks; the ablation then measures leaks only.
