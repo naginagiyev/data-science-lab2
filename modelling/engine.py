@@ -124,7 +124,7 @@ def evaluate(family, task, params, fold_data, rows, n_classes, seed, n_jobs, dea
 # searches one family with Optuna (TPE, seeded) inside its time; the default...
 # parameters come first; the search stops after patience trials without...
 # improvement; returns the best result and the trial log
-def search_family(family, task, metric, fold_data, y, n_classes, seed, settings, seconds, hard_deadline):
+def search_family(family, task, metric, fold_data, y, n_classes, seed, settings, seconds, hard_deadline, scorer=None):
     start = time.monotonic()
     family_deadline = min(start + seconds, hard_deadline)
     best = {"score": -np.inf}
@@ -135,7 +135,7 @@ def search_family(family, task, metric, fold_data, y, n_classes, seed, settings,
         trial_start = time.perf_counter()
         deadline = hard_deadline if trial.number == 0 else family_deadline
         oof, trees = evaluate(family, task, params, fold_data, len(y), n_classes, seed, settings.n_jobs, deadline)
-        score = oof_score(task, y, oof, n_classes)
+        score = scorer(oof) if scorer is not None else oof_score(task, y, oof, n_classes)
         value = oriented(metric, score) if np.isfinite(score) else -np.inf
         log.append({"family": family, "trial": trial.number, "score": score, "seconds": round(time.perf_counter() - trial_start, 3), "trees": trees, "params": params})
         if value > best["score"]:
@@ -156,7 +156,7 @@ def search_family(family, task, metric, fold_data, y, n_classes, seed, settings,
         if "params" not in best:
             params = default_params(family)
             oof, trees = evaluate(family, task, params, fold_data, len(y), n_classes, seed, settings.n_jobs, hard_deadline)
-            score = oof_score(task, y, oof, n_classes)
+            score = scorer(oof) if scorer is not None else oof_score(task, y, oof, n_classes)
             best.update(score=oriented(metric, score), raw_score=score, params=params, oof=oof, trees=trees, trial=0)
     return best, log
 
@@ -204,13 +204,21 @@ def search_sample(frame, y, folds, task, max_rows, seed):
 
 # the model stage: cross-validated search of every candidate family under the...
 # time budget, an average of the best two families when it beats the best one,...
-# and a refit on all training rows; the dummy model always exists
-def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_classes=None, row_filter=None):
+# and a refit on all training rows; the dummy model always exists; with a...
+# target transform (log_target) models learn the transformed target and are...
+# scored on the original scale
+def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_classes=None, row_filter=None, target_transform=None):
     start = time.monotonic()
     hard_deadline = start + seconds * (1 - RESERVE_SHARE)
     n_classes = n_classes or (int(y.max()) + 1 if task != "regression" else 0)
     full_frame, full_y = frame, y
     frame, y, folds = search_sample(frame, y, folds, task, settings.max_search_rows, seed)
+    y_true = y
+    scorer = None
+    if target_transform is not None:
+        y = target_transform.forward(y)
+        full_y = target_transform.forward(full_y)
+        scorer = lambda oof: oof_score(task, y_true, target_transform.inverse(oof), n_classes)
     prepared = {}
     results = {}
     trial_log = []
@@ -228,7 +236,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
             if family != "dummy" and left <= 1:
                 logger.info(f"No time left for {family}; skipped")
                 continue
-            best, log = search_family(family, task, metric, prepared[kind], y, n_classes, seed, settings, family_seconds, hard_deadline)
+            best, log = search_family(family, task, metric, prepared[kind], y, n_classes, seed, settings, family_seconds, hard_deadline, scorer)
             trial_log += log
             if "params" in best:
                 results[family] = best
@@ -240,7 +248,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
     ensemble_score = None
     if settings.ensemble and len(ranked) >= 2:
         average = (results[ranked[0]]["oof"] + results[ranked[1]]["oof"]) / 2
-        ensemble_score = oof_score(task, y, average, n_classes)
+        ensemble_score = scorer(average) if scorer is not None else oof_score(task, y, average, n_classes)
         if oriented(metric, ensemble_score) > results[ranked[0]]["score"]:
             chosen = ranked[:2]
     members = []

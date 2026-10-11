@@ -417,3 +417,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   steps (effect below minus the tolerance) are removed together, the reduced plan is scored once more,
   and it is kept when it is not worse than P0 within the tolerance; otherwise P0 is the final plan.
 - Tolerances as in the plan: ROC-AUC 0.002 absolute; log-loss and RMSE 0.5% relative to the P0 score.
+
+## 2026-10-11 · P5.7 · Rules end to end; gate speed
+
+- Decision: the default `gate.max_rows` is 10,000 instead of 20,000 (plan §2.5). Reason: the gate gets
+  about 45 s inside a 120 s run (stage limit = time left minus `min_model_seconds`), and one plan score
+  on kinghousedata took 4.1 s at 17,290 rows (about 11 s with a second run in parallel) and 2.9 s at
+  10,000 rows with the same score; with 9 gated steps the per-step tests did not finish.
+- Decision: per-step tests run riskiest first (drops, missing-value rules, row filters, grouping,
+  clipping, replacements, log transforms, then parsing). When single-step tests would not fit in the
+  time left (estimated from the P0 and P1 timings), steps are tested in groups of the same operation (one
+  test per operation type); every step records how it was tested. When the reduced plan still loses to
+  P0 and some steps were untested, P0 plus the tested steps that did not hurt is scored once more.
+- Result (120 s, benchmark mode, seed 0): `rules` vs `generic`: ibmchurn ROC-AUC 0.8528 vs 0.8517;
+  kinghousedata RMSE 100,064 vs 102,687 (first run before the gate change: 102,791 with all gated steps
+  rejected); winequality log-loss 0.8245 vs 0.8076 (protected training-only duplicate drop of 240 rows);
+  creditcardfraud ROC-AUC 0.99997 vs 0.99996.
+- The run folder now also holds `leaks.json`, `plans.json` (every version), `checks.json` (data checks
+  and verify), `gate.json`, `verify/` and, in benchmark mode, `prepared.parquet`.

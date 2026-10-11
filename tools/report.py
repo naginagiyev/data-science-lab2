@@ -43,7 +43,8 @@ def preparation_section(context, extras, decisions):
     if context.leaks:
         lines += ["", "## Leak decisions", ""]
         for leak in context.leaks:
-            lines.append(f"- `{leak.get('column')}`: {leak.get('action')} ({leak.get('evidence')}) - {leak.get('reason', '')}")
+            evidence = "; ".join(f"{kind}: {', '.join(item['code'] for item in items)}" for kind, items in leak.get("evidence", {}).items() if items)
+            lines.append(f"- `{leak.get('column')}`: {leak.get('action')} ({evidence}) - {leak.get('reason', '')}")
     plan = context.final_plan
     gated = [decision for decision in decisions if decision.get("stage") == "gate" and decision.get("kind") == "step"]
     repairs = [decision for decision in decisions if decision.get("kind") == "repair"]

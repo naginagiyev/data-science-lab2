@@ -78,3 +78,18 @@ def test_v2_adapter(tmp_path):
     assert result["classes"] == ["No", "Yes"] and result["predictions"][0].shape == (100, 2)
     assert (tmp_path / "out" / "run" / "model.joblib").exists()
     assert result["meta"]["llm_calls"] == 0 and result["meta"]["run_dir"].endswith("run")
+
+# the rules variant runs the audit, leak guard, plan, checks and gate: the id...
+# is dropped, the blank token becomes missing, and every file exists
+def test_rules_run(tmp_path):
+    path = churn_file(tmp_path)
+    context = run(path, load_settings(assignments=FAST + ["gate.max_rows=400"]), "Churn", "binary-classification", variant="rules", out_dir=tmp_path / "runs", console=False)
+    folder = next((tmp_path / "runs").iterdir())
+    for name in RUN_FILES + ["leaks.json", "plans.json", "checks.json", "gate.json"]:
+        assert (folder / name).exists(), name
+    assert all(stage.ok for stage in context.stages), [stage for stage in context.stages if not stage.ok]
+    final = context.final_plan
+    assert any(step.op == "drop_columns" and "customerID" in step.params["columns"] and step.protected for step in final.steps)
+    assert any(step.op == "replace_values" and step.params["column"] == "TotalCharges" for step in final.steps)
+    model = FittedModel.load(folder / "model.joblib")
+    assert len(model.predict(pd.read_csv(path, dtype=str, keep_default_na=False).head(3))) == 3

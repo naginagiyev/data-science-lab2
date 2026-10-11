@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from operations.compiler import target_steps
 from tools.metrics import align_probabilities, compute_scores
 
 # the true test values: stripped label text, or floats for regression
@@ -28,7 +29,11 @@ def dummy_values(train_truth, task, rows, classes):
 # uses the locked test set once: scores of the fitted model and of the dummy...
 # model, at full precision
 def evaluate(fitted, test_frame, train_target):
-    truth = test_truth(test_frame[fitted.target], fitted.task)
+    values = test_frame[fitted.target]
+    if fitted.task != "regression" and fitted.plan is not None and fitted.plan.target_steps:
+        values = target_steps(fitted.plan).labels(values)
+        train_target = target_steps(fitted.plan).labels(train_target)
+    truth = test_truth(values, fitted.task)
     values = fitted.raw_values(test_frame.drop(columns=[fitted.target]))
     classes = fitted.classes
     result = score(fitted.task, truth, values, classes)

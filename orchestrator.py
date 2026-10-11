@@ -3,22 +3,28 @@ import json
 import logging
 import numpy as np
 import pandas as pd
-from paths import runs_dir
+from edatool import audit
 from modelling import engine
 from tools.glance import glance
 from llms.client import LlmClient
 from settings import settings_hash
 from tools.report import write_report
-from sklearn.pipeline import Pipeline
+from checks.leakage import leak_guard
 from modelling.cv import encode_target
+from llms.agentmodel import AgentModel
 from modelling.evaluator import evaluate
 from agents.framer import frame_by_rules
+from edatool.schemas import Meta, Report
+from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
+from operations.translator import default_plan
 from tools.splitter import holdout, make_folds, split
-from operations.generic import GenericStage, TypingStep
-from tools.runfolder import RunFolder, close_logging, setup_logging
-from schemas import Decision, RunContext, SplitInfo, StageStatus, StopRun
+from checks.datachecks import check_steps, verify_plan
+from checks.gate import gate_data, protected_only, run_gate
+from tools.runfolder import RunFolder, close_logging, now_text, setup_logging
+from schemas import Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
+from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
@@ -189,10 +195,217 @@ def fallback_split(state):
 def skipped(state):
     return "skipped (variant)"
 
-# builds the preparation pipeline of a model kind: agent steps (P5) + typing...
-# step + generic stage
+# the edatool settings of the audit stage: agent cache, session limits, the...
+# stage deadline, the LLM model and the G01 workers
+def edatool_settings(state):
+    audit_settings = state.settings.audit
+    deadline = time.time() + state.budget.stage_limit("audit")
+    agent = {"cache_dir": str(edatool_cache_dir), "session_seconds": audit_settings.session_seconds, "max_sessions": audit_settings.max_sessions, "deadline": deadline, "model_id": state.settings.llm.model}
+    return {"agent": agent, "thresholds": {"G01": {"n_jobs": {"value": audit_settings.n_jobs}}}}
+
+# an empty audit report (when even the deterministic audit fails)
+def empty_report(state):
+    task = state.context.task
+    meta = Meta(tool_version="0", settings_hash="", dataset_hash="", dataset="train", rows=len(state.objects["train"]), columns=state.objects["train"].shape[1], target=task.target, task=task.task, raw_input=True, created_at=now_text())
+    return Report(meta=meta)
+
+# keeps the audit report and its summary; in benchmark mode the task-type...
+# doubt F02 is closed (the task is given)
+def keep_report(state, report):
+    if state.context.mode == "benchmark":
+        for issue in report.issues:
+            if issue.code == "F02" and issue.status == "open":
+                issue.status = "accepted"
+                decide(state, "audit", "issue", issue.id, True, "task type is given in benchmark mode; F02 ignored", "rules")
+    state.objects["report"] = report
+    folders = sorted(state.folder.file("audit").glob("*/")) if state.folder.file("audit").exists() else []
+    state.context.audit_dir = str(folders[-1]) if folders else None
+    counts = {priority: sum(issue.priority == priority for issue in report.issues) for priority in ["must_fix", "should_fix", "consider"]}
+    return f"{len(report.issues)} issues ({counts['must_fix']} must_fix, {counts['should_fix']} should_fix)"
+
+# adds the token use of the edatool agent to the run's LLM usage
+def add_agent_usage(state, model):
+    for key in ["calls", "failed_calls", "input_tokens", "output_tokens", "cost_usd"]:
+        state.client.usage[key] += model.usage.get(key, 0)
+    state.context.llm = dict(state.client.usage)
+
+# stage 05: the edatool audit of the training rows; the agent reviews the...
+# unclear issues when the variant uses it (its calls are logged and budgeted)
+def stage_audit(state):
+    task = state.context.task
+    use_agent = state.options["review"] and state.settings.audit.use_agent
+    model = None
+    if use_agent:
+        left = max(0.0, state.settings.llm.max_cost_per_run_usd - state.client.usage["cost_usd"])
+        model = AgentModel(state.settings, state.folder, "audit", max_cost_usd=left, deadline=time.monotonic() + state.budget.stage_limit("audit"))
+        state.objects["agent_model"] = model
+    try:
+        report = audit(state.objects["train"], task.target, task.task, use_agent=use_agent, model=model, settings=edatool_settings(state), sample_rows=state.settings.audit.sample_rows, run_dir=state.folder.file("audit"))
+    finally:
+        if model is not None:
+            add_agent_usage(state, model)
+    return keep_report(state, report)
+
+# fallback of stage 05: the deterministic audit, or an empty report
+def fallback_audit(state):
+    task = state.context.task
+    try:
+        report = audit(state.objects["train"], task.target, task.task, use_agent=False, settings=edatool_settings(state), sample_rows=state.settings.audit.sample_rows, run_dir=state.folder.file("audit"))
+        keep_report(state, report)
+        return "deterministic audit"
+    except Exception as error:
+        state.folder.log_error("audit fallback", error)
+        keep_report(state, empty_report(state))
+        return "empty report"
+
+# stage 06: the leak guard decides ids, saved index columns and leaks from...
+# the audit evidence and the framer; drops are protected plan steps
+def stage_leakguard(state):
+    task = state.context.task
+    split = state.context.split
+    ids = list(task.id_columns)
+    if split.strategy == "group" and split.key and any(entry["name"] == split.key and entry.get("type") == "id" for entry in state.objects["glance"]["columns"]):
+        ids.append(split.key)
+    decisions, steps = leak_guard(state.objects["report"], task.target, ids, state.settings.leakage.drop_semantic_only, state.options["leakguard"])
+    state.context.leaks = decisions
+    state.objects["leak_steps"] = steps
+    state.folder.write_json("leaks.json", decisions)
+    for item in decisions:
+        decide(state, "leakguard", "column", item["column"], item["action"] == "drop", f"{item['action']}: {item['reason']}", "rules", evidence=item["evidence"])
+    dropped = sum(item["action"] == "drop" for item in decisions)
+    return f"{dropped} dropped, {sum(item['action'] == 'warn' for item in decisions)} warnings"
+
+# fallback of stage 06: structural drops only (framer ids)
+def fallback_leakguard(state):
+    task = state.context.task
+    steps = [Step(op="drop_columns", params={"columns": list(task.id_columns)}, reason="framer id columns", protected=True, source="leakguard")] if task.id_columns else []
+    state.objects["leak_steps"] = steps
+    return "framer ids only"
+
+# keeps the steps of a plan that validate one after the other (a step that...
+# breaks the plan is left out and logged)
+def valid_steps(state, plan, columns):
+    task = state.context.task
+    kept = Plan(version=plan.version, notes=plan.notes)
+    for group in ["steps", "row_steps", "target_steps"]:
+        for step in getattr(plan, group):
+            trial = kept.model_copy(deep=True)
+            getattr(trial, group).append(step)
+            errors = validate_plan(trial, columns, task.target, task.task)
+            if errors:
+                decide(state, "plan", "step", step.op, False, f"invalid step left out: {errors[0]}", "checks", proposal=step.model_dump())
+                continue
+            getattr(kept, group).append(step)
+    return kept
+
+# saves every plan version to plans.json
+def save_plans(state):
+    state.folder.write_json("plans.json", [plan.model_dump() for plan in state.context.plans])
+
+# stage 07: the default plan of the translator (Appendix C) after the leak...
+# guard's protected drops; steps on dropped columns are left out
+def stage_plan(state):
+    task = state.context.task
+    train = state.objects["train"]
+    leak_steps = state.objects.get("leak_steps", [])
+    dropped = {column for step in leak_steps for column in step.params.get("columns", [])}
+    plan, skipped_issues = default_plan(state.objects["report"], task.target) if state.options["operations"] else (Plan(), [])
+    for item in skipped_issues:
+        decide(state, "plan", "issue", item["issue"], False, f"translator skipped: {item['reason']}", "rules")
+    steps = [step for step in plan.steps if not ({step.params.get("column")} | set(step.params.get("columns", []))) & dropped]
+    combined = Plan(version=0, steps=leak_steps + steps, row_steps=plan.row_steps, target_steps=plan.target_steps, notes="translator")
+    combined = valid_steps(state, combined, list(train.columns))
+    state.objects["plan"] = combined
+    state.context.plans.append(combined)
+    save_plans(state)
+    return f"{len(combined.steps)} column, {len(combined.row_steps)} row, {len(combined.target_steps)} target steps"
+
+# fallback of stage 07: the protected steps of the leak guard only
+def fallback_plan(state):
+    plan = Plan(version=0, steps=list(state.objects.get("leak_steps", [])), notes="fallback: leak guard steps only")
+    state.objects["plan"] = plan
+    state.context.plans.append(plan)
+    save_plans(state)
+    return "leak guard steps only"
+
+# the gate sample of the training rows: frame, raw target values and folds
+def check_data(state):
+    task = state.context.task
+    if "check_data" not in state.objects:
+        sample, folds, _ = gate_data(state.objects["train"], task.target, task.task, state.context.split, state.settings.gate, state.settings.seed)
+        state.objects["check_data"] = (sample.drop(columns=[task.target]), sample[task.target].to_numpy(), folds)
+    return state.objects["check_data"]
+
+# stage 08: data checks of every step on the folds of a sample (failing steps...
+# are dropped; the LLM variants repair them first) and edatool verify of the plan
+def stage_compile(state):
+    task = state.context.task
+    plan = state.objects["plan"]
+    frame, values, folds = check_data(state)
+    results, failing = check_steps(plan, frame, values, folds, task.target, state.settings.checks)
+    for position in failing:
+        step = plan.steps[position]
+        decide(state, "compile", "check", step.op, False, "; ".join(results[position]["problems"]), "checks", proposal=step.model_dump())
+    compiled = plan.model_copy(deep=True)
+    compiled.steps = [step for position, step in enumerate(plan.steps) if position not in failing]
+    compiled = valid_steps(state, compiled, list(state.objects["train"].columns))
+    compiled.version = plan.version + 1
+    compiled.notes = "compiled: failing steps dropped"
+    verification = None
+    if state.settings.verify.enabled and compiled.steps:
+        train = state.objects["train"]
+        try:
+            verification = verify_plan(state.objects["report"], compiled, train.drop(columns=[task.target]), train[task.target].to_numpy(), task.target, run_dir=state.folder.file("verify"))
+        except Exception as error:
+            state.folder.log_error("verify", error)
+            verification = {"error": f"{type(error).__name__}: {error}"}
+    state.folder.write_json("checks.json", {"steps": results, "failing": failing, "verify": verification})
+    state.objects["plan"] = compiled
+    state.context.plans.append(compiled)
+    save_plans(state)
+    return f"{len(failing)} failing steps dropped" + (f", verify: {verification.get('resolved', 0)} resolved" if verification and "resolved" in verification else "")
+
+# fallback of stage 08: the protected steps only
+def fallback_compile(state):
+    state.objects["plan"] = protected_only(state.objects["plan"])
+    return "protected steps only"
+
+# stage 09: the validation gate (or, without the gate, every step is accepted)
+def stage_gate(state):
+    task = state.context.task
+    plan = state.objects["plan"]
+    if not (state.options["gate"] and state.settings.gate.enabled):
+        final = plan.model_copy(deep=True)
+        final.notes = "gate off: all steps accepted"
+        for step in plan.steps + plan.row_steps + plan.target_steps:
+            decide(state, "gate", "step", step.op, True, "gate off", "gate", proposal=step.model_dump())
+    else:
+        deadline = time.monotonic() + state.budget.stage_limit("gate")
+        final, result = run_gate(plan, state.objects["train"], task.target, task.task, task.metric, state.context.split, state.settings.gate, state.settings.seed, list(state.objects["train"].columns), deadline)
+        state.context.gate = result
+        state.folder.write_json("gate.json", result)
+        removed = set(result["reduced"]["removed"]) if result["accepted"] else None
+        for item in result["effects"]:
+            kept = result["accepted"] and item["op"] not in removed
+            reason = item.get("note") or ("kept" if kept else "removed by the gate")
+            decide(state, "gate", "step", f"{item['op']} {item['params'].get('column', '')}".strip(), kept, reason, "gate", proposal={"op": item["op"], "params": item["params"]}, evidence={"effect": item["effect"]})
+    state.context.final_plan = final
+    state.context.plans.append(final)
+    save_plans(state)
+    return f"{len(final.steps)} column steps kept" + (f" | P0 {state.context.gate['p0']['score']:.4f} -> {state.context.gate['final_score']:.4f}" if state.context.gate else "")
+
+# fallback of stage 09: P0 (protected steps only)
+def fallback_gate(state):
+    final = protected_only(state.objects["plan"])
+    state.context.final_plan = final
+    state.context.plans.append(final)
+    save_plans(state)
+    return "P0 (protected steps only)"
+
+# builds the preparation pipeline of a model kind: the final plan's agent...
+# steps + typing step + generic stage
 def preparation(state, kind):
-    return Pipeline([("typing", TypingStep()), ("generic", GenericStage(kind, state.settings.seed))])
+    return feature_pipeline(state.context.final_plan, kind, state.settings.seed)
 
 # saves the Optuna trial log as optuna.csv
 def save_trials(state, trials):
@@ -201,23 +414,41 @@ def save_trials(state, trials):
         frame["params"] = frame["params"].map(json.dumps)
         frame.to_csv(state.folder.file("optuna.csv"), index=False, lineterminator="\n")
 
-# trains with the engine, saves model.joblib and the CV results
+# benchmark mode: the training frame after the agent steps, for repair accuracy
+def save_prepared(state, features):
+    plan = state.context.final_plan
+    if state.context.mode != "benchmark" or plan is None or not plan.steps:
+        return
+    prepared = AgentSteps(list(plan.steps)).fit(features).transform(features)
+    prepared = prepared.apply(lambda column: column.astype(str) if column.dtype == object or str(column.dtype) == "category" else column)
+    prepared.to_parquet(state.folder.file("prepared.parquet"))
+
+# trains with the engine (target spellings mapped, training-only row filters,...
+# log target), saves model.joblib and the CV results
 def train_model(state, families=None):
     task = state.context.task
+    plan = state.context.final_plan
     train = state.objects["train"]
-    y, encoder = encode_target(train[task.target], task.task)
+    targets = target_steps(plan)
+    labels = targets.labels(train[task.target]) if task.task != "regression" else train[task.target]
+    y, encoder = encode_target(labels, task.task)
     features = train.drop(columns=[task.target])
     settings = state.settings.engine if families is None else state.settings.engine.model_copy(update={"candidates": families, "optuna": False})
     n_classes = len(encoder.classes_) if encoder is not None else None
     make_prep = lambda kind: preparation(state, kind)
-    trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes)
+    transform = targets.transform if task.task == "regression" else None
+    trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes, row_filter(plan), transform)
     save_trials(state, trials)
     chosen = summary["chosen"]
     summary["cv_score"] = summary["ensemble_cv"] if len(chosen) == 2 else summary["cv"].get(chosen[0])
     state.context.model = summary
-    fitted = FittedModel(trained, encoder, features.columns, task.target, task.task, task.metric, state.context.settings_hash, plan=state.context.final_plan)
+    fitted = FittedModel(trained, encoder, features.columns, task.target, task.task, task.metric, state.context.settings_hash, plan=plan, target_transform=transform)
     fitted.save(state.folder.file("model.joblib"))
     state.objects["fitted"] = fitted
+    try:
+        save_prepared(state, features)
+    except Exception as error:
+        state.folder.log_error("prepared.parquet", error)
     cv_text = f"{summary['cv_score']:.4f}" if summary["cv_score"] is not None else "n/a"
     return f"{' + '.join(chosen)} | CV {task.metric} {cv_text}"
 
@@ -241,23 +472,36 @@ def stage_test(state):
     state.context.scores = {"metric": state.context.task.metric, "cv": cv, "test": result}
     return f"test {result['metric']} {result['test']:.4f} (dummy {result['dummy_test']:.4f})"
 
+# the top audit issues for the report (must_fix and should_fix, at most 10)
+def top_issues(state):
+    report = state.objects.get("report")
+    if report is None:
+        return []
+    chosen = [issue for issue in report.issues if issue.priority in {"must_fix", "should_fix"}][:10]
+    return [f"{issue.id} [{issue.priority}] {issue.title} ({', '.join(issue.columns[:3])}) - {issue.status}" for issue in chosen]
+
 # stage 12: scores.json and report.md
 def stage_report(state):
     scores = dict(state.context.scores)
     scores["seconds"] = {stage.name: stage.seconds for stage in state.context.stages}
     scores["llm"] = state.context.llm
     state.folder.write_json("scores.json", scores)
-    extras = {"read": state.objects.get("read", {}), "row_notes": state.objects["row_notes"]}
+    extras = {"read": state.objects.get("read", {}), "row_notes": state.objects["row_notes"], "top_issues": top_issues(state)}
     write_report(state.folder, state.context, extras)
     return "report.md written"
 
 # the stages in order with their function and fallback for the variant
 def stage_table(state):
+    preparing = state.options["audit"]
     table = {
         "read": (stage_read, None), "glance": (stage_glance, fallback_glance), "frame": (stage_frame, None),
-        "split": (stage_split, fallback_split), "audit": (skipped, None), "leakguard": (skipped, None), "plan": (skipped, None),
-        "compile": (skipped, None), "gate": (skipped, None), "model": (stage_model, fallback_model), "test": (stage_test, None),
-        "report": (stage_report, None),
+        "split": (stage_split, fallback_split),
+        "audit": (stage_audit, fallback_audit) if preparing else (skipped, None),
+        "leakguard": (stage_leakguard, fallback_leakguard) if preparing else (skipped, None),
+        "plan": (stage_plan, fallback_plan) if preparing else (skipped, None),
+        "compile": (stage_compile, fallback_compile) if preparing else (skipped, None),
+        "gate": (stage_gate, fallback_gate) if preparing else (skipped, None),
+        "model": (stage_model, fallback_model), "test": (stage_test, None), "report": (stage_report, None),
     }
     return [(name, *table[name]) for name in STAGES]
 

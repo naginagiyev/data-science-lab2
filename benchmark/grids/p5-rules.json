@@ -1,0 +1,10 @@
+{
+  "name": "p5-rules",
+  "systems": ["generic", "rules"],
+  "datasets": ["ibmchurn", "kinghousedata", "winequality", "creditcardfraud"],
+  "group": "dev",
+  "levels": [0],
+  "seeds": [0],
+  "budget": 120,
+  "workers": 2
+}

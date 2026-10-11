@@ -30,7 +30,7 @@
   "gate": {
     "enabled": true,
     "folds": 3,
-    "max_rows": 20000,
+    "max_rows": 10000,
     "per_op": true,
     "max_per_op_tests": 10,
     "n_jobs": 4,

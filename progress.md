@@ -78,8 +78,17 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P5.3 Translator · 2026-10-11 · aab5dd7 · Appendix C default plans look right on churn, kinghousedata and wine (see decisions.md)
 - [x] P5.4 Compiler, data checks, verify integration · 2026-10-11 · 47a805b · wrong unit map -> "parse_units on Weight: 40.0% of values could not be parsed, examples: \"800 g\", ..."; verify resolves C02 after replace_values
 - [x] P5.5 Leak guard · 2026-10-11 · c00c5ff · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
-- [x] P5.6 Gate · 2026-10-11 · (next) · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
-- [ ] P5.7 Variant rules end to end
+- [x] P5.6 Gate · 2026-10-11 · 160b245 · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
+- [x] P5.7 Variant rules end to end · 2026-10-11 · (next) · complete run folders on the 4 local datasets; rules >= generic on ibmchurn and kinghousedata (table below); worse on winequality (explained)
+
+P5.7 table (benchmark mode, 4 local datasets, seed 0, 120 s budget, benchmark/results/p5-rules.csv):
+
+| system | ibmchurn (roc_auc) | kinghousedata (rmse) | winequality (log_loss) | creditcardfraud (roc_auc) |
+|---|---|---|---|---|
+| generic | 0.8517 | 102687 | 0.8076 | 1.0000 |
+| rules | 0.8528 | 100064 | 0.8245 | 1.0000 |
+
+winequality: `rules` drops 240 exact duplicate training rows (a protected step); they look like genuine repeated wines, and without them the class weights change (CV log-loss 0.894 vs 0.876 for `generic`). creditcardfraud: equal within noise.
 
 ## P6. Benchmark data
 - [ ] P6.1 Dataset registry
@@ -193,3 +202,13 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
   notes; it finds numbers with units, packed values and mixed date formats; it never proposes to change
   the target's label space; on anonymized data its agent costs 6% of the tokens it used before. On the
   injection benchmark the old results are unchanged and the new kinds are all found. LLM spend: $0.0247.
+- **P5 (2026-10-11).** Created: `operations/` (`base`, `parsing`, `values`, `columns`, `categories`,
+  `text`, `rows`, `target`, `registry`, `translator`, `compiler`), `checks/` (`datachecks`, `leakage`,
+  `gate`), grid `p5-rules.json`, results `p5-rules.csv`, tests (`testoperations`, `testtranslator`,
+  `testcompiler`, `testleakage`, `testgate`). Edited: `orchestrator.py` (audit, leak guard, plan,
+  compile and gate stages; the final plan feeds the model), `modelling/engine.py` (log-target transform),
+  `modelling/evaluator.py` (target spellings), `tools/report.py`, `settings.py` and
+  `configuration/settings.json` (`gate.n_jobs`, `gate.max_rows` 10,000), `tests/testpipeline.py`.
+  Deleted: nothing. What changed: the `rules` variant works without any LLM: edatool audits the training
+  rows, the leak guard drops ids and leaks, the translator turns issues into typed operations, data
+  checks and edatool verify test them, and the gate keeps only steps that do not hurt cross-validation.

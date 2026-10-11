@@ -59,9 +59,13 @@ def without(plan, group, position):
 def protected_only(plan):
     return Plan(version=plan.version, steps=[step for step in plan.steps if step.protected], row_steps=[step for step in plan.row_steps if step.protected], target_steps=[step for step in plan.target_steps if step.protected], notes="P0")
 
-# the gated steps of a plan as (group, position, step)
+RISK_ORDER = ["drop_columns", "set_missing_where", "drop_rows_where", "drop_conflicting_rows", "group_rare", "clip_values", "replace_values", "log_transform", "log_target"]
+
+# the gated steps of a plan as (group, position, step), riskiest first (drops,...
+# missing-value rules and row filters), so a time limit cuts the safer ones
 def gated_steps(plan):
-    return [(group, position, step) for group in ["steps", "row_steps", "target_steps"] for position, step in enumerate(getattr(plan, group)) if not step.protected]
+    steps = [(group, position, step) for group in ["steps", "row_steps", "target_steps"] for position, step in enumerate(getattr(plan, group)) if not step.protected]
+    return sorted(steps, key=lambda item: RISK_ORDER.index(item[2].op) if item[2].op in RISK_ORDER else len(RISK_ORDER))
 
 # the gate sample and folds: a stratified sample of at most max_rows training...
 # rows and gate.folds folds with the split strategy of the run
@@ -74,7 +78,10 @@ def gate_data(train, target, task, split, settings, seed):
 # than P0 (protected steps only) within the tolerance; each gated step is...
 # tested by leaving it out, steps that hurt by more than the tolerance are...
 # removed, and the better of P0 and the reduced plan is the result; the...
-# deadline stops the per-step tests (untested steps stay)
+# deadline stops the per-step tests (untested steps stay); when the reduced...
+# plan loses and some steps were not tested, P0 plus the tested steps that did...
+# not hurt is tried as well; when the single-step tests would not fit in the...
+# time left, the steps are tested in groups of the same operation
 def run_gate(plan, train, target, task, metric, split, settings, seed, columns, deadline=None):
     sample, folds, notes = gate_data(train, target, task, split, settings, seed)
     frame = sample.drop(columns=[target])
@@ -89,19 +96,31 @@ def run_gate(plan, train, target, task, metric, split, settings, seed, columns, 
     }
     gated = gated_steps(plan)
     tol = tolerance(settings, metric, base_score)
+    per_score = (time.monotonic() - started) / 2
+    units = [[item] for item in gated]
+    if deadline is not None and len(gated) * per_score > deadline - time.monotonic():
+        by_op = {}
+        for item in gated:
+            by_op.setdefault(item[2].op, []).append(item)
+        units = list(by_op.values())
+        result["grouped_by_operation"] = True
     effects = []
-    if settings.per_op and 0 < len(gated) <= settings.max_per_op_tests:
-        for group, position, step in gated:
+    if settings.per_op and 0 < len(units) <= settings.max_per_op_tests:
+        for unit in units:
+            note = f"tested together with the other {unit[0][2].op} steps" if len(unit) > 1 else None
+            records = [{"group": group, "position": position, "op": step.op, "params": step.params} for group, position, step in unit]
             if deadline is not None and time.monotonic() > deadline:
-                effects.append({"group": group, "position": position, "op": step.op, "params": step.params, "effect": None, "note": "not tested (time)"})
+                effects += [dict(record, effect=None, note="not tested (time)") for record in records]
                 continue
-            reduced = without(plan, group, position)
+            reduced = plan.model_copy(deep=True)
+            for group, position, _ in sorted(unit, key=lambda item: -item[1]):
+                getattr(reduced, group).pop(position)
             if validate_plan(reduced, columns, target, task):
-                effects.append({"group": group, "position": position, "op": step.op, "params": step.params, "effect": None, "note": "other steps need it"})
+                effects += [dict(record, effect=None, note="other steps need it") for record in records]
                 continue
             score, _ = score_plan(reduced, frame, values, folds, task, metric, settings, seed)
             effect = oriented(metric, full_score) - oriented(metric, score)
-            effects.append({"group": group, "position": position, "op": step.op, "params": step.params, "effect": effect, "score_without": score})
+            effects += [dict(record, effect=effect, score_without=score, note=note) for record in records]
     result["effects"] = effects
     harmful = [item for item in effects if item["effect"] is not None and item["effect"] < -tol]
     reduced = plan.model_copy(deep=True)
@@ -113,7 +132,21 @@ def run_gate(plan, train, target, task, metric, split, settings, seed, columns, 
     result["reduced"] = {"score": reduced_score, "folds": reduced_folds, "removed": [item["op"] for item in harmful]}
     accepted = oriented(metric, reduced_score) >= oriented(metric, base_score) - tol
     final = reduced if accepted else base
-    result.update(tolerance=tol, accepted=accepted, final_score=reduced_score if accepted else base_score, seconds=round(time.monotonic() - started, 2))
+    final_score = reduced_score if accepted else base_score
+    untested = [item for item in effects if item["effect"] is None]
+    useful = [item for item in effects if item["effect"] is not None and item["effect"] >= -tol]
+    if not accepted and untested and useful and (deadline is None or time.monotonic() < deadline):
+        keep = {(item["group"], item["position"]) for item in useful}
+        safer = plan.model_copy(deep=True)
+        for group, position, _ in sorted(gated, key=lambda item: -item[1]):
+            if (group, position) not in keep:
+                getattr(safer, group).pop(position)
+        safer_score, safer_folds = score_plan(safer, frame, values, folds, task, metric, settings, seed)
+        result["tested_only"] = {"score": safer_score, "folds": safer_folds, "kept": [item["op"] for item in useful]}
+        if oriented(metric, safer_score) > oriented(metric, base_score):
+            final, final_score, accepted = safer, safer_score, True
+            result["reduced"]["removed"] = [item["op"] for item in effects if (item["group"], item["position"]) not in keep]
+    result.update(tolerance=tol, accepted=accepted, final_score=final_score, seconds=round(time.monotonic() - started, 2))
     final.version = plan.version + 1
     final.notes = "gate: reduced P1" if accepted else "gate: P0 (protected steps only)"
     return final, result
