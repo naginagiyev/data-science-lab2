@@ -155,3 +155,20 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   `skrub.tabular_pipeline(HistGradientBoosting*(random_state=seed), n_jobs=4)` (skrub 0.11).
 - Reason: a user would rename such columns at the first error; failing on a name is not what the
   benchmark measures.
+
+## 2026-10-11 · P2.3 · Separate baseline environments
+
+- Installed with `uv run python -m benchmark.envs.install <name>` into `benchmark/envs/<name>/.venv`
+  (CPython 3.12.14 x86_64, `win-amd64`). FLAML: `flaml[automl]==2.7.0` (xgboost 2.1.4); AutoGluon:
+  `autogluon.tabular[lightgbm,catboost,xgboost,fastai]==1.6.3` (torch 2.13.0, catboost 1.2.10,
+  lightgbm 4.7.0, xgboost-cpu 3.3.0, pandas 2.3.3; 1.5 GB). Both installed on Windows without WSL.
+- Decision: AutoGluon runs with `presets="medium_quality"`, `num_cpus=4`, `num_gpus=0` and
+  `ag_args_ensemble={"fold_fitting_strategy": "sequential_local"}` (no Ray), its model folder in the
+  short workdir `cache/w/<8 hex>/ag`. The `[all]` extra (Ray, vision and text models) is not installed.
+- Decision: every adapter gives its system `budget × 0.9 − time already used` seconds to fit
+  (`common.fit_seconds`), keeping 10% for predicting and writing. The runner measures the wall clock
+  of the whole process; FLAML overran a 60 s budget by up to 17 s (it retrains the best model at the
+  end), which stays inside the hard time-out (budget × 1.25 + 60 s). The measured seconds are in the
+  results, so the overrun is visible.
+- 60 s check on the 4 local datasets (seed 0): all cells `ok` (`benchmark/results/p2-flaml.csv`,
+  `p2-autogluon.csv`).

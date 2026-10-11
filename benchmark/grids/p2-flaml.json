@@ -1,0 +1,10 @@
+{
+  "name": "p2-flaml",
+  "systems": ["flaml"],
+  "datasets": ["ibmchurn", "kinghousedata", "winequality", "creditcardfraud"],
+  "group": "dev",
+  "levels": [0],
+  "seeds": [0],
+  "budget": 60,
+  "workers": 2
+}

@@ -1,0 +1,10 @@
+{
+  "name": "p2-autogluon",
+  "systems": ["autogluon"],
+  "datasets": ["ibmchurn", "kinghousedata", "winequality", "creditcardfraud"],
+  "group": "dev",
+  "levels": [0],
+  "seeds": [0],
+  "budget": 60,
+  "workers": 1
+}

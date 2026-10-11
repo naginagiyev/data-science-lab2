@@ -1,0 +1,2 @@
+autogluon.tabular[lightgbm,catboost,xgboost,fastai]==1.6.3
+pyarrow

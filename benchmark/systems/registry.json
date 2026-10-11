@@ -1,5 +1,7 @@
 {
   "dummy": {"python": "main", "module": "benchmark.systems.dummy", "llm": false},
   "lightgbm": {"python": "main", "module": "benchmark.systems.lightgbm", "llm": false},
-  "skrub": {"python": "main", "module": "benchmark.systems.skrub", "llm": false}
+  "skrub": {"python": "main", "module": "benchmark.systems.skrub", "llm": false},
+  "flaml": {"python": "benchmark/envs/flaml/.venv/Scripts/python.exe", "module": "benchmark.systems.flaml", "llm": false},
+  "autogluon": {"python": "benchmark/envs/autogluon/.venv/Scripts/python.exe", "module": "benchmark.systems.autogluon", "llm": false}
 }

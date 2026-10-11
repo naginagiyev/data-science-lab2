@@ -21,6 +21,11 @@ def parse_arguments(extra=None):
     arguments.tests = [path for path in arguments.test.split(",") if path]
     return arguments
 
+# seconds a system may spend fitting: the budget minus the time already used...
+# (reading, imports) and a 10% reserve for predicting and writing files
+def fit_seconds(arguments, started):
+    return max(10.0, arguments.budget * 0.9 - (time.perf_counter() - started))
+
 # the key of a class label: text without outer spaces, and integer-valued...
 # numbers written as integers ("1", "1.0" and 1 all become "1")
 def label_key(value):
