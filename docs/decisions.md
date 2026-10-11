@@ -450,3 +450,27 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Fixed samples: SDSS17 and diamonds 30,000 rows (as planned); also Food_Delivery_Time and adult 30,000
   rows (large natural-mess tables; same rule).
 - The TabArena bank-marketing (did 46910) has no `duration` column, so its known leak is not there.
+
+## 2026-10-11 · P6.2 · Corruptor
+
+- Numbers are rewritten with `Decimal` from their original text (currency with thousand separators,
+  percent, `k`/`M` suffixes, unit conversions), so every format corruption is undone exactly
+  (`restore`); types that destroy values (fake missing, impossible values, plain missing) are restored
+  from the stored original cells (`cells.parquet`: row, column, original, corrupted, type).
+- Allocation: each type wants 25/50/75% of its eligible columns (at least one); columns are handed
+  out one per type and round in a seeded order, so all types get columns; one type per column; at
+  most 80% of the features; never the target. Levels are nested: a level-independent generator fixes
+  the column order of each type and a row order per column, and level k takes the first columns and
+  rows, so a higher level contains the lower ones (cells grow strictly with the level in the tests).
+- Eligibility choices: units and mixed units need a non-negative numeric column with at least 20
+  values; impossible values need a non-negative numeric column with at least 5 values; packed pairs
+  need two numeric columns without empty cells; dates need a text column that is at least 90% dates;
+  spellings need 3 to 50 text levels; booleans need exactly 2 levels.
+- Unit families from the column name: months/days, age years/months, weight kg/g, length m/cm, time
+  h/min, volume l/ml; otherwise `k` and `M` thousands/millions. Type 1 styles: currency (money names or
+  values below 1,000; minority "1,250 USD"), percent (rate names, values up to 100), thousands `k`.
+- Type 9 adds `customer_id` (level 1) and also `Unnamed: 0` (level 2 and 3). Type 10 (layout) is only
+  applied when files are written: BOM (level 1), title rows and a footer note (level 2), `;` with
+  decimal commas and cp1252 (level 3); the robust loader reads all three back (test).
+- Files of a single type live in `level<k>-<type>/`; `truth.json` has the items, the train and test row
+  positions and the file hashes.

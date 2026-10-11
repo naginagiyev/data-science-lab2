@@ -76,7 +76,7 @@ def test_failure_gets_dummy(tmp_path):
 # file correctly; a second run skips the finished cell
 def test_runner_scores_handmade_file(tmp_path, monkeypatch):
     files = tmp_path / "files"
-    monkeypatch.setattr(runner, "cell_dir", lambda group, name, level, seed: files)
+    monkeypatch.setattr(runner, "cell_dir", lambda group, name, level, seed, mess="mixed": files)
     monkeypatch.setattr(runner, "benchmark_outputs_dir", tmp_path / "outputs")
     monkeypatch.setattr(runner, "workdirs_dir", tmp_path / "w")
     monkeypatch.setattr(runner, "logs_dir", tmp_path / "logs")

@@ -1,7 +1,8 @@
 import sys
 import json
 from paths import docs_dir, results_dir
-from benchmark.datasets import LOCAL_DATASETS, MANIFEST, OPENML_DATASETS
+from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt, write_layout
+from benchmark.datasets import GROUP_A, LOCAL_DATASETS, MANIFEST, OPENML_DATASETS, dataset_spec, load_dataset
 
 CARDS_FILE = docs_dir / "datasets.md"
 TASK_IDS = {
@@ -93,6 +94,38 @@ def write_cards():
             lines += [f"## {title}", "", path.read_text(encoding="utf-8").strip(), ""]
     CARDS_FILE.write_text("\n".join(lines).rstrip("\n") + "\n", encoding="utf-8", newline="\n")
 
+# one realistic example per mess type (level 3, one type at a time) from the...
+# first Group A dataset where the type applies; written to...
+# benchmark/results/mess-examples.md
+def write_mess_examples():
+    lines = ["Level 3, one type at a time, seed 0; three changed cells per type (before → after).", ""]
+    for kind in [kind for kind in TYPE_NUMBERS if kind not in {"layout", "leak"}]:
+        for name in GROUP_A:
+            spec = dataset_spec(name)
+            clean = load_dataset(name).head(3000)
+            messy, truth, cells = corrupt(clean, spec["target"], name, 0, 3, [kind])
+            if not truth["items"]:
+                continue
+            item = truth["items"][0]
+            lines.append(f"- **{TYPE_NUMBERS[kind]}. {kind}** ({name}, expected `{EXPECTED_OPS[kind]}`):")
+            if kind == "ids":
+                lines.append(f"  added columns {item['params']['added']}, e.g. `{messy[item['params']['added'][0]].iloc[0]}`")
+            else:
+                sample = cells[cells["original"] != cells["corrupted"]].head(3)
+                pairs = "; ".join(f"`{row.column}`: `{row.original}` → `{row.corrupted}`" for row in sample.itertuples())
+                lines.append(f"  {pairs}")
+            break
+    name = "credit-g"
+    spec = dataset_spec(name)
+    sample_path = results_dir / "layout-example.csv"
+    write_layout(load_dataset(name).head(3), sample_path, 3)
+    head = sample_path.read_bytes().decode("cp1252").splitlines()[:5]
+    sample_path.unlink()
+    lines += ["- **10. layout** (credit-g, level 3: title rows, `;`, decimal commas, cp1252, footer; reader test E6b): first lines:", "", "```", *[line[:110] for line in head], "```"]
+    (results_dir / "mess-examples.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
 if __name__ == "__main__":
+    if "--examples" in sys.argv:
+        write_mess_examples()
     write_cards()
     sys.exit(0)

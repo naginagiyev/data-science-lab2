@@ -111,9 +111,10 @@ def cell_command(entry, cell, files, truth, workdir, out, extra_arguments):
 # predictions, appends the result row and deletes the workdir
 def run_cell(cell, grid, registry, results_file, lock, log_dir):
     entry = registry[cell["system"]]
-    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"])
+    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"])
     truth = json.loads((files / "truth.json").read_text(encoding="utf-8"))
-    cell_id = f"{cell['system']}-{cell['dataset']}-l{cell['level']}-s{cell['seed']}-b{int(cell['budget'])}".replace("+", "plus")
+    mess = "" if cell["mess"] == "mixed" else f"-{cell['mess']}"
+    cell_id = f"{cell['system']}-{cell['dataset']}-l{cell['level']}{mess}-s{cell['seed']}-b{int(cell['budget'])}".replace("+", "plus")
     workdir = workdirs_dir / secrets.token_hex(4)
     out = benchmark_outputs_dir / grid["name"] / cell_id
     shutil.rmtree(out, ignore_errors=True)
