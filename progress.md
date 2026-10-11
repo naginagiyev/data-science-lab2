@@ -21,8 +21,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P1.2 Remove v1 from the root · 2026-10-11 · 900fa72 · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
 - [x] P1.3 Core files · 2026-10-11 · f00390e · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
 - [x] P1.4 Run folder, logging, metrics · 2026-10-11 · 9509f16 · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
-- [x] P1.5 LLM layer · 2026-10-11 · (next) · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
-- [ ] P1.6 Orchestrator and CLI skeleton
+- [x] P1.5 LLM layer · 2026-10-11 · 0d7ec3e · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
+- [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · (next) · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
 
 ## P2. Baselines first
 - [ ] P2.1 Harness skeleton
@@ -129,3 +129,13 @@ Line format: status, task, date, commit (filled in by the next commit), note.
   folders). Deleted: nothing. What changed: the folder is now a git repository; v1 is saved with the
   tag `v1-dslab1` and as a frozen copy; both OpenAI models work with temperature 0 and seed 0, and
   their prices match the plan. LLM spend so far: $0.00005.
+- **P1 (2026-10-11).** Created: `settings.py`, `configuration/settings.json`, `orchestrator.py`,
+  `tools/runfolder.py`, `tools/metrics.py`, `llms/client.py`, `llms/providers.py`, `benchmark/spend.py`,
+  package `__init__.py` files, and tests (`testsettings`, `teststyle`, `testmetrics`, `testrunfolder`,
+  `testllmclient`, `testllmreal`, `testorchestrator`). Edited (rewritten): `pyproject.toml`, `uv.lock`,
+  `.python-version`, `paths.py`, `schemas.py`, `main.py`, `configuration/metrics.json`, `.gitignore`.
+  Deleted: the v1 code in `agents/`, `llms/`, `tools/`, `prompts/`, `main2.py`, `clean.py`, three files
+  in `configuration/`, and the empty `models/`, `sandbox/` and egg-info folders. What changed: a new
+  Python 3.12 x86_64 environment; settings with overrides and a hash; run folders with UTF-8 logs; fixed
+  metrics computed from probabilities; one LLM client with cache, retries, budgets and a global spend
+  ledger; and a pipeline skeleton with a CLI. 38 fast tests pass. LLM spend so far: $0.00006.

@@ -114,3 +114,16 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Decision: each line of `llm.jsonl` also stores the rendered messages and the raw answer (research
   data for decision-quality analysis and debugging).
 - The `llm`-marked real test (`tests/testllmreal.py`) cost $0.0000107 with `gpt-4.1-nano`.
+
+## 2026-10-11 · P1.6 · Orchestrator shape
+
+- Decision: every stage is a function `stage(state)` that receives one `RunState` (settings, run
+  folder, `RunContext`, `Budget`, LLM client and a dictionary of objects passed between stages, such
+  as frames and reports). `run_stage(state, name, function, fallback)` wraps it as in §3.16; a
+  fallback returns a short label that is stored in `StageStatus.fallback`. `StopRun` is the only
+  exception that ends a run (the hard stops of §3.1).
+- Reason: §3.16 says `stage(ctx, data, settings)`; one state object keeps the signatures short and
+  lets later stages read what earlier stages produced without global state.
+- Decision: files written by code use LF line endings (`newline="\n"`), so run folders and ledgers
+  are byte-identical on every machine.
+- Alternatives: separate arguments per stage (long signatures that change with every new stage).

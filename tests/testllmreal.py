@@ -1,8 +1,8 @@
 import pytest
 from benchmark import spend
 from pydantic import BaseModel
-from settings import load_settings
 from llms.client import LlmClient
+from settings import load_settings
 from tools.runfolder import RunFolder
 
 # the answer schema of the real-API check

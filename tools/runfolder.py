@@ -66,14 +66,14 @@ class RunFolder:
 
     def write_json(self, name, data):
         text = json.dumps(data, indent=2, ensure_ascii=False, default=to_json_value)
-        self.file(name).write_text(text + "\n", encoding="utf-8")
+        self.file(name).write_text(text + "\n", encoding="utf-8", newline="\n")
 
     def read_json(self, name):
         return json.loads(self.file(name).read_text(encoding="utf-8"))
 
     def append(self, name, record):
         line = json.dumps(record, ensure_ascii=False, default=to_json_value)
-        with self.file(name).open("a", encoding="utf-8") as handle:
+        with self.file(name).open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(line + "\n")
 
     def read_lines(self, name):
@@ -83,7 +83,7 @@ class RunFolder:
         return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
     def save_context(self, context):
-        self.file("context.json").write_text(context.model_dump_json(indent=2) + "\n", encoding="utf-8")
+        self.file("context.json").write_text(context.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n")
 
     def log_error(self, stage, error):
         details = "".join(traceback.format_exception(error))

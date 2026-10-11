@@ -43,7 +43,7 @@ def read_ledger(path=None):
 def write_ledger(ledger, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(ledger, indent=2) + "\n", encoding="utf-8")
+    temporary.write_text(json.dumps(ledger, indent=2) + "\n", encoding="utf-8", newline="\n")
     os.replace(temporary, path)
 
 # returns the dollars spent per category and in total
@@ -92,6 +92,6 @@ def record(cost, category, model, input_tokens, output_tokens, source, spend_set
         write_ledger(ledger, path)
     if warn and path == spend_file:
         note = f"\n- WARNING ({datetime.now().date()}): LLM spend reached ${total:.2f}; optional LLM work stops (buildplan §0.5).\n"
-        with progress_file.open("a", encoding="utf-8") as handle:
+        with progress_file.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(note.lstrip("\n"))
     return totals(path)
