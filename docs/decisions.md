@@ -384,3 +384,14 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   as_category `zipcode`, set_missing_where for `yr_renovated` 0 + indicator, D02 limits, drop
   `waterfront` (gated); `id` is dropped by the leak guard and used as the group key. winequality gives
   no target step (F05 is no_action).
+
+## 2026-10-11 · P5.4 · Compiler, data checks, verify
+
+- `validate_plan` walks the steps in order and tracks the columns that exist (inputs must exist,
+  outputs are added, removed columns disappear); new output names may not overwrite existing columns.
+- Data checks run on the gate sample (at most `gate.max_rows` training rows) and the gate folds: each
+  step is fitted on the training part and applied to the validation part; a failing step is reported
+  once and left out for the later steps, so all failures of a plan come out in one pass. The target
+  check compares every output column with the raw target values (and the target name).
+- Verify runs on all training rows after fitting the agent steps; snapshots carry the raw target; P01
+  and P02 are ignored; it returns still-open and new must-fix issues and the resolved count.
