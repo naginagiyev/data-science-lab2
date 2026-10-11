@@ -23,7 +23,7 @@ class AgentBudgetError(RuntimeError):
 # sessions of edatool (one lock)
 class AgentModel(OpenAIModel):
     def __init__(self, settings, folder=None, stage="audit", max_cost_usd=None, ledger_path=None, deadline=None, model_id=None):
-        key = os.environ.get("OPENAI_API_KEY") or dotenv_values(env_file).get("OPENAI_API_KEY")
+        key = os.environ.get("OPENAI_API_KEY") or dotenv_values(env_file).get("OPENAI_API_KEY") or "missing-key"
         options = {"temperature": settings.llm.temperature, "seed": settings.llm.seed}
         client = {"timeout": settings.llm.timeout_seconds, "max_retries": settings.llm.api_retries}
         super().__init__(model_id=model_id or settings.llm.model, api_key=key, client_kwargs=client, **options)

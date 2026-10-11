@@ -522,3 +522,18 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Real check (gpt-4.1-nano, 5,000-row samples, no flags): ibmchurn → Churn (binary, id customerID),
   kinghousedata → price (regression, id id), winequality → quality (multi-class), creditcardfraud →
   Class (binary); 4 of 4 right; two invalid id lists were corrected by the retry.
+
+## 2026-10-11 · P7.2 · edatool agent integration
+
+- The audit stage of the LLM variants passes `llms/agentmodel.AgentModel` to `edatool.audit`: every
+  agent call is checked (run budget left, global caps, the audit stage deadline), logged to `llm.jsonl`
+  (stage `audit`, prompt `edatool-agent`) and written to the ledger; the agent's usage is added to the
+  run's LLM usage. edatool also gets `cache_dir = cache/edatool`, `session_seconds`, `max_sessions`,
+  the audit `deadline` and G01 `n_jobs` from the settings. Without an API key the model still builds
+  (placeholder key); its calls then fail and the deterministic audit result is kept.
+- Real check (`full`, gpt-4.1-nano, ibmchurn level 3 seed 0 train file, demo mode, 180 s): 14 agent
+  calls, 81,185 tokens, $0.0085; the run finished in 173 s with test ROC-AUC 0.8114 (dummy 0.5).
+- Open problem found (for P7.9): nano's name review marked `tenure`, `TotalCharges` and the packed
+  `SeniorCitizen_MonthlyCharges` as known only after the event; with `leakage.drop_semantic_only=true`
+  the leak guard dropped them. The semantic prompt, the semantic-only policy and the pilot model
+  (gpt-4.1-mini) are to be checked in the dev iteration.

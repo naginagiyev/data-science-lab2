@@ -5,9 +5,9 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.0260 of $1.50
+- development: $0.0345 of $1.50
 - pilot: $0.00 of $2.75
-- total: $0.0260 (target about $4, hard maximum $5)
+- total: $0.0345 (target about $4, hard maximum $5)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
@@ -98,8 +98,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P6.5 Group C · 2026-10-11 · 82019e6 · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
 
 ## P7. LLM agents (variant full)
-- [x] P7.1 Framer · 2026-10-11 · (next) · fake-provider tests and --ask pass; real nano check: 4/4 targets right
-- [ ] P7.2 edatool agent integration
+- [x] P7.1 Framer · 2026-10-11 · a6b3189 · fake-provider tests and --ask pass; real nano check: 4/4 targets right
+- [x] P7.2 edatool agent integration · 2026-10-11 · (next) · agent calls in llm.jsonl and the ledger (real nano run: 14 calls, 81k tokens, $0.0085); provider failure falls back to the deterministic audit (test)
 - [ ] P7.3 Cleaner
 - [ ] P7.4 Repair loop
 - [ ] P7.5 Refine loop
@@ -152,6 +152,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [ ] S4 AutoGluon Assistant baseline
 
 ## Open problems
+- P7.9: nano's semantic name review flags normal features (tenure, TotalCharges) as post-event leaks; semantic-only drops then remove them (check prompt, policy and mini).
 - Full creditcardfraud (227k training rows): the generic model stage took 79 s for a 60 s budget (refit on all rows); check in P8.3 at 300 s.
 
 ## Phase summaries
