@@ -45,8 +45,8 @@ P2.6 smoke table (4 local datasets, seed 0, 60 s budget, level 0; score and wall
 Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move between runs of the same cell (AutoGluon on creditcardfraud: 0.9419 in the P2.3 check, 1.0000 here). This is why the pilot uses 2 seeds for the free systems.
 
 ## P3. v2 core without LLM (variant generic)
-- [x] P3.1 Vendor edatool · 2026-10-11 · (next) · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
-- [ ] P3.2 Reader and glance
+- [x] P3.1 Vendor edatool · 2026-10-11 · 72d3773 · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
+- [x] P3.2 Reader and glance · 2026-10-11 · (next) · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
 - [ ] P3.3 Splitter
 - [ ] P3.4 Typing step and generic stage
 - [ ] P3.5 Engine

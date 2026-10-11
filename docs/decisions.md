@@ -203,3 +203,15 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   environment (about 1 GB) was deleted. `benchmark/envs/tabpfn.txt` stays, so the user can install it
   later with `uv run python -m benchmark.envs.install tabpfn` after accepting the license.
 - AIDE is not installed in this plan (§2.5).
+
+## 2026-10-11 · P3.2 · Reader and glance
+
+- Decision: the pattern statistics live in `edatool/core/patterns.py` from the start (the plan allows
+  them in `tools/glance.py` first); edatool does not use them yet, so its behaviour is unchanged until
+  the P4.4 detectors.
+- Pattern shares (on at most 2,000 non-empty values): plain number, number with unit or suffix (top 5
+  units), currency, percent, date-like (top 3 of 7 date patterns), boolean-like, packed (two or more
+  numbers, not a date, no currency) with the top 3 digit templates, and long text (5 words or more).
+- Glance uses edatool's `infer_schema` on at most 50,000 rows (target unknown at that point). Missing
+  share = blank cells and edatool's hidden-missing tokens. The prompt line per column has the type,
+  missing share and tokens, uniques, up to 4 examples, the range and the pattern shares above 5%.
