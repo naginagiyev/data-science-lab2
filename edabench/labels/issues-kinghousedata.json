@@ -1,0 +1,80 @@
+{
+  "dataset": "kinghousedata.csv",
+  "source": "local",
+  "reviewed": false,
+  "issues": [
+    {
+      "codes": [
+        "E03"
+      ],
+      "columns": [
+        "id"
+      ],
+      "note": "House id, 99.2% unique."
+    },
+    {
+      "codes": [
+        "H01"
+      ],
+      "columns": [
+        "id"
+      ],
+      "note": "176 ids sold more than once (353 rows): group split."
+    },
+    {
+      "codes": [
+        "B02"
+      ],
+      "columns": [
+        "date"
+      ],
+      "note": "Dates stored as text, format 20141013T000000."
+    },
+    {
+      "codes": [
+        "B04"
+      ],
+      "columns": [
+        "zipcode"
+      ],
+      "note": "Zip code is a categorical code."
+    },
+    {
+      "codes": [
+        "E07"
+      ],
+      "columns": [
+        "sqft_living"
+      ],
+      "note": "sqft_living = sqft_above + sqft_basement."
+    },
+    {
+      "codes": [
+        "C03"
+      ],
+      "columns": [
+        "yr_renovated"
+      ],
+      "note": "0 means never renovated (95.8%)."
+    },
+    {
+      "codes": [
+        "D02"
+      ],
+      "columns": [
+        "bedrooms"
+      ],
+      "note": "33 bedrooms in a 1,620 sqft house: typo."
+    },
+    {
+      "codes": [
+        "F06",
+        "F07"
+      ],
+      "columns": [
+        "price"
+      ],
+      "note": "Price skew 4.02."
+    }
+  ]
+}

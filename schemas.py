@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 from typing import Any, Literal
-
-# the three task types, written as in edatool (replaced by an import from...
-# edatool.schemas once edatool is vendored in P3.1)
-Task = Literal["binary-classification", "multi-class-classification", "regression"]
+from edatool.schemas import Task
 
 # short task names that the command line accepts, mapped once to the full names
 TASK_ALIASES = {
@@ -11,6 +8,11 @@ TASK_ALIASES = {
     "multiclass": "multi-class-classification",
     "regression": "regression",
 }
+
+# raised for the few hard stops of §3.1 (unreadable file, no rows, one class...
+# ...); the message is shown to the user and the run ends without a model
+class StopRun(Exception):
+    pass
 
 # what to predict: target, task, metric, id and time columns, and who decided
 class TaskSpec(BaseModel):

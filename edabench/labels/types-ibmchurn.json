@@ -1,0 +1,32 @@
+{
+  "dataset": "ibmchurn.csv",
+  "reviewed": false,
+  "types": {
+    "customerID": "id",
+    "gender": "categorical_nominal",
+    "SeniorCitizen": "boolean",
+    "Partner": "boolean",
+    "Dependents": "boolean",
+    "tenure": "numeric_continuous",
+    "PhoneService": "boolean",
+    "MultipleLines": "categorical_nominal",
+    "InternetService": "categorical_nominal",
+    "OnlineSecurity": "categorical_nominal",
+    "OnlineBackup": "categorical_nominal",
+    "DeviceProtection": "categorical_nominal",
+    "TechSupport": "categorical_nominal",
+    "StreamingTV": "categorical_nominal",
+    "StreamingMovies": "categorical_nominal",
+    "Contract": "categorical_ordinal",
+    "PaperlessBilling": "boolean",
+    "PaymentMethod": "categorical_nominal",
+    "MonthlyCharges": "numeric_continuous",
+    "TotalCharges": "numeric_continuous",
+    "Churn": "boolean"
+  },
+  "notes": {
+    "gender": "Two values (Female/Male) but not yes/no tokens, so nominal, not boolean.",
+    "tenure": "Integer months with 73 values; above the 30-value limit for discrete.",
+    "Contract": "Month-to-month < One year < Two year has a real order."
+  }
+}

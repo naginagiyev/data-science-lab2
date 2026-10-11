@@ -1,0 +1,21 @@
+{
+  "dataset": "winequality.csv",
+  "reviewed": false,
+  "types": {
+    "fixed acidity": "numeric_continuous",
+    "volatile acidity": "numeric_continuous",
+    "citric acid": "numeric_continuous",
+    "residual sugar": "numeric_continuous",
+    "chlorides": "numeric_continuous",
+    "free sulfur dioxide": "numeric_continuous",
+    "total sulfur dioxide": "numeric_continuous",
+    "density": "numeric_continuous",
+    "pH": "numeric_continuous",
+    "sulphates": "numeric_continuous",
+    "alcohol": "numeric_continuous",
+    "quality": "numeric_discrete"
+  },
+  "notes": {
+    "quality": "Ordered score 3-8; the target."
+  }
+}

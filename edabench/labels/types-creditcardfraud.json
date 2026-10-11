@@ -1,0 +1,40 @@
+{
+  "dataset": "creditcardfraud.csv",
+  "reviewed": false,
+  "types": {
+    "Time": "numeric_continuous",
+    "V1": "numeric_continuous",
+    "V2": "numeric_continuous",
+    "V3": "numeric_continuous",
+    "V4": "numeric_continuous",
+    "V5": "numeric_continuous",
+    "V6": "numeric_continuous",
+    "V7": "numeric_continuous",
+    "V8": "numeric_continuous",
+    "V9": "numeric_continuous",
+    "V10": "numeric_continuous",
+    "V11": "numeric_continuous",
+    "V12": "numeric_continuous",
+    "V13": "numeric_continuous",
+    "V14": "numeric_continuous",
+    "V15": "numeric_continuous",
+    "V16": "numeric_continuous",
+    "V17": "numeric_continuous",
+    "V18": "numeric_continuous",
+    "V19": "numeric_continuous",
+    "V20": "numeric_continuous",
+    "V21": "numeric_continuous",
+    "V22": "numeric_continuous",
+    "V23": "numeric_continuous",
+    "V24": "numeric_continuous",
+    "V25": "numeric_continuous",
+    "V26": "numeric_continuous",
+    "V27": "numeric_continuous",
+    "V28": "numeric_continuous",
+    "Amount": "numeric_continuous",
+    "Class": "boolean"
+  },
+  "notes": {
+    "Time": "Seconds since the first transaction; sorted, but repeats, so not an id."
+  }
+}

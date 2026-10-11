@@ -1,0 +1,74 @@
+{
+  "dataset": "adult",
+  "source": "openml",
+  "reviewed": false,
+  "issues": [
+    {
+      "codes": [
+        "C01",
+        "C02"
+      ],
+      "columns": [
+        "workclass"
+      ],
+      "note": "'?' in the source file (OpenML stores it as missing)."
+    },
+    {
+      "codes": [
+        "C01",
+        "C02"
+      ],
+      "columns": [
+        "occupation"
+      ],
+      "note": "'?' in the source file."
+    },
+    {
+      "codes": [
+        "C01",
+        "C02"
+      ],
+      "columns": [
+        "native-country"
+      ],
+      "note": "'?' in the source file."
+    },
+    {
+      "codes": [
+        "E06",
+        "E08"
+      ],
+      "columns": [
+        "education",
+        "education-num"
+      ],
+      "note": "education-num is a numeric code for education."
+    },
+    {
+      "codes": [
+        "C03",
+        "D02"
+      ],
+      "columns": [
+        "capital-gain"
+      ],
+      "note": "99999 is a top-coded value."
+    },
+    {
+      "codes": [
+        "A04"
+      ],
+      "columns": [],
+      "note": "Some exact duplicate rows."
+    },
+    {
+      "codes": [
+        "F04"
+      ],
+      "columns": [
+        "class"
+      ],
+      "note": "<=50K about 76%."
+    }
+  ]
+}

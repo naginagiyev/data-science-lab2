@@ -45,6 +45,7 @@ edabench_labels_dir = edabench_dir / "labels"
 edabench_legacy_dir = edabench_dir / "legacy"
 edabench_results_dir = edabench_dir / "results"
 edabench_runs_dir = cache_dir / "edabench"
+edabench_legacy_runs_dir = edabench_runs_dir / "legacy"
 
 tests_dir = root_dir / "tests"
 fixtures_dir = tests_dir / "fixtures"

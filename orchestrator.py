@@ -3,7 +3,7 @@ import logging
 from paths import runs_dir
 from llms.client import LlmClient
 from settings import settings_hash
-from schemas import RunContext, StageStatus
+from schemas import RunContext, StageStatus, StopRun
 from tools.runfolder import RunFolder, close_logging, setup_logging
 
 logger = logging.getLogger("automl")
@@ -12,11 +12,6 @@ VARIANTS = [
     "generic", "rules", "full", "full-noreview", "full-nogate", "full-norepair", "full-nosamples",
     "full-noleakguard", "freecode", "full+ag", "rules+ag",
 ]
-
-# raised for the few hard stops of §3.1 (unreadable file, no rows, ...); the...
-# message is shown to the user and the run ends without a model
-class StopRun(Exception):
-    pass
 
 # the time budget of one run: a deadline for the whole run and a limit per...
 # stage; the model stage gets everything that is left, at least min_model_seconds
