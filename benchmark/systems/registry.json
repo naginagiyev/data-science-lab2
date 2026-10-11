@@ -1,0 +1,5 @@
+{
+  "dummy": {"python": "main", "module": "benchmark.systems.dummy", "llm": false},
+  "lightgbm": {"python": "main", "module": "benchmark.systems.lightgbm", "llm": false},
+  "skrub": {"python": "main", "module": "benchmark.systems.skrub", "llm": false}
+}

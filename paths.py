@@ -23,6 +23,8 @@ openml_cache_dir = cache_dir / "openml"
 edatool_cache_dir = cache_dir / "edatool"
 edatool_runs_dir = cache_dir / "edatool-runs"
 benchmark_files_dir = cache_dir / "benchmark" / "files"
+benchmark_splits_dir = cache_dir / "benchmark" / "splits"
+benchmark_outputs_dir = cache_dir / "benchmark" / "outputs"
 workdirs_dir = cache_dir / "w"
 logs_dir = cache_dir / "logs"
 

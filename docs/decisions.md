@@ -127,3 +127,22 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
 - Decision: files written by code use LF line endings (`newline="\n"`), so run folders and ledgers
   are byte-identical on every machine.
 - Alternatives: separate arguments per stage (long signatures that change with every new stage).
+
+## 2026-10-11 · P2.1 · Harness details
+
+- Decision: systems run as modules (`python -m benchmark.systems.<name>`) with the project root on
+  `PYTHONPATH`, 4 threads (`OMP_NUM_THREADS` and friends), `PYTHONIOENCODING=utf-8` and **no**
+  `OPENAI_API_KEY` in the environment (an LLM adapter reads it from `.env` itself, inside its own
+  client). `benchmark/systems/common.py` uses only pandas and numpy, so the separate baseline
+  environments can import it too.
+- Decision: an adapter writes `predictions<i>.csv` for the i-th test file (`predictions0.csv` is the
+  deployment file; Group D adds `predictions1.csv` for the naive file) and `meta.json`.
+- Decision: the scorer uses the sorted label keys of the training and test labels as classes (a class
+  that appears only in the test rows still gets a column); missing probability columns are zeros and
+  rows are renormalized; a file with only a `label` column is scored as hard probabilities (v1's real
+  behaviour, B4).
+- Decision: outer splits are saved per dataset and seed in `cache/benchmark/splits/` with a hash of the
+  clean table, so every level of a dataset uses the same rows. The fixed creditcardfraud sample
+  (50,000 rows, stratified, seed 0) is the same for every seed.
+- Decision: the fast tests never read `data/` (it is git-ignored, so a fresh clone has no data);
+  they build small synthetic tables. Tests that need the real dev files are marked `slow`.

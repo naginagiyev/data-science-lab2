@@ -22,10 +22,10 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P1.3 Core files · 2026-10-11 · f00390e · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
 - [x] P1.4 Run folder, logging, metrics · 2026-10-11 · 9509f16 · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
 - [x] P1.5 LLM layer · 2026-10-11 · 0d7ec3e · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
-- [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · (next) · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
+- [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · cd982be · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
 
 ## P2. Baselines first
-- [ ] P2.1 Harness skeleton
+- [x] P2.1 Harness skeleton · 2026-10-11 · (next) · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
 - [ ] P2.2 Main-environment baselines (dummy, lightgbm, skrub)
 - [ ] P2.3 Separate environments (flaml, autogluon)
 - [ ] P2.4 v1 adapter (optional, never run)
