@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 from types import SimpleNamespace
 from edatool.api import build_context
-from edatool.core.enrichment import enrich
 from edatool.agent.gate import make_guard
+from edatool.core.enrichment import enrich
 from edatool.agent.tools import CallCounter
 from edatool.core.registry import run_detectors
 from edatool.agent.session import accept_anonymized, build_sessions

@@ -3,10 +3,10 @@ import time
 import logging
 import threading
 from benchmark import spend
-from paths import env_file, spend_file
-from smolagents import OpenAIModel
 from dotenv import dotenv_values
+from smolagents import OpenAIModel
 from tools.runfolder import now_text
+from paths import env_file, spend_file
 
 ESTIMATED_OUTPUT_TOKENS = 500
 logger = logging.getLogger("automl.llm")
