@@ -350,3 +350,18 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   `docs/edatool-baseline.md`).
 - Decision: B07's number-with-unit pattern accepts an exponent (`1.2e+06kg`); found because the first
   re-run missed 2 of 3 mixed-unit columns.
+
+## 2026-10-11 · P5.1 + P5.2 · Operations (one commit)
+
+- Decision: P5.1 (column operations) and P5.2 (row and target operations) are committed together,
+  because the registry and the shared operation tests cover both kinds.
+- Operations are scikit-learn transformers with a Pydantic parameter model (`Params`, unknown
+  parameters are errors). `transform` keeps the index and row count (checked in the base class) and
+  records `stats_` (present values, parse failures with up to 10 examples, changed values, seconds).
+  Row operations only return a keep-mask for training rows (`RowFilter`); calling `transform` on them
+  raises. `map_target_labels` refuses mappings between labels whose spelling keys differ (lowercase, no
+  punctuation, no repeated spaces), so classes are never merged; `log_target` is undone exactly.
+- Choices left open by Appendix B: `parse_number` with `percent=true` divides values that end in `%` by
+  100; `parse_units` reads values without a unit with `default_factor` (else they fail);
+  `date_difference` treats 4-digit numbers as years and other values as dates (fractional years);
+  `as_category` outputs the pandas `category` dtype (the typing step leaves it alone).

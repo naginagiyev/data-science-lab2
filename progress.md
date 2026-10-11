@@ -70,11 +70,11 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P4.3 Loader robustness · 2026-10-11 · 60d2dc9 · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
 - [x] P4.4 Semantic-mess detectors · 2026-10-11 · 830bb36 · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
 - [x] P4.5 Policy and cost · 2026-10-11 · bfa1258, b438abe · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
-- [x] P4.6 Benchmark the auditor again · 2026-10-11 · (next) · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
+- [x] P4.6 Benchmark the auditor again · 2026-10-11 · 57cbcd2 · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
 
 ## P5. Toolbox and verification (variant rules)
-- [ ] P5.1 Operations
-- [ ] P5.2 Row and target operations
+- [x] P5.1 Operations · 2026-10-11 · (next) · 17 column operations + registry/catalog text; contract tests (index, unseen rows, NaN, unicode, empty column, one row, pickle) pass
+- [x] P5.2 Row and target operations · 2026-10-11 · (next, same commit as P5.1) · row filters never transform; map_target_labels never merges classes; log_target exact inverse
 - [ ] P5.3 Translator
 - [ ] P5.4 Compiler, data checks, verify integration
 - [ ] P5.5 Leak guard
