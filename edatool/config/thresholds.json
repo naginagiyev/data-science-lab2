@@ -278,6 +278,10 @@
     "max_features": {
       "value": 500,
       "reason": "One CV tree per feature; above 500 features the check is skipped and recorded in coverage."
+    },
+    "n_jobs": {
+      "value": 4,
+      "reason": "Parallel single-feature trees; 4 workers keep the laptop usable next to other runs."
     }
   },
   "G02": {

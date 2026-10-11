@@ -5,9 +5,9 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.0001 of $1.50
+- development: $0.0247 of $1.50
 - pilot: $0.00 of $2.75
-- total: $0.0001 (target about $4, hard maximum $5)
+- total: $0.0247 (target about $4, hard maximum $5)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
@@ -68,8 +68,8 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P4.1 Baseline numbers before changing anything · 2026-10-11 · 3bc011f · recall 0.986, precision 0.896 on 358 injected issues (same as before); baselines: ydata 0.433, old eda.py 0.317, cleanlab 0.158 recall; docs/edatool-baseline.md
 - [x] P4.2 Windows-safe output · 2026-10-11 · 3eb03e2 · SafeConsoleText filter on the edatool logger; cp1252 test: 0 logging errors (2 without the filter)
 - [x] P4.3 Loader robustness · 2026-10-11 · 60d2dc9 · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
-- [x] P4.4 Semantic-mess detectors · 2026-10-11 · (next) · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
-- [ ] P4.5 Policy and cost
+- [x] P4.4 Semantic-mess detectors · 2026-10-11 · 830bb36 · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
+- [x] P4.5 Policy and cost · 2026-10-11 · (next) · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
 - [ ] P4.6 Benchmark the auditor again
 
 ## P5. Toolbox and verification (variant rules)

@@ -138,6 +138,8 @@ def audit(
         timings["agent_sessions"] = summary["sessions"]
         timings["agent_tokens"] = summary["tokens"]
         meta.llm_model = summary["model"]
+        meta.llm_tokens = summary["tokens"]
+        meta.agent_sessions = len(summary["sessions"])
         meta.smolagents_version = summary["smolagents_version"]
         meta.prompt_hash = summary["prompt_hash"]
         complete = complete and summary["complete"]

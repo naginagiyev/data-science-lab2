@@ -1,3 +1,4 @@
+import time
 from edatool.core.progress import logger, short
 
 # finds columns with conflicting fixes (drop_column with other fixes, or two...
@@ -46,12 +47,16 @@ def make_gate(state):
         return True
     return done_gate
 
-# builds the step callback: counts tokens, reminds an idle agent after...
+# builds the step callback: counts tokens, stops a session at its token cap,...
+# its wall-clock limit or the audit deadline, reminds an idle agent after...
 # guard_k steps and stops it after twice that many
 def make_guard(state, settings):
     agent_settings = settings["agent"]
     patience = agent_settings["guard_k"]
     token_cap = agent_settings["max_tokens_per_run"]
+    session_seconds = agent_settings.get("session_seconds")
+    deadline = agent_settings.get("deadline")
+    started = time.monotonic()
     progress = {"changes": 0, "idle": 0}
     def guard(step, agent=None):
         state.steps += 1
@@ -65,6 +70,11 @@ def make_guard(state, settings):
         if state.tokens["input"] + state.tokens["output"] > token_cap:
             state.failure = "token cap reached"
             logger.info(f"  [{state.key}] ! token cap reached, stopping the session")
+            agent.interrupt()
+            return
+        if (session_seconds and time.monotonic() - started > session_seconds) or (deadline and time.time() > deadline):
+            state.failure = "session time limit reached"
+            logger.info(f"  [{state.key}] ! time limit reached, stopping the session")
             agent.interrupt()
             return
         if state.changes != progress["changes"]:

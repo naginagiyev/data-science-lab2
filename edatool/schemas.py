@@ -114,6 +114,8 @@ class Meta(BaseModel):
     sample_rows: int | None = None
     raw_input: bool
     llm_model: str | None = None
+    llm_tokens: dict[str, int] | None = None
+    agent_sessions: int | None = None
     smolagents_version: str | None = None
     prompt_hash: str | None = None
     run_seconds: float = 0.0

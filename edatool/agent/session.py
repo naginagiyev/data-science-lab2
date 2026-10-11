@@ -1,3 +1,4 @@
+import re
 import json
 import time
 import hashlib
@@ -82,17 +83,53 @@ def dataset_task(state):
     lines += ["", "Open items: " + "; ".join(state.open_items())]
     return "\n".join(lines)
 
-# creates one session per cluster with review items, plus one dataset session
+# accepts review items on anonymized columns (V1, X3, col_7, ...) for codes...
+# where only the meaning could decide (D02, E09): no meaning is available, so...
+# the agent is not asked
+def accept_anonymized(context, settings):
+    agent_settings = settings["agent"]
+    pattern = re.compile(agent_settings.get("anonymized_pattern") or "$^")
+    codes = set(agent_settings.get("anonymized_codes", []))
+    accepted = []
+    for issue in context.ledger.issue_list():
+        if issue.code in codes and issue.status == "open" and issue.columns and all(pattern.match(column) for column in issue.columns):
+            issue.status = "accepted"
+            issue.diagnosis = "No meaning is available for an anonymized column name; the values are kept without agent review."
+            accepted.append(issue.id)
+    if accepted:
+        logger.debug(f"    accepted without review (anonymized names): {', '.join(accepted)}")
+    return accepted
+
+# groups the clusters with review items into sessions: clusters whose review...
+# items have the same code share a session of at most batch_size items...
+# (must_fix first); sessions above max_sessions are not run and their items...
+# stay open; the dataset session always runs
 def build_sessions(context, counter, settings):
+    agent_settings = settings["agent"]
     issues = context.ledger.issue_list()
     by_id = {issue.id: issue for issue in issues}
-    sessions = []
+    rank = {"must_fix": 0, "should_fix": 1, "consider": 2}
+    groups = []
     for group in clusters(issues, context.ledger.edges):
         members = {issue_id: by_id[issue_id] for issue_id in group if by_id[issue_id].code not in dataset_codes}
         review = [issue_id for issue_id, issue in members.items() if issue.needs_review and issue.status == "open"]
         if review:
-            key = f"cluster-{len(sessions) + 1}"
-            sessions.append(SessionState(key, "cluster", context, members, review, counter, settings))
+            first = by_id[review[0]]
+            groups.append((min(rank[by_id[item].priority] for item in review), first.code, members, review))
+    batch_size = agent_settings.get("batch_size", 8)
+    batches = []
+    for priority, code, members, review in sorted(groups, key=lambda item: (item[0], item[1])):
+        target = next((batch for batch in batches if batch["code"] == code and len(batch["review"]) + len(review) <= batch_size), None)
+        if target is None:
+            target = {"priority": priority, "code": code, "members": {}, "review": []}
+            batches.append(target)
+        target["members"].update(members)
+        target["review"] += review
+    limit = max(0, agent_settings.get("max_sessions", len(batches) + 1) - 1)
+    sessions = [SessionState(f"cluster-{index + 1}", "cluster", context, batch["members"], batch["review"], counter, settings) for index, batch in enumerate(batches[:limit])]
+    for batch in batches[limit:]:
+        for issue_id in batch["review"]:
+            by_id[issue_id].unresolved = "agent session cap reached"
     dataset_issues = {issue.id: issue for issue in issues if issue.code in dataset_codes}
     review = [issue_id for issue_id, issue in dataset_issues.items() if issue.needs_review]
     sessions.append(SessionState("dataset", "dataset", context, dataset_issues, review, counter, settings))
@@ -160,6 +197,11 @@ def run_session(state, model, settings, dataset_hash):
     else:
         goal = "review " + ", ".join(f"{issue_id} ({state.issues[issue_id].title.lower()})" for issue_id in state.review_ids)
     logger.debug(f"  [{state.key}] start: {goal}")
+    deadline = agent_settings.get("deadline")
+    if cached is None and deadline and time.time() > deadline:
+        state.failure = "audit time budget used up before the session started"
+        log_session_end(state)
+        return state
     if cached is not None:
         apply_cached(state, cached)
         logger.debug(f"  [{state.key}] reused cached decisions from an earlier run (no API call)")
@@ -278,6 +320,7 @@ def review(context, settings, model=None):
     model = model or build_model(settings)
     dataset_hash = context.dataset_hash()
     counter = CallCounter()
+    accept_anonymized(context, settings)
     sessions = build_sessions(context, counter, settings)
     workers = max(1, settings["agent"]["max_parallel_sessions"])
     clusters_count = len(sessions) - 1

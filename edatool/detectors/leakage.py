@@ -67,7 +67,7 @@ def single_feature_predicts_target(context, columns):
     }
     depth = context.value("G01", "tree_depth")
     folds = context.value("G01", "cv_folds")
-    scores = Parallel(n_jobs=-1)(
+    scores = Parallel(n_jobs=context.value("G01", "n_jobs"))(
         delayed(single_feature_score)(features[column], target, task, depth, folds) for column in columns
     )
     limit = context.value("G01", "min_r2") if context.task == "regression" else context.value("G01", "min_auc")
