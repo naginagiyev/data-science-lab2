@@ -103,6 +103,7 @@ def main():
     load_dotenv(find_dotenv(usecwd=True))
     args = build_parser().parse_args()
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     logger = logging.getLogger("edatool")
     logger.setLevel(logging.DEBUG)
     screen = logging.StreamHandler(sys.stdout)

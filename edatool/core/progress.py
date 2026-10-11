@@ -1,7 +1,53 @@
 import json
+import codecs
 import logging
 
+# ASCII replacements of the symbols of the terminal output, used when a...
+# console cannot show them (for example cp1252 on Windows)
+ascii_symbols = {"└─": "`-", "✓": "ok", "✗": "x", "·": "-", "→": "->", "─": "-", "×": "x", "…": "...", "≥": ">=", "≤": "<="}
+
+# true when an encoding can write any text (UTF-8 or UTF-16/32)
+def is_unicode(encoding):
+    try:
+        return codecs.lookup(encoding).name.startswith(("utf-8", "utf-16", "utf-32"))
+    except LookupError:
+        return False
+
+# the encoding of the first console handler (not a file) that cannot write...
+# unicode, looking at the handlers of the logger and of its parents; None if...
+# every console handler can
+def weak_encoding(logger):
+    current = logger
+    while current is not None:
+        for handler in current.handlers:
+            stream = getattr(handler, "stream", None)
+            if stream is not None and not isinstance(handler, logging.FileHandler):
+                encoding = getattr(stream, "encoding", None) or "ascii"
+                if not is_unicode(encoding):
+                    return encoding
+        current = current.parent if current.propagate else None
+    return None
+
+# makes a log message safe for an encoding: ASCII symbols first, then any...
+# other character the encoding cannot write becomes "?"
+def safe_text(text, encoding):
+    for symbol, replacement in ascii_symbols.items():
+        text = text.replace(symbol, replacement)
+    return text.encode(encoding, "replace").decode(encoding)
+
+# a filter on the edatool logger: when a console handler cannot write unicode,...
+# the message is made safe for it, so library use never raises...
+# UnicodeEncodeError in the host application's logging
+class SafeConsoleText(logging.Filter):
+    def filter(self, record):
+        encoding = weak_encoding(logging.getLogger("edatool"))
+        if encoding is not None:
+            record.msg = safe_text(record.getMessage(), encoding)
+            record.args = ()
+        return True
+
 logger = logging.getLogger("edatool")
+logger.addFilter(SafeConsoleText())
 # column widths of the terminal output
 label_width = 13
 text_width = 56

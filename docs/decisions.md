@@ -293,3 +293,15 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   scikit-learn, joblib, pydantic, python-dotenv, tabulate, matplotlib, openml, cleanlab[datalab]>=2.9,
   ydata-profiling>=4.18.4, setuptools<81); the `baselines` experiment runs with that Python and the
   project root on `PYTHONPATH`.
+
+## 2026-10-11 · P4.2 · Windows-safe edatool output
+
+- Decision: a `logging.Filter` on the `edatool` logger (`SafeConsoleText` in `edatool/core/progress.py`)
+  looks at the console handlers (not file handlers) of the logger and its parents; when one of them
+  cannot write unicode (for example cp1252), the message is made safe for that encoding: the symbols
+  `✓ ✗ · → ─ └─ × … ≥ ≤` get ASCII replacements and any other character becomes `?`. The CLI also
+  reconfigures stderr to UTF-8 with `errors="replace"` (stdout already was).
+- Reason: in library mode the host's handlers decide the encoding; the filter keeps the host's
+  logging free of `UnicodeEncodeError` (the `../II` crash). With a cp1252 console the same audit gave
+  2 logging errors without the filter and 0 with it (test `tests/testedatooloutput.py`).
+- Alternative: an ASCII-only output everywhere (loses the symbols on UTF-8 consoles).
