@@ -19,8 +19,8 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 ## P1. Foundation
 - [x] P1.1 Environment · 2026-10-11 · 6271716 · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
 - [x] P1.2 Remove v1 from the root · 2026-10-11 · 900fa72 · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
-- [x] P1.3 Core files · 2026-10-11 · (next) · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
-- [ ] P1.4 Run folder, logging, metrics
+- [x] P1.3 Core files · 2026-10-11 · f00390e · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
+- [x] P1.4 Run folder, logging, metrics · 2026-10-11 · (next) · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
 - [ ] P1.5 LLM layer
 - [ ] P1.6 Orchestrator and CLI skeleton
 
