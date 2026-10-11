@@ -5,16 +5,16 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.00 of $1.50
+- development: $0.0001 of $1.50
 - pilot: $0.00 of $2.75
-- total: $0.00 (target about $4, hard maximum $5)
+- total: $0.0001 (target about $4, hard maximum $5)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
 - [x] P0.2 Git · 2026-10-11 · 73f0f98 · git init, ignores, .gitattributes (LF), tag v1-dslab1
 - [x] P0.3 Memory files · 2026-10-11 · f701d8c · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
-- [x] P0.4 Freeze v1 · 2026-10-11 · (next) · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
-- [ ] P0.5 Check the LLM
+- [x] P0.4 Freeze v1 · 2026-10-11 · 6d8ed7f · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
+- [x] P0.5 Check the LLM · 2026-10-11 · (next) · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
 
 ## P1. Foundation
 - [ ] P1.1 Environment
@@ -123,4 +123,9 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 -
 
 ## Phase summaries
--
+- **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,
+  `docs/deviations.md`, `benchmark/legacy/v1/` (an exact copy of the v1 code),
+  `benchmark/results/spend.json`. Edited: `.gitignore` (runs, cache, parquet, catboost and AutoGluon
+  folders). Deleted: nothing. What changed: the folder is now a git repository; v1 is saved with the
+  tag `v1-dslab1` and as a frozen copy; both OpenAI models work with temperature 0 and seed 0, and
+  their prices match the plan. LLM spend so far: $0.00005.

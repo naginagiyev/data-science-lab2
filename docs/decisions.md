@@ -51,3 +51,16 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   `benchmark/results/spend.json` starts by hand in the format that `benchmark/spend.py` uses later.
 - Reason: P0.5 comes before P1.1, which builds the new environment.
 - Alternatives: move the check after P1.1 (breaks the task order).
+
+## 2026-10-11 · P0.5 · LLM availability, parameters and prices
+
+- Checked: `gpt-4.1-nano` (served as `gpt-4.1-nano-2025-04-14`) and `gpt-4.1-mini` (served as
+  `gpt-4.1-mini-2025-04-14`) both answer a strict structured-output call (`chat.completions.parse`
+  with a Pydantic model) with `temperature=0`, `seed=0` and `max_tokens`. No parameter was rejected.
+- Prices (OpenAI pricing page, standard tier, per million tokens, checked 2026-10-11):
+  `gpt-4.1-nano` input 0.10, cached input 0.025, output 0.40; `gpt-4.1-mini` input 0.40, cached
+  input 0.10, output 1.60. They equal the defaults of `buildplan.md` §2.5, so
+  `prices_per_million_tokens` stays as planned. Costs are computed without the cached-input
+  discount (an upper bound).
+- Cost of the check: 2 calls, 65 input and 9 output tokens each, $0.0000505 in total, written to
+  `benchmark/results/spend.json` (category `dev`).
