@@ -225,3 +225,22 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   on the sorted order); the time key is parsed as numbers when at least 90% parse, otherwise as dates
   (`format="mixed"`); unparseable values sort first. Group folds use `GroupKFold(shuffle=True)`
   (scikit-learn 1.9). If edatool's `presplit` fails, classification is stratified and regression random.
+
+## 2026-10-11 · P3.4 · Typing step and generic stage
+
+- Decision: `TypingStep` works only on object (text) columns; operations that produce numbers, dates
+  or pandas categories are left alone (so `as_category` must output the `category` dtype). It uses
+  pandas' own NA list (`pandas._libs.parsers.STR_NA_VALUES`, exact match, so `"?"` and `" "` stay),
+  `pd.to_numeric` for numbers (it strips spaces and reads `inf`, like `read_csv`), and turns columns of
+  only `True`/`False` spellings without missing cells into 0/1 (pandas makes them `bool`). A parity
+  test compares it with `pd.read_csv` defaults.
+- Decision: `GenericStage` is skrub's `TableVectorizer` (skrub 0.11 works with scikit-learn 1.9, so no
+  `ColumnTransformer` fallback was needed): `cardinality_threshold=31` (at most 30 levels is low),
+  `StringEncoder(n_components=30)` for high cardinality, `DatetimeEncoder(resolution="day",
+  add_weekday=True, add_total_seconds=True)`; low cardinality is an `OrdinalEncoder` (unknown -1,
+  missing NaN) for tree models and skrub's default one-hot for linear models, which also get a median
+  imputer and a standard scaler. Infinite numbers become NaN before vectorizing. skrub's own null
+  strings (for example `"?"`) become missing inside the vectorizer, exactly as in the `skrub` baseline.
+- Decision: output names are sanitized (`[ ] { } " : ,` → `_`, duplicates get `_2`, `_3`), the map to
+  the original names is kept in `name_map_`; a table with no usable column gets one constant
+  `no_features` column, so every model can still fit (it then predicts the prior or mean).
