@@ -29,8 +29,20 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P2.2 Main-environment baselines (dummy, lightgbm, skrub) · 2026-10-11 · 81f7f0e, 929e78b · all 3 score on the 4 local datasets (benchmark/results/p2-local.csv)
 - [x] P2.3 Separate environments (flaml, autogluon) · 2026-10-11 · 80be799 · flaml 2.7.0 and autogluon 1.6.3 in own uv envs (no WSL needed); both score on the 4 local datasets with 60 s
 - [x] P2.4 v1 adapter (optional, never run) · 2026-10-11 · b1d7b1c · v1 env from frozen lock (3.10); headless.py fails cleanly with a refused OPENAI_BASE_URL (slow test)
-- [-] P2.5 Optional baseline (tabpfn) · 2026-10-11 · (next) · skipped: tabpfn 9.1.0 weights are gated (license acceptance via browser login)
-- [ ] P2.6 Baseline smoke table
+- [-] P2.5 Optional baseline (tabpfn) · 2026-10-11 · efebcc4 · skipped: tabpfn 9.1.0 weights are gated (license acceptance via browser login)
+- [x] P2.6 Baseline smoke table · 2026-10-11 · (next) · 20/20 cells ok, table below (benchmark/results/p2-smoke.csv)
+
+P2.6 smoke table (4 local datasets, seed 0, 60 s budget, level 0; score and wall seconds; RMSE in price units, log-loss and RMSE lower is better):
+
+| system | ibmchurn (roc_auc) | kinghousedata (rmse) | winequality (log_loss) | creditcardfraud (roc_auc) |
+|---|---|---|---|---|
+| dummy | 0.5000 (1 s) | 345120 (1 s) | 1.1818 (1 s) | 0.5000 (1 s) |
+| lightgbm | 0.8386 (2 s) | 111720 (2 s) | 1.0082 (2 s) | 0.9384 (3 s) |
+| skrub | 0.8417 (10 s) | 109407 (9 s) | 1.1541 (9 s) | 0.7668 (9 s) |
+| flaml | 0.8506 (58 s) | 104370 (58 s) | 0.7583 (56 s) | 0.9998 (56 s) |
+| autogluon | 0.8499 (50 s) | 101097 (60 s) | 0.7824 (34 s) | 1.0000 (60 s) |
+
+Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move between runs of the same cell (AutoGluon on creditcardfraud: 0.9419 in the P2.3 check, 1.0000 here). This is why the pilot uses 2 seeds for the free systems.
 
 ## P3. v2 core without LLM (variant generic)
 - [ ] P3.1 Vendor edatool
@@ -139,3 +151,12 @@ Line format: status, task, date, commit (filled in by the next commit), note.
   Python 3.12 x86_64 environment; settings with overrides and a hash; run folders with UTF-8 logs; fixed
   metrics computed from probabilities; one LLM client with cache, retries, budgets and a global spend
   ledger; and a pipeline skeleton with a CLI. 38 fast tests pass. LLM spend so far: $0.00006.
+- **P2 (2026-10-11).** Created: `benchmark/datasets.py`, `splits.py`, `materialize.py`, `scoring.py`,
+  `runner.py`, `benchmark/systems/` (`common.py`, `dummy.py`, `lightgbm.py`, `skrub.py`, `flaml.py`,
+  `autogluon.py`, `registry.json`), `benchmark/envs/` (`install.py`, `flaml.txt`, `autogluon.txt`,
+  `tabpfn.txt`), `benchmark/legacy/v1/headless.py`, grids `p2-*.json`, results `p2-*.csv`, and tests
+  (`testharness`, `testbaselines`, `testv1adapter`). Edited: `paths.py`, `docs/decisions.md`. Deleted:
+  nothing (the TabPFN environment was created and removed). What changed: a resumable benchmark harness
+  (fixed splits, text files, subprocess systems with hard time-outs, scoring with a dummy fallback);
+  five baselines that all work on the four local datasets; a v1 adapter that is ready but never run;
+  TabPFN skipped because its weights are gated.
