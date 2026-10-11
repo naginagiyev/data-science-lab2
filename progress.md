@@ -14,10 +14,10 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 - [x] P0.2 Git · 2026-10-11 · 73f0f98 · git init, ignores, .gitattributes (LF), tag v1-dslab1
 - [x] P0.3 Memory files · 2026-10-11 · f701d8c · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
 - [x] P0.4 Freeze v1 · 2026-10-11 · 6d8ed7f · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
-- [x] P0.5 Check the LLM · 2026-10-11 · (next) · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
+- [x] P0.5 Check the LLM · 2026-10-11 · 0fa301c · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
 
 ## P1. Foundation
-- [ ] P1.1 Environment
+- [x] P1.1 Environment · 2026-10-11 · (next) · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
 - [ ] P1.2 Remove v1 from the root
 - [ ] P1.3 Core files
 - [ ] P1.4 Run folder, logging, metrics
