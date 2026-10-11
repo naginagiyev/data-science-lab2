@@ -576,3 +576,19 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   steps are added by code. Each revision is checked (failing steps repaired or dropped) and gated; at
   most `cleaner.max_refines` (2) rounds, and the gate stage deadline also stops the loop. The plan with
   the best gated score of all rounds is the final plan; `gate.json` keeps every round.
+
+## 2026-10-11 · P7.6 · Sandbox and custom operation
+
+- `tools/sandbox.py`: the AST check allows only the listed imports (pandas, numpy, re, math, datetime,
+  string, collections, itertools, functools, statistics, unicodedata), refuses the listed modules and
+  names (plus `getattr`, `setattr`, `delattr`, `vars`) and every dunder attribute (`__class__`, ...),
+  and needs exactly one class with `fit` and `transform`. The code runs with the main Python in a new
+  temporary folder with only SYSTEMROOT, PATH, TEMP, TMP, PYTHONIOENCODING and PYTHONHASHSEED (no API
+  key); data goes in and out as parquet; rows and index are checked; a time-out (60 s) kills the
+  process tree with `taskkill /T /F`. This is a safety net, not a security boundary (README, P11.2).
+- The `custom` operation keeps its training values and refits the generated code on them in the
+  sandbox at every transform, so prediction gives the same result without keeping a live process. Its
+  code is generated in the compile stage (`prompts/customop.md`), checked by the AST check and a trial
+  run (fit on 200 training rows, transform 100 other rows) whose errors go back to the LLM; a custom
+  step without valid code is dropped with a decision. It is registered in the catalog but not in the
+  17 column operations of the contract tests (it needs a sandbox per transform).

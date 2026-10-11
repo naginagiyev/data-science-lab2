@@ -5,12 +5,14 @@ from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 from schemas import Plan, Step
+from operations.custom import CLASS_NAME
 from checks.datachecks import check_steps
 from checks.gate import gate_data, run_gate
 from operations.compiler import validate_plan
 from tools.metrics import lower_is_better, oriented
 from edatool.core.patterns import pattern_stats, pattern_text
 from operations.registry import OPERATIONS, catalog_text, operation_class
+from tools.sandbox import SandboxError, allowed_imports_text, check_code, run_code
 
 # one operation of the cleaner's answer; params_json is a JSON object as text...
 # (strict structured outputs do not accept free dictionaries)
@@ -275,3 +277,54 @@ def gate_with_refine(plan, train, task, split, settings, seed, client=None, cont
             best = (candidate, result["final_score"])
         current = revised
     return best[0], results
+
+# the code answer of the custom-operation generator
+class CodeAnswer(BaseModel):
+    code: str
+
+# the instructions of one custom step for the code prompt, with value examples
+def custom_instructions(step, frame):
+    columns = step.params.get("columns", [])
+    examples = {column: frame[column].astype(str).value_counts().head(8).index.tolist() for column in columns if column in frame}
+    return (
+        f"Input columns: {columns}. Create these numeric output columns: {step.params.get('into', [])}.\n"
+        f"Instructions: {step.params.get('instructions', '')}\n"
+        f"Example values: {json.dumps(examples, ensure_ascii=False)}\n"
+        "Return only the output columns; a value that cannot be read becomes NaN."
+    )
+
+# the problems of generated code: the AST check, then a trial run in the...
+# sandbox (fit on training rows, transform other rows) that must create the...
+# output columns
+def code_problems(answer, step, frame):
+    code = answer.code.strip().removeprefix("```python").removeprefix("```").removesuffix("```")
+    problems = check_code(code, CLASS_NAME)
+    if problems:
+        return problems
+    columns = [column for column in step.params.get("columns", []) if column in frame]
+    sample = frame[columns].astype(str).reset_index(drop=True)
+    try:
+        output = run_code(code, CLASS_NAME, sample.head(200), [sample.iloc[200:300].reset_index(drop=True) if len(sample) > 200 else sample], timeout=60)[0]
+    except SandboxError as error:
+        return [str(error)]
+    missing = [name for name in step.params.get("into", []) if name not in output.columns]
+    return [f"the output has no column(s) {missing}"] if missing else []
+
+# generates the code of every custom step without code (prompts/customop.md);...
+# steps without valid code are left out; returns the plan and the decisions
+def prepare_custom_steps(plan, client, context, frame):
+    records = []
+    kept = []
+    for step in plan.steps:
+        if step.op != "custom" or step.params.get("code"):
+            kept.append(step)
+            continue
+        inputs = {"class_name": CLASS_NAME, "allowed_imports": allowed_imports_text(), "task_specific_instructions": custom_instructions(step, frame)}
+        answer = client.ask("customop", inputs, CodeAnswer, "compile", context, check=lambda answer: code_problems(answer, step, frame)) if client is not None else None
+        if answer is None:
+            records.append({"subject": "custom", "accepted": False, "reason": "no valid code for the custom step; dropped", "proposal": step.model_dump()})
+            continue
+        code = answer.code.strip().removeprefix("```python").removeprefix("```").removesuffix("```")
+        kept.append(step.model_copy(update={"params": dict(step.params, code=code), "source": "custom"}))
+        records.append({"subject": "custom", "accepted": True, "reason": "code generated and tested in the sandbox", "proposal": kept[-1].model_dump()})
+    return plan.model_copy(update={"steps": kept}), records
