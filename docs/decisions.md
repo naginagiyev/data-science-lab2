@@ -405,3 +405,15 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   `drop_columns` step with source `leakguard`.
 - Decision: with the guard off (`full-noleakguard`) only the structural drops (ids, saved index)
   remain, because ids are not leaks; the ablation then measures leaks only.
+
+## 2026-10-11 · P5.6 · Validation gate
+
+- The quick model is LightGBM (300 trees, learning rate 0.05, 31 leaves, `gate.n_jobs` = 4, a new
+  setting) behind the typing and generic stages (tree kind), on a stratified sample of at most
+  `gate.max_rows` training rows with `gate.folds` folds of the run's split strategy. The plan score is
+  the mean of the fold scores; row filters touch fold-training parts only.
+- Decision: a gated step whose removal makes the plan invalid (a later step needs its output) is not
+  tested and stays; when the stage deadline passes, the remaining steps are not tested and stay. Harmful
+  steps (effect below minus the tolerance) are removed together, the reduced plan is scored once more,
+  and it is kept when it is not worse than P0 within the tolerance; otherwise P0 is the final plan.
+- Tolerances as in the plan: ROC-AUC 0.002 absolute; log-loss and RMSE 0.5% relative to the P0 score.

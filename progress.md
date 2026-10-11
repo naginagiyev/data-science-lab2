@@ -77,8 +77,8 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 - [x] P5.2 Row and target operations · 2026-10-11 · d981c3e · row filters never transform; map_target_labels never merges classes; log_target exact inverse
 - [x] P5.3 Translator · 2026-10-11 · aab5dd7 · Appendix C default plans look right on churn, kinghousedata and wine (see decisions.md)
 - [x] P5.4 Compiler, data checks, verify integration · 2026-10-11 · 47a805b · wrong unit map -> "parse_units on Weight: 40.0% of values could not be parsed, examples: \"800 g\", ..."; verify resolves C02 after replace_values
-- [x] P5.5 Leak guard · 2026-10-11 · (next) · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
-- [ ] P5.6 Gate
+- [x] P5.5 Leak guard · 2026-10-11 · c00c5ff · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
+- [x] P5.6 Gate · 2026-10-11 · (next) · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
 - [ ] P5.7 Variant rules end to end
 
 ## P6. Benchmark data

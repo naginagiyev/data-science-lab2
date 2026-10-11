@@ -93,6 +93,7 @@ class GateSettings(Section):
     max_rows: int
     per_op: bool
     max_per_op_tests: int
+    n_jobs: int
     tolerance: dict[str, dict[str, float]]
 
 # options of the own model engine
