@@ -323,3 +323,21 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   reader turns it into a hard stop). Title rows, footer rows and a non-UTF-8 encoding are reported in
   `attrs["edatool"]` and as an A01 `file_layout` issue.
 - Check: the 4 local datasets load with the same shapes as before (creditcardfraud 5.6 s).
+
+## 2026-10-11 · P4.4 · Semantic-mess detectors
+
+- B07 numbers with units (categorical, text and id columns): at least 90% of at least 20 present
+  values match number + unit (`edatool/core/patterns.unit_of`; percent and currency are B01 cases).
+  Evidence: unit counts, share, examples; fix `convert_type {"to": "numeric", "units": [...]}`;
+  needs review when there are 2 or more units (the factors must come from the agent or the LLM).
+- B08 packed values: the top 3 digit templates (digits → `#`) cover at least 80% of the values and each
+  has at least 2 numeric slots; columns that are mostly dates are excluded. Fix `extract_pattern` with
+  a ready regex built from the top template (spaces become `\s*`) and names `<column>_1, _2, ...`.
+  `extract_pattern` was added to `FixAction`. Priority should_fix, no review.
+- B09 mixed date formats: at least 90% of the values match one of 7 date patterns and at least 2
+  formats have a share of at least 1%. For `dd/mm/yyyy` vs `mm/dd/yyyy` the values decide the order
+  when a part is above 12; otherwise the order is ambiguous and needs review. Fix
+  `convert_type {"to": "datetime", "formats": [strptime formats], "dayfirst": ...}`.
+- New hidden-missing tokens: `n.a.`, `not available`, `--`, `#N/A`, `nil`. The two agent prompts now
+  contain `{fix_actions}`, filled from `FixAction` by `session.prompt_text` (C4).
+- The 4 local datasets give no B07, B08 or B09 issue (no new false alarms).

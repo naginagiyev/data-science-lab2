@@ -3,9 +3,10 @@ import time
 import hashlib
 import smolagents
 from pathlib import Path
-from edatool.schemas import Fix
+from typing import get_args
 from edatool.paths import prompts_dir
 from smolagents.utils import AgentError
+from edatool.schemas import Fix, FixAction
 from edatool.core.enrichment import clusters
 from edatool.agent.models import build_model
 from concurrent.futures import ThreadPoolExecutor
@@ -18,9 +19,11 @@ from edatool.core.progress import detail_line, logger, plural, stage_line
 # issue codes that the dataset session reviews instead of a cluster session
 dataset_codes = {"F02"}
 
-# reads an agent prompt file
+# reads an agent prompt file; the fix vocabulary is filled in from FixAction,...
+# so the prompt and the schema can never disagree
 def prompt_text(name):
-    return (prompts_dir / f"{name}.md").read_text(encoding="utf-8")
+    text = (prompts_dir / f"{name}.md").read_text(encoding="utf-8")
+    return text.replace("{fix_actions}", ", ".join(get_args(FixAction)))
 
 # hash of the prompts and tool descriptions; it is part of the cache key and...
 # of the report meta

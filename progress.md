@@ -67,8 +67,8 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 ## P4. edatool improvements
 - [x] P4.1 Baseline numbers before changing anything · 2026-10-11 · 3bc011f · recall 0.986, precision 0.896 on 358 injected issues (same as before); baselines: ydata 0.433, old eda.py 0.317, cleanlab 0.158 recall; docs/edatool-baseline.md
 - [x] P4.2 Windows-safe output · 2026-10-11 · 3eb03e2 · SafeConsoleText filter on the edatool logger; cp1252 test: 0 logging errors (2 without the filter)
-- [x] P4.3 Loader robustness · 2026-10-11 · (next) · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
-- [ ] P4.4 Semantic-mess detectors
+- [x] P4.3 Loader robustness · 2026-10-11 · 60d2dc9 · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
+- [x] P4.4 Semantic-mess detectors · 2026-10-11 · (next) · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
 - [ ] P4.5 Policy and cost
 - [ ] P4.6 Benchmark the auditor again
 

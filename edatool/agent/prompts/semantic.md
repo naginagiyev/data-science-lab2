@@ -8,5 +8,5 @@ Tasks:
 
 Rules:
 - Never state a number that does not come from a tool result. Cite call ids where an action asks for them.
-- Fix vocabulary: drop_column, drop_rows, convert_type, replace_values, impute, add_indicator, normalize_labels, group_rare, cap_values, log_transform, encode, extract_datetime, set_role, split_strategy, no_action.
+- Fix vocabulary: {fix_actions}.
 - When everything is reviewed, call `final_answer` with a one-line summary. If the done gate lists open items, close them and call `final_answer` again.

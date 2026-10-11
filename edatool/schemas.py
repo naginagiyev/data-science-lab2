@@ -15,6 +15,7 @@ FixAction = Literal[
     "log_transform",
     "encode",
     "extract_datetime",
+    "extract_pattern",
     "set_role",
     "split_strategy",
     "no_action",
