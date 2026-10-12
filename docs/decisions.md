@@ -897,3 +897,25 @@ Findings from the decision logs of the worst cells:
   relative, labels equal, dates by their parts, fake-missing and impossible values repaired when they
   become missing; a corrupted column is matched to the best prepared column, so renamed and split
   columns count).
+
+## 2026-10-12 · P9.5 · pilot-main
+
+- Run in four chunks of at most 2 hours (resumable runner): (1) the first 100 cells (dummy,
+  lightgbm, skrub, flaml, part of autogluon); (2) autogluon, generic, rules; (3) the first 10 `full`
+  cells; (4) the other `full` and the `full+ag` cells. The 4 held-out cells are excluded by the grid's
+  `holdout` list and run last (P9.13). The previous agent session ended during chunk 2; the runner
+  process kept running and finished normally (no cell lost).
+- Spend check after the first 10 `full` runs (§4.6): mean $0.023 per run (max $0.038, 4 to 21 LLM
+  calls), below $0.06, so `pilot-ablations` and `pilot-types` keep their planned size. Experiments
+  spend at that point: $0.26 of $2.75.
+- Result: 212 cells (the 4 held-out cells excluded), 211 ok. `full` mean cost $0.026 per run;
+  `full+ag` $0.006 (its LLM answers mostly come from the cache of `full`). Experiments spend after
+  `pilot-main`: $0.83.
+- One failure: `full` on students_dropout_and_academic_success level 3 was killed at the 210 s
+  cell time-out (budget 120 s). Cause: the audit stage took 57 s (72 issues to review) and used up
+  the time before the model stage; the plan stage then still made its LLM call (55 s, 34 steps) and
+  the gate still ran (46 s) although their stage limits were already 0. This is a reliability bug of
+  the frozen system (stages do not skip their work when their limit is 0), not a harness bug, so by
+  the pre-registration it stays a failure with the dummy score; it is reported under RQ4. Recommended
+  fix before a full benchmark (not applied, it would change the frozen method): when a stage's
+  limit is 0, the LLM stages use their fallback and the gate keeps P0 without testing.

@@ -120,7 +120,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.2 Pre-registration · 2026-10-12 · dce6c06 · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
 - [x] P9.3 Smoke grid and freeze · 2026-10-12 · c3e5616 · smoke 40/40 ok (after the FLAML column-name fix); the 6 full grids pass --check; tag v2-freeze
 - [x] P9.4 E7 framer accuracy · 2026-10-12 · b76f241 · 40 datasets: rules 32/40 targets (31/40 with task), rules + mini 36/40 (35/40); $0.025
-- [ ] P9.5 pilot-main
+- [x] P9.5 pilot-main · 2026-10-12 · (next) · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
 - [ ] P9.6 pilot-leaks
 - [ ] P9.7 pilot-ablations
 - [ ] P9.8 pilot-types and E6b reading robustness
@@ -131,7 +131,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [ ] P9.13 Held-out cells
 
 ## P10. Analysis
-- [x] P10.1 analysis.py · 2026-10-12 · (next) · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
+- [x] P10.1 analysis.py · 2026-10-12 · d8b1322 · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
 - [ ] P10.2 benchmark/figures.py
 - [ ] P10.3 docs/results.md
 - [ ] P10.4 benchmark/projection.py and docs/projection.md
@@ -154,7 +154,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 ## Open problems
 - Solved in P7.9: nano's semantic name review flagged normal features as post-event leaks (stricter edatool prompt).
 - Small tables (about 1,400 rows): the gate's P1 vs P0 comparison is noisy and can keep P0 although every step helps alone (P9 pilot: watch Is-this-a-good-customer-sized datasets).
-- Full creditcardfraud (227k training rows): the generic model stage took 79 s for a 60 s budget (refit on all rows); check in P8.3 at 300 s.
+- Solved in P8.3: large-file overruns (verify sample, refit estimate, finish reserve).
+- Found in P9.5 (not fixed, frozen method): stages still do their work when their time limit is already 0, so a run with a slow audit can overrun its budget (1 time-out in 22 full runs). Fix before a full benchmark.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,
