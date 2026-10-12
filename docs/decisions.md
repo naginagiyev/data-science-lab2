@@ -859,3 +859,19 @@ Findings from the decision logs of the worst cells:
   grid cell has its files.
 - Tag `v2-freeze` after this commit. From now on, method changes are not allowed; bug fixes go to
   `docs/deviations.md` with a re-run of the affected cells.
+
+## 2026-10-12 · P9.4 · E7 framer accuracy
+
+- `benchmark/framereval.py`: 40 OpenML datasets, the 31 of the benchmark pools plus 9 OpenML-CC18
+  classification datasets (diabetes, vehicle, ilpd, qsar-biodeg, wdbc, balance-scale, breast-w,
+  dresses-sales, kc1); at most 100,000 rows. Truth: the OpenML default target; the task from the pool
+  spec (CC18: binary or multi-class by the number of classes). Each table is framed without flags,
+  by rules only and by rules + `gpt-4.1-mini` (the framer's LLM step chooses among the rules' top 5
+  candidates). The pool lists 31 OpenML datasets, not 32, so a ninth CC18 dataset (kc1) was added to
+  reach 40.
+- Result (`benchmark/results/framer.csv`): rules 32/40 targets right (31/40 target and task); rules
+  + LLM 36/40 (35/40). LLM misses: E-CommereShippingData (chose Customer_rating), miami_housing
+  (structure_quality), bank-marketing (default), credit-approval (A1, anonymous names); in these the
+  true target was not among the 5 rule candidates, so the LLM could not choose it. wine_quality: target
+  right, but the integer quality score was framed as multi-class while the pool treats it as
+  regression. Cost $0.025.

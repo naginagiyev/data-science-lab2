@@ -1,7 +1,7 @@
 {
   "totals": {
-    "dev": 0.38236440000000016,
-    "experiments": 0.0027283000000000003
+    "dev": 0.38271710000000014,
+    "experiments": 0.0273955
   },
   "calls": [
     {
@@ -4359,6 +4359,429 @@
       "input_tokens": 1163,
       "output_tokens": 120,
       "cost_usd": 0.0001643
+    },
+    {
+      "time": "2026-10-12T12:32:59+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 855,
+      "output_tokens": 61,
+      "cost_usd": 0.0004396
+    },
+    {
+      "time": "2026-10-12T12:33:00+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 875,
+      "output_tokens": 64,
+      "cost_usd": 0.0004524
+    },
+    {
+      "time": "2026-10-12T12:33:02+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1282,
+      "output_tokens": 68,
+      "cost_usd": 0.0006216000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:03+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 631,
+      "output_tokens": 62,
+      "cost_usd": 0.00035160000000000004
+    },
+    {
+      "time": "2026-10-12T12:33:04+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1380,
+      "output_tokens": 59,
+      "cost_usd": 0.0006464
+    },
+    {
+      "time": "2026-10-12T12:33:06+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 782,
+      "output_tokens": 58,
+      "cost_usd": 0.00040560000000000005
+    },
+    {
+      "time": "2026-10-12T12:33:07+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 798,
+      "output_tokens": 61,
+      "cost_usd": 0.00041680000000000005
+    },
+    {
+      "time": "2026-10-12T12:33:09+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1164,
+      "output_tokens": 56,
+      "cost_usd": 0.0005552
+    },
+    {
+      "time": "2026-10-12T12:33:10+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 685,
+      "output_tokens": 57,
+      "cost_usd": 0.0003652
+    },
+    {
+      "time": "2026-10-12T12:33:13+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1976,
+      "output_tokens": 59,
+      "cost_usd": 0.0008848
+    },
+    {
+      "time": "2026-10-12T12:33:16+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1020,
+      "output_tokens": 79,
+      "cost_usd": 0.0005344
+    },
+    {
+      "time": "2026-10-12T12:33:17+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1154,
+      "output_tokens": 60,
+      "cost_usd": 0.0005576
+    },
+    {
+      "time": "2026-10-12T12:33:18+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 856,
+      "output_tokens": 60,
+      "cost_usd": 0.00043840000000000003
+    },
+    {
+      "time": "2026-10-12T12:33:20+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 638,
+      "output_tokens": 49,
+      "cost_usd": 0.00033360000000000003
+    },
+    {
+      "time": "2026-10-12T12:33:21+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 721,
+      "output_tokens": 59,
+      "cost_usd": 0.0003828000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:22+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 772,
+      "output_tokens": 57,
+      "cost_usd": 0.0004
+    },
+    {
+      "time": "2026-10-12T12:33:24+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1288,
+      "output_tokens": 61,
+      "cost_usd": 0.0006128
+    },
+    {
+      "time": "2026-10-12T12:33:26+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 808,
+      "output_tokens": 51,
+      "cost_usd": 0.0004048000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:28+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1269,
+      "output_tokens": 65,
+      "cost_usd": 0.0006116
+    },
+    {
+      "time": "2026-10-12T12:33:31+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1551,
+      "output_tokens": 67,
+      "cost_usd": 0.0007276000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:32+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 617,
+      "output_tokens": 63,
+      "cost_usd": 0.00034760000000000005
+    },
+    {
+      "time": "2026-10-12T12:33:34+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1066,
+      "output_tokens": 65,
+      "cost_usd": 0.0005304000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:36+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 933,
+      "output_tokens": 58,
+      "cost_usd": 0.00046600000000000005
+    },
+    {
+      "time": "2026-10-12T12:33:39+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1331,
+      "output_tokens": 66,
+      "cost_usd": 0.000638
+    },
+    {
+      "time": "2026-10-12T12:33:41+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1450,
+      "output_tokens": 69,
+      "cost_usd": 0.0006904
+    },
+    {
+      "time": "2026-10-12T12:33:44+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 853,
+      "output_tokens": 61,
+      "cost_usd": 0.0004388000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:47+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 883,
+      "output_tokens": 64,
+      "cost_usd": 0.0004556
+    },
+    {
+      "time": "2026-10-12T12:33:48+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1000,
+      "output_tokens": 60,
+      "cost_usd": 0.000496
+    },
+    {
+      "time": "2026-10-12T12:33:52+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 964,
+      "output_tokens": 61,
+      "cost_usd": 0.00048320000000000004
+    },
+    {
+      "time": "2026-10-12T12:33:53+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1020,
+      "output_tokens": 62,
+      "cost_usd": 0.0005072
+    },
+    {
+      "time": "2026-10-12T12:33:54+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1136,
+      "output_tokens": 58,
+      "cost_usd": 0.0005472000000000001
+    },
+    {
+      "time": "2026-10-12T12:33:57+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1025,
+      "output_tokens": 65,
+      "cost_usd": 0.000514
+    },
+    {
+      "time": "2026-10-12T12:33:59+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2143,
+      "output_tokens": 70,
+      "cost_usd": 0.0009692
+    },
+    {
+      "time": "2026-10-12T12:34:00+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2266,
+      "output_tokens": 66,
+      "cost_usd": 0.001012
+    },
+    {
+      "time": "2026-10-12T12:34:02+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 981,
+      "output_tokens": 60,
+      "cost_usd": 0.0004884
+    },
+    {
+      "time": "2026-10-12T12:34:06+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 745,
+      "output_tokens": 58,
+      "cost_usd": 0.0003908
+    },
+    {
+      "time": "2026-10-12T12:34:10+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1230,
+      "output_tokens": 61,
+      "cost_usd": 0.0005896
+    },
+    {
+      "time": "2026-10-12T12:34:15+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 869,
+      "output_tokens": 59,
+      "cost_usd": 0.000442
+    },
+    {
+      "time": "2026-10-12T12:34:20+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2235,
+      "output_tokens": 56,
+      "cost_usd": 0.0009836
+    },
+    {
+      "time": "2026-10-12T12:34:24+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2096,
+      "output_tokens": 55,
+      "cost_usd": 0.0009264000000000001
+    },
+    {
+      "time": "2026-10-12T12:35:26+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 584,
+      "output_tokens": 59,
+      "cost_usd": 0.000328
+    },
+    {
+      "time": "2026-10-12T12:35:27+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 813,
+      "output_tokens": 62,
+      "cost_usd": 0.0004244
+    },
+    {
+      "time": "2026-10-12T12:35:28+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 867,
+      "output_tokens": 58,
+      "cost_usd": 0.0004396
+    },
+    {
+      "time": "2026-10-12T12:35:32+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1421,
+      "output_tokens": 74,
+      "cost_usd": 0.0006868
+    },
+    {
+      "time": "2026-10-12T12:35:34+00:00",
+      "category": "experiments",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1551,
+      "output_tokens": 68,
+      "cost_usd": 0.0007292
+    },
+    {
+      "time": "2026-10-12T12:36:10+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 991,
+      "output_tokens": 152,
+      "cost_usd": 0.0001599
+    },
+    {
+      "time": "2026-10-12T12:36:12+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1188,
+      "output_tokens": 185,
+      "cost_usd": 0.00019280000000000002
     }
   ]
 }
