@@ -24,25 +24,28 @@ def write_text_csv(frame, path):
     frame.to_csv(path, index=False, na_rep="", encoding="utf-8", lineterminator="\n")
 
 # returns the clean raw table of a dataset: rows with an empty target removed...
-# and the fixed sample applied (the same for every seed and level)
-def clean_table(name):
+# and the fixed sample applied (the same for every seed and level); sample_rows...
+# gives a smaller fixed sample (dev iteration)
+def clean_table(name, sample_rows=None):
     spec = dataset_spec(name)
     raw = load_dataset(name)
     raw = raw[raw[spec["target"]].str.strip() != ""].reset_index(drop=True)
-    return fixed_sample(raw, spec["target"], spec["task"], spec["sample_rows"], seed=0), spec
+    rows = min(value for value in [spec["sample_rows"], sample_rows, len(raw)] if value)
+    return fixed_sample(raw, spec["target"], spec["task"], rows, seed=0), spec
 
 # writes train.csv, test_features.csv, test_labels.csv, truth.json and...
 # cells.parquet of one dataset, level, seed and mess (mixed or one type); the...
 # mess is applied to the full table before the fixed split; the layout type...
 # changes only how the feature files are written
-def materialize(name, level, seed, overwrite=False, mess="mixed", group=None):
-    raw, spec = clean_table(name)
+def materialize(name, level, seed, overwrite=False, mess="mixed", group=None, sample_rows=None):
+    raw, spec = clean_table(name, sample_rows)
     group = group or spec["group"]
     folder = cell_dir(group, name, level, seed, mess)
     if (folder / "truth.json").exists() and not overwrite:
         return folder
     target = spec["target"]
-    train_rows, test_rows = dataset_split(name, raw, target, spec["task"], seed)
+    split_name = f"{name}-n{sample_rows}" if sample_rows else name
+    train_rows, test_rows = dataset_split(split_name, raw, target, spec["task"], seed)
     types = None if mess in {"mixed", "layout"} else [mess]
     leak = None
     if group == "D":
@@ -83,11 +86,12 @@ def main():
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--mess", default="mixed")
     parser.add_argument("--group")
+    parser.add_argument("--sample-rows", type=int)
     arguments = parser.parse_args()
     for name in arguments.datasets:
         for level in arguments.levels:
             for seed in arguments.seeds:
-                folder = materialize(name, level, seed, arguments.overwrite, arguments.mess, arguments.group)
+                folder = materialize(name, level, seed, arguments.overwrite, arguments.mess, arguments.group, arguments.sample_rows)
                 print(f"{name} level {level} seed {seed}: {folder}")
     return 0
 

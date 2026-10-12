@@ -630,3 +630,29 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   ask for a summary, and only when `report.llm_summary` is true.
 - Real nano check on the churn freecode report: the first answer failed the number check, the second
   was valid (5 sentences); cost $0.0004.
+
+## 2026-10-12 · P7.9 · Dev iteration (part 1): dev samples, semantic review, backends
+
+- **Dev samples.** The dev cells (P6.4) are full size, and the level-3 files have layout mess (title
+  rows, `;`, cp1252), so they cannot be sampled after writing. `benchmark.materialize --sample-rows N
+  --group dev5k` takes a fixed sample of the clean table first (6,250 rows, so about 5,000 training
+  rows) and then corrupts and splits it as usual; the sampled table gets its own saved split
+  (`<name>-n6250`). Grid: `benchmark/grids/p7-dev.json` (6 dev datasets x levels 0 and 3 x seed 0,
+  120 s).
+- **Semantic name review (open problem from P7.2).** Nano marked normal features (TotalCharges, a
+  packed SeniorCitizen_MonthlyCharges) as post-event leaks, and the semantic-only policy dropped them.
+  The edatool prompt `agent/prompts/semantic.md` now says that 'suspected' needs a clear
+  outcome-or-later meaning, lists value kinds that exist before the prediction (totals so far,
+  tenure, counts, balances, prices, packed or renamed columns) as 'clean', and says "when unsure,
+  choose 'clean'". The policy (`drop_semantic_only=true`) stays. Re-run on the level-3 churn sample
+  with nano: only the three id columns were dropped (before: five).
+- **Backends (`modelling/backends.py`, `modelling/backendworker.py`).** No task of §6 names them, but
+  `full+ag` and `rules+ag` are in `pilot-main`, so they are built here. The preparation (agent steps
+  + typing step, no generic stage) runs in the main process; the prepared rows go as parquet to a
+  worker in the AutoGluon or FLAML environment, which fits with the remaining model seconds minus
+  15 s (AutoGluon: medium_quality, sequential folds, 4 CPUs, as the baseline adapter) and later
+  predicts. The model folder is short (`cache/b/<token>`) because AutoGluon paths inside the long
+  run folders could pass the Windows path limit; `model.joblib` keeps the folder path. The "CV" score
+  of a backend run is the backend's own validation score. Any backend error is logged as a decision
+  and the own engine trains instead. Checked: slow tests (real FLAML and AutoGluon fit and predict)
+  and a `rules+ag` run on the level-3 churn sample (test roc_auc 0.8115).

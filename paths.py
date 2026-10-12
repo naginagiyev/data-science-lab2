@@ -26,6 +26,7 @@ benchmark_files_dir = cache_dir / "benchmark" / "files"
 benchmark_splits_dir = cache_dir / "benchmark" / "splits"
 benchmark_outputs_dir = cache_dir / "benchmark" / "outputs"
 workdirs_dir = cache_dir / "w"
+backend_models_dir = cache_dir / "b"
 logs_dir = cache_dir / "logs"
 
 benchmark_dir = root_dir / "benchmark"

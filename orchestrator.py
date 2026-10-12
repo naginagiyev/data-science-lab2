@@ -18,6 +18,7 @@ from modelling.evaluator import evaluate
 from edatool.schemas import Meta, Report
 from checks.datachecks import verify_plan
 from agents.freecoder import free_code_plan
+from modelling.backends import train_backend
 from tools.glance import glance, glance_text
 from paths import edatool_cache_dir, runs_dir
 from modelling.fittedmodel import FittedModel
@@ -477,8 +478,18 @@ def train_model(state, families=None):
     n_classes = len(encoder.classes_) if encoder is not None else None
     make_prep = lambda kind: preparation(state, kind)
     transform = targets.transform if task.task == "regression" else None
-    trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes, row_filter(plan), transform)
-    save_trials(state, trials)
+    backend = state.options["engine"] if state.options["engine"] != "own" else state.settings.backend
+    trained = None
+    if families is None and backend != "own":
+        try:
+            trained, summary = train_backend(backend, plan, features, y, task.task, task.metric, state.budget.model_seconds(), state.settings.seed, n_classes, row_filter(plan), transform)
+            decide(state, "model", "backend", backend, True, f"{backend} trained on the prepared data", "checks")
+        except Exception as error:
+            state.folder.log_error("backend", error)
+            decide(state, "model", "backend", backend, False, f"{backend} failed ({type(error).__name__}: {error}); own engine used", "checks")
+    if trained is None:
+        trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes, row_filter(plan), transform)
+        save_trials(state, trials)
     chosen = summary["chosen"]
     summary["cv_score"] = summary["ensemble_cv"] if len(chosen) == 2 else summary["cv"].get(chosen[0])
     state.context.model = summary
@@ -492,7 +503,8 @@ def train_model(state, families=None):
     cv_text = f"{summary['cv_score']:.4f}" if summary["cv_score"] is not None else "n/a"
     return f"{' + '.join(chosen)} | CV {task.metric} {cv_text}"
 
-# stage 10: the model search (own engine)
+# stage 10: the model search (own engine, or a backend on the prepared data...
+# with the own engine as its fallback)
 def stage_model(state):
     return train_model(state)
 
