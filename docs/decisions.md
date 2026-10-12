@@ -875,3 +875,25 @@ Findings from the decision logs of the worst cells:
   true target was not among the 5 rule candidates, so the LLM could not choose it. wine_quality: target
   right, but the integer quality score was framed as multi-class while the pool treats it as
   regression. Cost $0.025.
+
+## 2026-10-12 · P10.1 (written during the pilot) · Analysis, figures, projection, repair checks
+
+- `benchmark/analysis.py` follows §4.7: a failed run gets the dummy score of its cell (not removed);
+  normalized score per cell, mean over seeds then datasets; average ranks; Friedman + Nemenyi
+  critical difference (Demšar's q values at alpha 0.05); Wilcoxon with Holm over the baselines,
+  win/tie/loss counts; bootstrap intervals over datasets; reliability and cost; leak detection from
+  the run folders (`leaks.json`; structural id drops are not counted as leak drops).
+- `benchmark/figures.py` regenerates every figure (PDF and PNG) and table (CSV and Markdown) with
+  one command. Colours: the 8 categorical slots of the dataviz skill's validated reference palette in
+  a fixed system order, plus a distinct marker per system (secondary encoding); the palette validator
+  needs Node, which is not installed, so the pre-validated palette is used unchanged. Dummy is the 0
+  line of the normalized score and is not drawn.
+- `benchmark/projection.py` follows §4.10. Seed noise is measured on oriented scores scaled by the
+  seed-0 cell's (best - dummy), because the seed-1 cells contain only the free systems and would have
+  another best. `--predict` writes the held-out predictions before the held-out cells run.
+- `benchmark/repairs.py` (for P9.8): the cleaning-only check runs the `rules` variant up to the gate
+  (new run option `stop_after`; evaluation tooling, not a method change), fits the final plan's steps
+  on the training rows and scores the corrupted cells against `cells.parquet` (numbers within 1e-6
+  relative, labels equal, dates by their parts, fake-missing and impossible values repaired when they
+  become missing; a corrupted column is matched to the best prepared column, so renamed and split
+  columns count).

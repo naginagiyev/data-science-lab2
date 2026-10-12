@@ -42,7 +42,7 @@ def test_provider_failure_falls_back(tmp_path, monkeypatch):
     monkeypatch.setattr(smolagents.OpenAIModel, "generate", broken)
     monkeypatch.setattr("llms.agentmodel.spend_file", tmp_path / "spend.json")
     path = churn_file(tmp_path)
-    context = run(path, load_settings(assignments=FAST + ["gate.max_rows=400", "audit.session_seconds=20"]), "Churn", "binary-classification", variant="full", out_dir=tmp_path / "runs", console=False)
+    context = run(path, load_settings(assignments=FAST + ["gate.max_rows=400", "audit.session_seconds=20", "budget.total_seconds=25"]), "Churn", "binary-classification", variant="full", out_dir=tmp_path / "runs", console=False)
     folder = next((tmp_path / "runs").iterdir())
     for name in RUN_FILES:
         assert (folder / name).exists(), name

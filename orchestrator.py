@@ -573,7 +573,8 @@ def stage_table(state):
     return [(name, *table[name]) for name in STAGES]
 
 # runs the whole pipeline on one file and returns the RunContext; demo and...
-# benchmark use this same function
+# benchmark use this same function; options["stop_after"] ends the run after...
+# that stage (the cleaning-only repair checks stop after the gate)
 def run(data_path, settings, target=None, task=None, mode="demo", variant="full", out_dir=None, folder=None, provider=None, console=True, options=None):
     if variant not in VARIANT_OPTIONS:
         raise ValueError(f"Unknown variant '{variant}'. Choose one of: {', '.join(VARIANTS)}.")
@@ -591,6 +592,9 @@ def run(data_path, settings, target=None, task=None, mode="demo", variant="full"
         logger.info(f"Run {context.run_id} | {variant} | {mode} | budget {settings.budget.total_seconds:.0f} s")
         for name, function, fallback in stage_table(state):
             run_stage(state, name, function, fallback)
+            if name == state.objects["options"].get("stop_after"):
+                state.context.final_plan = state.context.final_plan or state.objects.get("plan")
+                return context
         logger.info(f"Done in {budget.elapsed():.1f} s | run folder: {folder.path}")
         return context
     except StopRun as error:
