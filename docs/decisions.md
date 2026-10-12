@@ -919,3 +919,11 @@ Findings from the decision logs of the worst cells:
   the pre-registration it stays a failure with the dummy score; it is reported under RQ4. Recommended
   fix before a full benchmark (not applied, it would change the frozen method): when a stage's
   limit is 0, the LLM stages use their fallback and the gate keeps P0 without testing.
+
+## 2026-10-12 · P9.6 · pilot-leaks
+
+- 25/25 ok, $0.13. Leak detection on the 5 Group D datasets: `full` dropped all 5 leak columns with no
+  other non-id column dropped (recall 1.0, precision 1.0); `rules` (no semantic review) and
+  `full-noleakguard` dropped none. Naive vs deployment: AutoGluon, LightGBM, `rules` and
+  `full-noleakguard` score almost perfectly when the leak values are present in the test file and fall
+  sharply when they are masked; `full` has the same score in both (it did not use the leak).
