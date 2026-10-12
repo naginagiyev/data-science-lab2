@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 from settings import load_settings
@@ -71,3 +72,13 @@ def test_validation_rows_never_filtered():
         assert len(fold.train_x) < 300
     mean, scores = score_plan(plan, frame, table["y"].to_numpy(), folds, "binary-classification", "roc_auc", gate_settings(), 0)
     assert len(scores) == 2 and 0.5 < mean <= 1.0
+
+# when the deadline leaves no time for single-step tests, an untested drop is...
+# left out, while other untested steps stay
+def test_untested_drop_left_out():
+    table = unit_table()
+    units = Step(op="parse_units", params={"column": "Weight", "units": [{"unit": "kg", "factor": 1}, {"unit": "g", "factor": 0.001}]})
+    plan = Plan(steps=[units, Step(op="drop_columns", params={"columns": ["other"]})])
+    final, result = run_gate(plan, table, "y", "regression", "rmse", SPLIT, gate_settings(), 0, list(table.columns), deadline=time.monotonic())
+    assert [step.op for step in final.steps] == ["parse_units"] and result["reduced_not_scored"]
+    assert {item["op"]: bool(item.get("removed")) for item in result["effects"]} == {"parse_units": False, "drop_columns": True}

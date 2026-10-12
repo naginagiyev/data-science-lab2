@@ -39,7 +39,9 @@ class MapTargetLabels(TargetOperation):
         known = set(pd.Series(labels).astype(str))
         problems = []
         for item in self.config.items:
-            if item.canonical not in known:
+            if item.value not in known:
+                problems.append(f"'{item.value}' does not occur in the target; map only values that occur (or leave out map_target_labels)")
+            elif item.canonical not in known:
                 problems.append(f"canonical label '{item.canonical}' is not an existing class")
             elif spelling_key(item.value) != spelling_key(item.canonical):
                 problems.append(f"'{item.value}' and '{item.canonical}' are different classes; classes are never merged")

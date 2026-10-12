@@ -426,9 +426,8 @@ def stage_gate(state):
         state.context.gate = {"p0": rounds[0]["p0"], "final_score": best["final_score"], "rounds": len(rounds), "accepted": best["accepted"]}
         state.folder.write_json("gate.json", {"rounds": rounds, "final_score": best["final_score"]})
         for number, result in enumerate(rounds):
-            removed = set(result["reduced"]["removed"]) if result["accepted"] else None
             for item in result["effects"]:
-                kept = result["accepted"] and item["op"] not in removed
+                kept = result["accepted"] and not item.get("removed")
                 reason = item.get("note") or ("kept" if kept else "removed by the gate")
                 subject = f"{item['op']} {item['params'].get('column', '')}".strip()
                 decide(state, "gate", "step", subject, kept, f"round {number}: {reason}", "gate", proposal={"op": item["op"], "params": item["params"]}, evidence={"effect": item["effect"], "round": number})

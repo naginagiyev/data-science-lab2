@@ -712,3 +712,43 @@ kinghousedata, ibmchurn and winequality. The dev5k test set of creditcardfraud h
 rows, so its roc_auc is noise (it moved by 0.25 between identical generic runs of iteration 1 and 2
 after the engine change); it is not used for conclusions. Is-this-a-good-customer l3 (-0.008) and
 winequality l0 (+0.0006 log_loss) are within the run-to-run noise of this small sample.
+
+## 2026-10-12 · P7.9 · Dev iteration (part 3): first `full` runs with nano
+
+`full` on the 12 dev5k cells (nano, 120 s): 12/12 ok, mean cost $0.0092 per run (total $0.11),
+7 to 26 LLM calls per run (most of them edatool agent calls).
+
+| dataset | level | metric | generic | rules | full |
+|---|---|---|---|---|---|
+| Is-this-a-good-customer | 0 | roc_auc | 0.6703 | 0.6706 | 0.6736 |
+| Is-this-a-good-customer | 3 | roc_auc | 0.6599 | 0.6518 | 0.6518 |
+| creditcardfraud | 0 | roc_auc | 0.9167 | 0.9227 | 0.9455 |
+| creditcardfraud | 3 | roc_auc | 0.7492 | 0.6979 | 0.6883 |
+| houses | 0 | rmse | 0.2318 | 0.2300 | 0.2285 |
+| houses | 3 | rmse | 0.2926 | 0.2374 | 0.2332 |
+| ibmchurn | 0 | roc_auc | 0.8391 | 0.8405 | 0.8384 |
+| ibmchurn | 3 | roc_auc | 0.8212 | 0.8350 | 0.8350 |
+| kinghousedata | 0 | rmse | 114,912 | 109,776 | 114,453 |
+| kinghousedata | 3 | rmse | 152,848 | 114,343 | 128,840 |
+| winequality | 0 | log_loss | 0.8277 | 0.8283 | 0.8478 |
+| winequality | 3 | log_loss | 0.9924 | 0.8983 | 0.9001 |
+
+Findings from the decision logs of the worst cells:
+
+- **kinghousedata l3.** The LLM plan was close to the translator plan but added `drop_columns
+  waterfront` ("almost all rows have the same value"). In `rules` the gate tested the same drop and
+  removed it (CV effect -3,856). In `full` the audit agent and the cleaner used about 20 s of the 120 s,
+  so the gate had time only for P0 and P1, and every step stayed untested. Fix (`checks/gate.py`): a
+  gated `drop_columns` that could not be tested is left out (dropping a feature is the riskiest
+  change; the model can ignore a useless column). After the deadline the reduced plan is not
+  re-scored (`reduced_not_scored` in gate.json). Also, gate decisions are now logged per step (a
+  `removed` flag on each effect) instead of per operation name, so two steps with the same operation
+  no longer share one verdict.
+- **winequality l0.** All three cleaner answers failed the checks (nano proposed
+  `map_target_labels` from "3.0" to "3", values that do not occur), so the translator plan was used;
+  the plan was the same as in `rules`, and the score gap comes from the model time (67 s vs 86 s).
+  The check now says "'3.0' does not occur in the target; map only values that occur (or leave out
+  map_target_labels)" instead of "classes are never merged".
+- **Model time.** At 120 s the LLM stages take 10 to 25 s, which the model stage of `full` does not
+  get. This is part of the comparison (same wall-clock budget for every system) and is reported, not
+  corrected.

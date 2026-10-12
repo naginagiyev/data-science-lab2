@@ -81,7 +81,8 @@ def gate_data(train, target, task, split, settings, seed):
 # deadline stops the per-step tests (untested steps stay); when the reduced...
 # plan loses and some steps were not tested, P0 plus the tested steps that did...
 # not hurt is tried as well; when the single-step tests would not fit in the...
-# time left, the steps are tested in groups of the same operation
+# time left, the steps are tested in groups of the same operation; a gated drop...
+# that could not be tested is left out
 def run_gate(plan, train, target, task, metric, split, settings, seed, columns, deadline=None):
     sample, folds, notes = gate_data(train, target, task, split, settings, seed)
     frame = sample.drop(columns=[target])
@@ -121,13 +122,27 @@ def run_gate(plan, train, target, task, metric, split, settings, seed, columns, 
             score, _ = score_plan(reduced, frame, values, folds, task, metric, settings, seed)
             effect = oriented(metric, full_score) - oriented(metric, score)
             effects += [dict(record, effect=effect, score_without=score, note=note) for record in records]
+    tested = {(item["group"], item["position"]) for item in effects if item["effect"] is not None}
+    for group, position, step in gated:
+        if step.op == "drop_columns" and (group, position) not in tested:
+            record = next((item for item in effects if (item["group"], item["position"]) == (group, position)), None)
+            if record is None:
+                record = {"group": group, "position": position, "op": step.op, "params": step.params, "effect": None}
+                effects.append(record)
+            record["note"] = "not tested (time); an untested drop is left out"
+            record["left_out"] = True
     result["effects"] = effects
-    harmful = [item for item in effects if item["effect"] is not None and item["effect"] < -tol]
+    harmful = [item for item in effects if (item["effect"] is not None and item["effect"] < -tol) or item.get("left_out")]
     reduced = plan.model_copy(deep=True)
     for item in sorted(harmful, key=lambda item: -item["position"]):
         getattr(reduced, item["group"]).pop(item["position"])
+    for item in harmful:
+        item["removed"] = True
     reduced_score, reduced_folds = (full_score, full_folds)
-    if harmful:
+    only_left_out = all(item["effect"] is None for item in harmful)
+    if harmful and only_left_out and deadline is not None and time.monotonic() > deadline:
+        result["reduced_not_scored"] = "untested drops left out after the deadline; the score is the one of P1"
+    elif harmful:
         reduced_score, reduced_folds = score_plan(reduced, frame, values, folds, task, metric, settings, seed)
     result["reduced"] = {"score": reduced_score, "folds": reduced_folds, "removed": [item["op"] for item in harmful]}
     accepted = oriented(metric, reduced_score) >= oriented(metric, base_score) - tol
@@ -146,6 +161,8 @@ def run_gate(plan, train, target, task, metric, split, settings, seed, columns, 
         if oriented(metric, safer_score) > oriented(metric, base_score):
             final, final_score, accepted = safer, safer_score, True
             result["reduced"]["removed"] = [item["op"] for item in effects if (item["group"], item["position"]) not in keep]
+            for item in effects:
+                item["removed"] = (item["group"], item["position"]) not in keep
     result.update(tolerance=tol, accepted=accepted, final_score=final_score, seconds=round(time.monotonic() - started, 2))
     final.version = plan.version + 1
     final.notes = "gate: reduced P1" if accepted else "gate: P0 (protected steps only)"
