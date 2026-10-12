@@ -927,3 +927,13 @@ Findings from the decision logs of the worst cells:
   `full-noleakguard` dropped none. Naive vs deployment: AutoGluon, LightGBM, `rules` and
   `full-noleakguard` score almost perfectly when the leak values are present in the test file and fall
   sharply when they are masked; `full` has the same score in both (it did not use the leak).
+
+## 2026-10-12 · P9.7 · pilot-ablations
+
+- 20/20 ok, $0.14. Mean normalized score at level 3 on the 4 ablation datasets (with the
+  `pilot-main` systems in the same cells): `rules` 0.995, `full-noreview` 0.991, `full-nosamples`
+  0.988, `full+ag` 0.988, `full-nogate` 0.987, `full-norepair` 0.987, `freecode` 0.986, `generic`
+  0.894, skrub 0.799, autogluon 0.784, `full` 0.746 (its time-out on students_dropout counts as the
+  dummy; on the other 3 datasets `full` is 0.991 to 1.000), lightgbm 0.673, flaml 0.631. On this
+  small sample the ablated parts change little; every v2 variant with a cleaning stage is far above
+  the systems without one.

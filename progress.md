@@ -121,8 +121,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.3 Smoke grid and freeze · 2026-10-12 · c3e5616 · smoke 40/40 ok (after the FLAML column-name fix); the 6 full grids pass --check; tag v2-freeze
 - [x] P9.4 E7 framer accuracy · 2026-10-12 · b76f241 · 40 datasets: rules 32/40 targets (31/40 with task), rules + mini 36/40 (35/40); $0.025
 - [x] P9.5 pilot-main · 2026-10-12 · 5d3d1fd · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
-- [x] P9.6 pilot-leaks · 2026-10-12 · (next) · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
-- [ ] P9.7 pilot-ablations
+- [x] P9.6 pilot-leaks · 2026-10-12 · 90b0a13 · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
+- [x] P9.7 pilot-ablations · 2026-10-12 · (next) · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
 - [ ] P9.8 pilot-types and E6b reading robustness
 - [ ] P9.9 pilot-seed
 - [ ] P9.10 pilot-natural
