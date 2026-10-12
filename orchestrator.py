@@ -149,12 +149,13 @@ def clean_rows(state, task):
             count = int(numbers.isna().sum())
             raw = raw[numbers.notna().to_numpy()].reset_index(drop=True)
             state.objects["row_notes"].append(f"{count} rows with a non-numeric regression target were removed.")
+    duplicates = 0
     if state.context.mode == "demo":
         raw, duplicates = drop_duplicate_rows(raw)
         if duplicates:
             state.objects["row_notes"].append(f"{duplicates} exact duplicate rows were removed before the split.")
             decide(state, "frame", "rows", "duplicate rows", True, f"{duplicates} exact duplicate rows removed before the split", "rules")
-    check_target(raw, task.target, task.task, state.settings.split.min_rows)
+    check_target(raw, task.target, task.task, state.settings.split.min_rows, duplicates)
     state.objects["raw"] = raw
 
 # stage 03: target, task, metric and id columns (flags win; rules, and the...

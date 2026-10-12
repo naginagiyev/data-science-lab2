@@ -51,11 +51,13 @@ def drop_duplicate_rows(raw):
     return raw[~duplicated].reset_index(drop=True), int(duplicated.sum())
 
 # the hard stops about the target: it must exist, have enough labeled rows...
-# and, for classification, at least two classes
-def check_target(raw, target, task, min_rows):
+# (the message counts the removed duplicate rows) and, for classification, at...
+# least two classes
+def check_target(raw, target, task, min_rows, duplicates=0):
     if target not in raw.columns:
         raise StopRun(f"The target column '{target}' is not in the file. Columns: {', '.join(map(str, raw.columns[:20]))}.")
     if len(raw) < min_rows:
-        raise StopRun(f"Only {len(raw)} labeled rows; at least {min_rows} are needed.")
+        removed = f" after removing {duplicates} exact duplicate rows (the features do not tell the rows apart)" if duplicates else ""
+        raise StopRun(f"Only {len(raw)} labeled rows{removed}; at least {min_rows} are needed.")
     if task != "regression" and raw[target].astype(str).str.strip().nunique() < 2:
         raise StopRun(f"The target '{target}' has only one class; classification needs at least two.")

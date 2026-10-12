@@ -106,10 +106,10 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P7.6 Sandbox and custom operation · 2026-10-11 · 0b4368b · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
 - [x] P7.7 Free-code variant · 2026-10-11 · 82f41a9 · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
 - [x] P7.8 Summary paragraph · 2026-10-11 · 55e6a8b · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
-- [x] P7.9 Dev iteration · 2026-10-12 · (next) · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
+- [x] P7.9 Dev iteration · 2026-10-12 · f8d8f91 · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
 
 ## P8. Robustness and performance
-- [ ] P8.1 Torture suite
+- [x] P8.1 Torture suite · 2026-10-12 · (next) · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
 - [ ] P8.2 Fault injection
 - [ ] P8.3 Performance
 - [ ] P8.4 Reproducibility test

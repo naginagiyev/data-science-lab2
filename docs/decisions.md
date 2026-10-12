@@ -782,3 +782,20 @@ Findings from the decision logs of the worst cells:
   run <= $0.05; on the messy level-3 files `full` >= `rules` >= `generic` (kinghousedata l3: `full` and
   `rules` equal within 0.4%), and the exceptions are written down above. Paid `full` runs: 31 of 40
   (1 semantic check, 12 + 12 nano, 6 mini). Development spend: $0.36 of $1.50.
+
+## 2026-10-12 · P8.1 and P8.2 · Torture suite and fault injection
+
+- `tests/torture.py` writes the 27 torture files of §5 at test time; `tests/testtorture.py` runs the
+  `rules` variant on each (20 s budget). The hard stops are fast tests; the files that should give a
+  model are `slow` (they run the whole pipeline, about 5 minutes together). The 1,000,000-row file is a
+  separate slow test and is measured in P8.3.
+- In demo mode exact duplicate rows are removed before the split (§3.1). A file with one column (only
+  the target), with all feature values missing, or with only constant features therefore keeps 2
+  rows, one per class, and stops. This is the correct outcome, but the message now says why: "Only 2
+  labeled rows after removing 298 exact duplicate rows (the features do not tell the rows apart); at
+  least 20 are needed." In benchmark mode no rows are removed, so the same files train a model.
+- Fault injection (`tests/testfaults.py`): one `rules` run where an operation, Optuna, the CatBoost
+  candidate and edatool verify all raise (fast test: the step is dropped, LightGBM uses its default
+  parameters, CatBoost is skipped, the verify error is in checks.json, the model predicts), and one
+  `full` run where every LLM call raises (slow test, 19 s: translator plan, template report). The
+  provider-failure paths are also covered by fast unit tests (cleaner, summary, agent model).
