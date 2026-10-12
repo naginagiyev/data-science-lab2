@@ -14,6 +14,8 @@ ORDER = [
     "map_categories", "as_category", "date_difference", "add_missing_indicator", "group_rare", "text_features", "drop_columns",
 ]
 DATE_FORMATS = {"ISO8601": "ISO8601", "mixed": "mixed"}
+MAGNITUDES = {"k": 1e3, "m": 1e6, "mn": 1e6, "b": 1e9, "bn": 1e9}
+NUMERIC_OPS = {"parse_number", "parse_units", "parse_datetime", "parse_boolean", "extract_pattern"}
 
 # one translated step; protected steps are never gated
 def step(op, params, issue, protected=False, reason=None):
@@ -25,7 +27,8 @@ def column_of(issue):
     return params.get("column") or (issue.columns[0] if len(issue.columns) == 1 else None)
 
 # unit factors from the fix parameters: a dict {unit: factor}, a list of...
-# {"unit", "factor"} pairs, or one unit without a factor (factor 1)
+# {"unit", "factor"} pairs, one unit without a factor (factor 1), or the...
+# magnitude suffixes k, M, B (with k present: M is million, not metres)
 def unit_factors(issue):
     units = (issue.fix.params if issue.fix else {}).get("units") or []
     if isinstance(units, dict):
@@ -35,6 +38,9 @@ def unit_factors(issue):
         return [{"unit": str(item["unit"]), "factor": float(item["factor"])} for item in pairs]
     if len(units) == 1:
         return [{"unit": str(units[0]), "factor": 1.0}]
+    names = {str(unit).lower() for unit in units}
+    if names <= set(MAGNITUDES) and "k" in names:
+        return [{"unit": str(unit), "factor": MAGNITUDES[str(unit).lower()]} for unit in units]
     return []
 
 # the set_missing_where parameters of D02 from the flagged values: values...
@@ -145,7 +151,8 @@ def translate_issue(issue, tokens):
 # the default plan from an edatool report (Appendix C): must_fix issues and...
 # the listed should_fix codes; dismissed and accepted issues are skipped; leaks...
 # and ids are left to the leak guard; target-changing fixes are never...
-# translated; returns the plan and the skipped issues with reasons
+# translated; group_rare is left out on columns parsed to numbers; returns the...
+# plan and the skipped issues with reasons
 def default_plan(report, target):
     tokens = {name: set(values) for name, values in load_settings()["tokens"].items() if name.startswith("boolean_")}
     steps, row_steps, target_steps, skipped = [], [], [], []
@@ -173,6 +180,10 @@ def default_plan(report, target):
         steps += columns
         row_steps += rows
         target_steps += targets
+    parsed = {item.params.get("column") for item in steps if item.op in NUMERIC_OPS}
+    for item in [item for item in steps if item.op == "group_rare" and item.params.get("column") in parsed]:
+        skipped.append({"issue": item.issues[0], "reason": "group_rare left out: the column is parsed to numbers"})
+        steps.remove(item)
     steps = sorted(steps, key=lambda item: (not item.protected, ORDER.index(item.op) if item.op in ORDER else len(ORDER)))
     unique_rows = {(item.op, json.dumps(item.params, sort_keys=True)): item for item in row_steps}
     return Plan(version=0, steps=steps, row_steps=list(unique_rows.values()), target_steps=target_steps, notes="translator"), skipped

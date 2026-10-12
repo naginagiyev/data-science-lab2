@@ -36,7 +36,7 @@
     "n_jobs": 4,
     "tolerance": {"roc_auc": {"absolute": 0.002}, "log_loss": {"relative": 0.005}, "rmse": {"relative": 0.005}}
   },
-  "engine": {"candidates": ["dummy", "linear", "lightgbm", "catboost"], "optuna": true, "ensemble": true, "n_jobs": 4, "patience_trials": 30, "max_search_rows": 50000},
+  "engine": {"candidates": ["dummy", "lightgbm", "linear", "catboost"], "optuna": true, "ensemble": true, "n_jobs": 4, "patience_trials": 30, "max_search_rows": 50000},
   "backend": "own",
   "report": {"llm_summary": true}
 }

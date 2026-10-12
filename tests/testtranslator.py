@@ -54,3 +54,26 @@ def test_policy_and_skips():
     assert plan.target_steps == []
     assert not any(step.op == "parse_units" for step in plan.steps)
     assert any("unit factors unknown" in item["reason"] for item in skipped)
+
+# mixed currency formats parse to numbers, k/M suffixes get magnitude factors,...
+# packed decimals are split (not taken for an id), and group_rare is left out...
+# on parsed columns
+def test_currency_magnitudes_and_packed():
+    rng = np.random.default_rng(1)
+    rows = 400
+    age = rng.integers(1, 52, rows)
+    bedrooms = rng.integers(100, 3000, rows)
+    frame = pd.DataFrame({
+        "Age": [f"${value}" if index % 3 else f"{value} USD" for index, value in enumerate(age)],
+        "Bedrooms": [f"{value / 1000:g}k" if index % 4 else f"{value / 1e6:g}M" for index, value in enumerate(bedrooms)],
+        "Packed": [f"L:{lat:.2f} W:{income:.4f}" for lat, income in zip(rng.uniform(32, 42, rows), rng.uniform(0.5, 15, rows))],
+        "y": rng.normal(0, 1, rows).astype(str),
+    })
+    report = audit(frame, "y", "regression", use_agent=False)
+    plan, skipped = default_plan(report, "y")
+    by_op = {(step.op, step.params.get("column")): step for step in plan.steps}
+    assert "USD" in by_op[("parse_number", "Age")].params["remove"]
+    assert {item["unit"].lower(): item["factor"] for item in by_op[("parse_units", "Bedrooms")].params["units"]} == {"k": 1e3, "m": 1e6}
+    assert ("extract_pattern", "Packed") in by_op
+    assert not any(step.op == "group_rare" for step in plan.steps)
+    assert not any(issue.code == "E03" and "Packed" in issue.columns for issue in report.issues)

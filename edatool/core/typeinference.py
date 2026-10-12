@@ -8,6 +8,10 @@ from edatool.core.sampling import sample_values
 # date formats tried in order: ISO, compact (20141013T000000), then mixed
 date_formats = ["ISO8601", "%Y%m%dT%H%M%S", "mixed"]
 
+# a decimal number inside a value: unique values with numbers like "L:34.03...
+# W:7.03" are packed measurements, not ids
+decimal_number = re.compile(r"\d\.\d")
+
 # reads one threshold value from the settings
 def value(settings, code, name):
     return settings["thresholds"][code][name]["value"]
@@ -165,6 +169,8 @@ def infer_column(name, raw, settings):
         if unique_share >= value(settings, "E05", "min_unique_share"):
             return "text", "high", typed, details
     if is_id_like(unique_share, len(present), settings):
+        if sample.str.contains(decimal_number).mean() >= 0.5:
+            return "categorical_nominal", "low", typed, details
         return "id", id_confidence(present, None, settings), typed, details
     return "categorical_nominal", "high", typed, details
 

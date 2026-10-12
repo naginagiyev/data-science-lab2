@@ -656,3 +656,30 @@ Every judgment call made while carrying out `buildplan.md`: date, decision, reas
   of a backend run is the backend's own validation score. Any backend error is logged as a decision
   and the own engine trains instead. Checked: slow tests (real FLAML and AutoGluon fit and predict)
   and a `rules+ag` run on the level-3 churn sample (test roc_auc 0.8115).
+
+## 2026-10-12 · P7.9 · Dev iteration (part 2): findings of the free variants
+
+Iteration 1 (`generic` and `rules` on the 12 dev5k cells, 120 s): all 24 runs ok. `rules` was worse
+than `generic` on houses l3 (rmse 0.412 vs 0.294), kinghousedata l3 and Is-this-a-good-customer l3;
+both were at the dummy level on creditcardfraud l3. Causes and fixes:
+
+- **Packed decimals taken for ids.** edatool typed unique packed values (`L:34.03 W:7.03`,
+  `0.65/0.23`) as `id`, so E03 and the framer marked them, and the leak guard dropped them (houses
+  lost MedianIncome). `edatool/core/typeinference.py`: a unique text column where at least half of
+  the values contain a decimal number is `categorical_nominal` (low confidence), not `id`.
+- **Mixed currency formats.** `$52` and `39 USD` in one column did not parse, so edatool saw label
+  variants. `USD`, `EUR` and `GBP` are now numeric cleaning tokens (`edatool/config/tokens.json`);
+  the column becomes B01 and the translator's `parse_number` removes them.
+- **Magnitude suffixes.** B07 with the units k and M was skipped ("two or more units"). The
+  translator now gives k = 1e3, M = 1e6, B = 1e9 when the units are only magnitude suffixes and k is
+  one of them (then M means million, not metres).
+- **group_rare on numbers written as text.** D05/E04 on a column that another step parses to
+  numbers is left out (with a skipped-issue reason).
+- **Engine time on wide text.** With packed columns, skrub's StringEncoder made one fold
+  preparation take about 10 s, so the 5-fold preparations of `linear` and the tree kind used the
+  whole 120 s and only the dummy was trained. The candidates are now dummy, lightgbm, linear,
+  catboost (trees first), and a family whose preparation kind is new is skipped when the time left
+  is less than 1.2 x the last preparation time + 2 s. creditcardfraud l3: LightGBM CV roc_auc 0.960
+  instead of the dummy.
+- The edabench deterministic results are unchanged after these edatool changes (recall 0.987,
+  precision 0.855, the post-P4 numbers).

@@ -220,6 +220,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
         full_y = target_transform.forward(full_y)
         scorer = lambda oof: oof_score(task, y_true, target_transform.inverse(oof), n_classes)
     prepared = {}
+    prep_seconds = 0.0
     results = {}
     trial_log = []
     candidates = [family for family in settings.candidates if family in {"dummy", "linear", "lightgbm", "catboost"}]
@@ -229,7 +230,12 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
         kind = prep_kind(family)
         try:
             if kind not in prepared:
+                if prepared and hard_deadline - time.monotonic() < 1.2 * prep_seconds + 2:
+                    logger.info(f"No time left to prepare the folds for {family} (the last preparation took {prep_seconds:.0f} s); skipped")
+                    continue
+                prep_start = time.monotonic()
                 prepared[kind] = prepare_folds(frame, y, folds, lambda kind=kind: make_prep(kind), row_filter)
+                prep_seconds = time.monotonic() - prep_start
             left = hard_deadline - time.monotonic()
             share = SHARES.get(family, 0.0) / max(1e-9, sum(SHARES.get(name, 0.0) for name in candidates[position:]))
             family_seconds = left * share if family != "dummy" else left
