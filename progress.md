@@ -111,8 +111,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 ## P8. Robustness and performance
 - [x] P8.1 Torture suite · 2026-10-12 · 15c1960 · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
 - [x] P8.2 Fault injection · 2026-10-12 · 8cfa0fd · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
-- [x] P8.3 Performance · 2026-10-12 · (next) · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
-- [ ] P8.4 Reproducibility test
+- [x] P8.3 Performance · 2026-10-12 · 97a2bc3 · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
+- [x] P8.4 Reproducibility test · 2026-10-12 · (next) · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
 - [ ] P8.5 Fresh-clone test
 
 ## P9. Pilot experiments (no full benchmark)
