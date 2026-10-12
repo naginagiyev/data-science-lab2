@@ -823,3 +823,6 @@ Findings from the decision logs of the worst cells:
   summary (its facts include the run id and stage times). The test turns Optuna off, because a
   time-bounded search runs a different number of trials under a different machine load; with Optuna on,
   results are reproducible only up to that.
+- Fresh clone (P8.5): `git clone` into a temporary folder, `uv sync` (exit 0), `uv run pytest -q`:
+  182 passed. The first run took 192 s (every module compiled and imported cold in the new folder);
+  the second run took 140 s, inside the 3-minute target.

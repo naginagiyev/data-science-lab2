@@ -112,8 +112,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P8.1 Torture suite · 2026-10-12 · 15c1960 · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
 - [x] P8.2 Fault injection · 2026-10-12 · 8cfa0fd · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
 - [x] P8.3 Performance · 2026-10-12 · 97a2bc3 · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
-- [x] P8.4 Reproducibility test · 2026-10-12 · (next) · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
-- [ ] P8.5 Fresh-clone test
+- [x] P8.4 Reproducibility test · 2026-10-12 · afa30fb · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
+- [x] P8.5 Fresh-clone test · 2026-10-12 · (next) · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
 
 ## P9. Pilot experiments (no full benchmark)
 - [ ] P9.1 Materialize
@@ -240,3 +240,12 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   can train on the prepared data (`full+ag`, `rules+ag`). The dev iteration fixed packed values taken
   for ids, currency codes, k/M suffixes, slow verify and engine starvation, and untested drops. With
   `gpt-4.1-mini` a `full` run costs about $0.03. LLM spend so far: $0.36 (dev).
+- **P8 (2026-10-12).** Created: `tests/torture.py`, `tests/testtorture.py`, `tests/testfaults.py`,
+  `tests/testreproducible.py`, `benchmark/performance.py`, `benchmark/results/performance.json`.
+  Edited: `orchestrator.py`, `modelling/engine.py`, `tools/reader.py`, `settings.py`,
+  `configuration/settings.json`, `paths.py`, `docs/decisions.md`. Deleted: nothing. What changed: 26
+  torture files either give a model and a report or stop with a clear message; injected faults
+  (operation, Optuna, model, verify, LLM provider) never stop a run; large files (284,807 and
+  1,000,000 rows) finish inside 300 s with at most 2.14 GB of memory, after three time fixes (verify
+  on a row sample, a refit time estimate, a reserve for the test stage); the same seed and a warm
+  cache give the same plans and scores; a fresh clone installs and passes the tests.
