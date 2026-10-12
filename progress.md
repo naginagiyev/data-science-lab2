@@ -113,10 +113,10 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P8.2 Fault injection · 2026-10-12 · 8cfa0fd · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
 - [x] P8.3 Performance · 2026-10-12 · 97a2bc3 · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
 - [x] P8.4 Reproducibility test · 2026-10-12 · afa30fb · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
-- [x] P8.5 Fresh-clone test · 2026-10-12 · (next) · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
+- [x] P8.5 Fresh-clone test · 2026-10-12 · 1d6defb · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
 
 ## P9. Pilot experiments (no full benchmark)
-- [ ] P9.1 Materialize
+- [x] P9.1 Materialize · 2026-10-12 · (next) · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
 - [ ] P9.2 Pre-registration
 - [ ] P9.3 Smoke grid and freeze
 - [ ] P9.4 E7 framer accuracy

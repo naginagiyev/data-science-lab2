@@ -254,7 +254,7 @@ def corrupt_packed(raw, first, second, rows, rng):
             return ""
         text = template.format(a=a, b=b)
         return text.replace(" ", "") if index in minority else text
-    position = list(raw.columns).index(first)
+    position = min(list(raw.columns).index(first), list(raw.columns).index(second))
     packed = [write(index) for index in raw.index]
     raw.drop(columns=[first, second], inplace=True)
     raw.insert(position, name, packed)

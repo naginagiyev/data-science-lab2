@@ -826,3 +826,16 @@ Findings from the decision logs of the worst cells:
 - Fresh clone (P8.5): `git clone` into a temporary folder, `uv sync` (exit 0), `uv run pytest -q`:
   182 passed. The first run took 192 s (every module compiled and imported cold in the new folder);
   the second run took 140 s, inside the 3-minute target.
+
+## 2026-10-12 · P9.1 · Materialize
+
+- Written (all in `cache/benchmark/files/`, about 475 MB, not in git): Group A at levels 0 to 3 and
+  seeds 0 to 2 (180 cells); the single-type files for `pilot-types` and the full `types` grid: the 10
+  mixed mess types and the layout type at level 3, seed 0, for all 15 Group A datasets (165 cells);
+  Group C at seeds 0 to 2 (15 cells); Group D at seeds 0 to 2 (30 cells). The leak type exists only
+  in Group D. `benchmark/results/files.json` lists the 390 cells with rows, mess and sha256 hashes
+  (`python -m benchmark.materialize --manifest`).
+- Bug fixed: `corrupt_packed` inserted the packed column at the old position of the first source
+  column after both were dropped, which is out of range when the second column comes first (SDSS17).
+  It now uses the smaller of the two positions. Every file written before had the second column after
+  the first (otherwise it would have failed), so no existing file changes.

@@ -3,8 +3,8 @@ import json
 import hashlib
 import argparse
 from benchmark.leaks import add_leak
-from paths import benchmark_files_dir
 from tools.metrics import primary_metric
+from paths import benchmark_files_dir, results_dir
 from benchmark.corruptor import corrupt, write_layout
 from benchmark.splits import dataset_split, fixed_sample
 from benchmark.datasets import DEV_POOL, dataset_spec, load_dataset
@@ -77,6 +77,19 @@ def materialize(name, level, seed, overwrite=False, mess="mixed", group=None, sa
     (folder / "truth.json").write_text(json.dumps(truth, indent=2) + "\n", encoding="utf-8", newline="\n")
     return folder
 
+# lists every materialized cell of the benchmark groups (A, C, D) with its...
+# rows, mess and file hashes in benchmark/results/files.json
+def write_manifest(groups=("A", "C", "D")):
+    cells = []
+    for truth_file in sorted(path for group in groups for path in (benchmark_files_dir / group).glob("*/*/*/truth.json")):
+        truth = json.loads(truth_file.read_text(encoding="utf-8"))
+        cells.append({
+            "folder": truth_file.parent.relative_to(benchmark_files_dir).as_posix(), "dataset": truth["dataset"], "group": truth["group"],
+            "level": truth["level"], "seed": truth["seed"], "mess": truth["mess_kind"], "rows": truth["rows"], "files": truth["files"],
+        })
+    (results_dir / "files.json").write_text(json.dumps(cells, indent=1) + "\n", encoding="utf-8", newline="\n")
+    return cells
+
 # command line: writes the files of the chosen datasets, levels and seeds
 def main():
     parser = argparse.ArgumentParser(description="Write benchmark files.")
@@ -87,7 +100,11 @@ def main():
     parser.add_argument("--mess", default="mixed")
     parser.add_argument("--group")
     parser.add_argument("--sample-rows", type=int)
+    parser.add_argument("--manifest", action="store_true", help="only write benchmark/results/files.json")
     arguments = parser.parse_args()
+    if arguments.manifest:
+        print(f"{len(write_manifest())} cells in the manifest")
+        return 0
     for name in arguments.datasets:
         for level in arguments.levels:
             for seed in arguments.seeds:
