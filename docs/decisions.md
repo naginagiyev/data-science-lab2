@@ -683,3 +683,32 @@ both were at the dummy level on creditcardfraud l3. Causes and fixes:
   instead of the dummy.
 - The edabench deterministic results are unchanged after these edatool changes (recall 0.987,
   precision 0.855, the post-P4 numbers).
+- **Verify time.** On creditcardfraud l3 the translator plan had 34 steps; edatool verify built one
+  snapshot per step (about 4 s each), so the compile stage took 121 s (limit 45 s) and the cell timed
+  out. Verify now checks at most `verify.max_snapshots` (6) evenly spaced snapshots (always the last
+  one); the issues of a skipped step count on the next checked snapshot. It is skipped when the
+  compile stage time is already used up. Re-run of the cell: 117 s, ok.
+
+Iteration 2 (after the fixes above), dev5k, 120 s, seed 0 (`rules` vs `generic`; lower is better
+for rmse and log_loss):
+
+| dataset | level | metric | generic | rules |
+|---|---|---|---|---|
+| Is-this-a-good-customer | 0 | roc_auc | 0.6703 | 0.6706 |
+| Is-this-a-good-customer | 3 | roc_auc | 0.6599 | 0.6518 |
+| creditcardfraud | 0 | roc_auc | 0.9167 | 0.9227 |
+| creditcardfraud | 3 | roc_auc | 0.7492 | 0.6979 |
+| houses | 0 | rmse | 0.2318 | 0.2300 |
+| houses | 3 | rmse | 0.2926 | 0.2374 |
+| ibmchurn | 0 | roc_auc | 0.8391 | 0.8405 |
+| ibmchurn | 3 | roc_auc | 0.8212 | 0.8350 |
+| kinghousedata | 0 | rmse | 114,912 | 109,776 |
+| kinghousedata | 3 | rmse | 152,848 | 114,343 |
+| winequality | 0 | log_loss | 0.8277 | 0.8283 |
+| winequality | 3 | log_loss | 0.9924 | 0.8983 |
+
+`rules` >= `generic` on 9 of 12 cells and clearly better on the messy level-3 files of houses,
+kinghousedata, ibmchurn and winequality. The dev5k test set of creditcardfraud has only 2 fraud
+rows, so its roc_auc is noise (it moved by 0.25 between identical generic runs of iteration 1 and 2
+after the engine change); it is not used for conclusions. Is-this-a-good-customer l3 (-0.008) and
+winequality l0 (+0.0006 log_loss) are within the run-to-run noise of this small sample.

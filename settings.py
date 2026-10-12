@@ -81,9 +81,10 @@ class ChecksSettings(Section):
     max_column_growth: float
     op_seconds: float
 
-# option of the edatool verify step
+# options of the edatool verify step
 class VerifySettings(Section):
     enabled: bool
+    max_snapshots: int
 
 # options of the validation gate: folds, sample size, per-operation tests...
 # and the tolerance of each metric

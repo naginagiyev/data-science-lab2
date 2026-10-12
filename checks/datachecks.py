@@ -91,14 +91,20 @@ def check_steps(plan, frame, y, folds, target, settings):
 # runs edatool verify on the output of the agent steps (before the typing and...
 # generic stages): the steps are fitted on the given training rows, the target...
 # is added back to every snapshot, and P01/P02 are ignored (expected before...
-# the generic stage); returns still-open and new must-fix issues
-def verify_plan(report, plan, frame, target_values, target, run_dir=None):
+# the generic stage); at most max_snapshots evenly spaced snapshots (always the...
+# last) are checked, and the issues of skipped steps go to the next checked...
+# snapshot; returns still-open and new must-fix issues
+def verify_plan(report, plan, frame, target_values, target, run_dir=None, max_snapshots=6):
     if not plan.steps:
         return {"skipped": "no column steps", "still_open": [], "new": [], "resolved": 0}
     agent = AgentSteps(list(plan.steps)).fit(frame)
     target_series = pd.Series(np.asarray(target_values), index=frame.index)
-    snapshots = [(name, snapshot.assign(**{target: target_series.loc[snapshot.index].to_numpy()})) for name, snapshot in agent.snapshots(frame)]
-    step_issues = {step_name(position, step): list(step.issues) for position, step in enumerate(plan.steps)}
+    kept = sorted({int(round(value)) for value in np.linspace(0, len(plan.steps) - 1, min(max_snapshots, len(plan.steps)))} | {len(plan.steps) - 1})
+    snapshots = [(name, snapshot.assign(**{target: target_series.loc[snapshot.index].to_numpy()})) for position, (name, snapshot) in enumerate(agent.snapshots(frame)) if position in kept]
+    step_issues = {}
+    for position, step in enumerate(plan.steps):
+        owner = next(index for index in kept if index >= position)
+        step_issues.setdefault(step_name(owner, plan.steps[owner]), []).extend(step.issues)
     checked = verify(report, snapshots, step_issues, run_dir=run_dir)
     relevant = [issue for issue in checked.issues if issue.priority == "must_fix" and issue.code not in IGNORED_VERIFY]
     still_open = [issue for issue in relevant if issue.status == "still_open"]

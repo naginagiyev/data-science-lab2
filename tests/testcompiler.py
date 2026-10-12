@@ -74,3 +74,16 @@ def test_verify_plan():
     plan = Plan(steps=[Step(op="replace_values", params={"column": "charge", "items": [{"value": "?", "new": None}]}, issues=[hidden[0].id])])
     result = verify_plan(report, plan, frame.drop(columns="y"), frame["y"], "y")
     assert result["resolved"] >= 1 and result["new"] == []
+
+# with fewer snapshots than steps the issues of a skipped step still count on...
+# the next checked snapshot
+def test_verify_plan_few_snapshots():
+    rng = np.random.default_rng(0)
+    frame = pd.DataFrame({"charge": [f"{value:.2f}" for value in rng.uniform(10, 90, 200)], "y": rng.choice(["a", "b"], 200)})
+    frame.loc[:9, "charge"] = "?"
+    report = audit(frame, "y", "binary-classification", use_agent=False)
+    hidden = [issue for issue in report.issues if issue.code == "C02"]
+    replace = Step(op="replace_values", params={"column": "charge", "items": [{"value": "?", "new": None}]}, issues=[hidden[0].id])
+    plan = Plan(steps=[replace, Step(op="parse_number", params={"column": "charge"})])
+    result = verify_plan(report, plan, frame.drop(columns="y"), frame["y"], "y", max_snapshots=1)
+    assert result["resolved"] >= 1 and result["new"] == []

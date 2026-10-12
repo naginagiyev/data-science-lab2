@@ -367,8 +367,9 @@ def check_data(state):
 
 # stage 08: data checks of every step on the folds of a sample; the LLM...
 # variants repair failing steps (at most max_repairs times), the others drop...
-# them; then edatool verify of the plan
+# them; then edatool verify of the plan (skipped when the stage time is used up)
 def stage_compile(state):
+    deadline = time.monotonic() + state.budget.stage_limit("compile")
     task = state.context.task
     plan = state.objects["plan"]
     frame, values, folds = check_data(state)
@@ -385,10 +386,12 @@ def stage_compile(state):
     compiled.version = plan.version + 1
     compiled.notes = "compiled: failing steps repaired or dropped"
     verification = None
-    if state.settings.verify.enabled and compiled.steps:
+    if state.settings.verify.enabled and compiled.steps and time.monotonic() >= deadline:
+        verification = {"skipped": "no time left in the compile stage"}
+    elif state.settings.verify.enabled and compiled.steps:
         train = state.objects["train"]
         try:
-            verification = verify_plan(state.objects["report"], compiled, train.drop(columns=[task.target]), train[task.target].to_numpy(), task.target, run_dir=state.folder.file("verify"))
+            verification = verify_plan(state.objects["report"], compiled, train.drop(columns=[task.target]), train[task.target].to_numpy(), task.target, run_dir=state.folder.file("verify"), max_snapshots=state.settings.verify.max_snapshots)
         except Exception as error:
             state.folder.log_error("verify", error)
             verification = {"error": f"{type(error).__name__}: {error}"}
