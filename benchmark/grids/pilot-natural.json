@@ -1,0 +1,27 @@
+{
+  "name": "pilot-natural",
+  "systems": [
+    "full",
+    "generic",
+    "autogluon",
+    "lightgbm"
+  ],
+  "datasets": [
+    "HR_Analytics_Job_Change_of_Data_Scientists",
+    "in_vehicle_coupon_recommendation",
+    "heloc"
+  ],
+  "group": "C",
+  "levels": [
+    0
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 120,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

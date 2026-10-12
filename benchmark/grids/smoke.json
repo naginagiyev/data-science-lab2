@@ -1,0 +1,32 @@
+{
+  "name": "smoke",
+  "systems": [
+    "dummy",
+    "lightgbm",
+    "skrub",
+    "flaml",
+    "autogluon",
+    "generic",
+    "rules",
+    "full",
+    "full+ag",
+    "rules+ag"
+  ],
+  "datasets": [
+    "ibmchurn",
+    "houses"
+  ],
+  "group": "dev5k",
+  "levels": [
+    0,
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 60,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments"
+  ]
+}

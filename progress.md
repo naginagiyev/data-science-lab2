@@ -116,8 +116,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P8.5 Fresh-clone test · 2026-10-12 · 1d6defb · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
 
 ## P9. Pilot experiments (no full benchmark)
-- [x] P9.1 Materialize · 2026-10-12 · (next) · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
-- [ ] P9.2 Pre-registration
+- [x] P9.1 Materialize · 2026-10-12 · df33b79 · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
+- [x] P9.2 Pre-registration · 2026-10-12 · (next) · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
 - [ ] P9.3 Smoke grid and freeze
 - [ ] P9.4 E7 framer accuracy
 - [ ] P9.5 pilot-main

@@ -1,0 +1,28 @@
+{
+  "name": "subsets",
+  "systems": [
+    "v1"
+  ],
+  "datasets": [
+    "credit-g",
+    "Bank_Customer_Churn",
+    "E-CommereShippingData",
+    "maternal_health_risk",
+    "students_dropout_and_academic_success",
+    "concrete_compressive_strength"
+  ],
+  "group": "A",
+  "levels": [
+    0,
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 300,
+  "workers": 1,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

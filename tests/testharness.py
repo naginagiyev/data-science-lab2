@@ -125,3 +125,13 @@ def test_materialize_writes_files(tmp_path, monkeypatch):
     assert "quality" not in features.columns
     assert truth["rows"] == {"train": 40, "test": 10}
     assert set(truth["files"]) == {"train.csv", "test_features.csv", "test_labels.csv"}
+
+# grids expand over mess types and budgets; held-out cells are kept apart; the...
+# pilot grids have the planned sizes
+def test_grid_expansion():
+    grid = {"systems": ["a", "b"], "datasets": ["d"], "levels": [2, 3], "seeds": [0], "budget": 60, "mess": ["units", "packed"], "budgets": [60, 300], "holdout": [{"system": "a", "dataset": "d", "level": 2}]}
+    cells = runner.expand_cells(grid)
+    assert len(cells) == 16 and {cell["mess"] for cell in cells} == {"units", "packed"} and {cell["budget"] for cell in cells} == {60, 300}
+    assert sum(runner.is_holdout(cell, grid) for cell in cells) == 4
+    sizes = {name: len(runner.expand_cells(runner.load_grid(name))) for name in ["smoke", "pilot-main", "pilot-seed", "pilot-leaks", "pilot-ablations", "pilot-natural", "pilot-budget", "main"]}
+    assert sizes == {"smoke": 40, "pilot-main": 216, "pilot-seed": 96, "pilot-leaks": 25, "pilot-ablations": 20, "pilot-natural": 12, "pilot-budget": 4, "main": 1440}
