@@ -106,7 +106,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P7.6 Sandbox and custom operation · 2026-10-11 · 0b4368b · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
 - [x] P7.7 Free-code variant · 2026-10-11 · 82f41a9 · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
 - [x] P7.8 Summary paragraph · 2026-10-11 · 55e6a8b · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
-- [ ] P7.9 Dev iteration
+- [x] P7.9 Dev iteration · 2026-10-12 · (next) · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
 
 ## P8. Robustness and performance
 - [ ] P8.1 Torture suite
@@ -152,7 +152,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [ ] S4 AutoGluon Assistant baseline
 
 ## Open problems
-- P7.9: nano's semantic name review flags normal features (tenure, TotalCharges) as post-event leaks; semantic-only drops then remove them (check prompt, policy and mini).
+- Solved in P7.9: nano's semantic name review flagged normal features as post-event leaks (stricter edatool prompt).
+- Small tables (about 1,400 rows): the gate's P1 vs P0 comparison is noisy and can keep P0 although every step helps alone (P9 pilot: watch Is-this-a-good-customer-sized datasets).
 - Full creditcardfraud (227k training rows): the generic model stage took 79 s for a 60 s budget (refit on all rows); check in P8.3 at 300 s.
 
 ## Phase summaries
@@ -221,3 +222,21 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   data exists: 31 OpenML datasets are downloaded and documented; a corruptor writes 12 kinds of
   realistic mess at 4 nested levels with exact ground truth; Group D gets one post-event leak column per
   dataset; Group C is checked for real mess; the dev pool is written at all levels and seeds.
+- **P7 (2026-10-12).** Created: `agents/cleaner.py`, `agents/freecoder.py`, `agents/summarizer.py`,
+  `tools/sandbox.py`, `operations/custom.py`, `modelling/backends.py`, `modelling/backendworker.py`,
+  prompts (`framer.md`, `cleaner.md`, `repair.md`, `refine.md`, `customop.md`, `freecode.md`,
+  `summary.md`), grids `p7-dev.json` and `p7-mini.json`, results `p7-dev.csv` and `p7-mini.csv`, and
+  tests (`testframer`, `testagentmodel`, `testcleaner`, `testrepair`, `testrefine`, `testsandbox`,
+  `testfreecode`, `testsummary`, `testbackends`). Edited: `orchestrator.py`, `settings.py`,
+  `configuration/settings.json`, `paths.py`, `agents/framer.py`, `llms/agentmodel.py`,
+  `benchmark/spend.py`, `benchmark/materialize.py`, `checks/gate.py`, `checks/datachecks.py`,
+  `modelling/engine.py`, `operations/registry.py`, `operations/target.py`, `operations/translator.py`,
+  edatool (`agent/prompts/semantic.md`, `config/tokens.json`, `core/typeinference.py`), tests
+  (`testcompiler`, `testgate`, `testtranslator`), `docs/decisions.md`. Deleted: nothing. What changed:
+  the `full` variant works end to end: the LLM frames the task, reviews the audit, writes a plan from
+  the operation catalog, repairs failing steps and refines the plan from the gate evidence; code
+  checks every answer. Generated code (custom steps and the `freecode` variant) runs only in a
+  sandbox process without the API key. Reports get a short checked LLM summary. AutoGluon and FLAML
+  can train on the prepared data (`full+ag`, `rules+ag`). The dev iteration fixed packed values taken
+  for ids, currency codes, k/M suffixes, slow verify and engine starvation, and untested drops. With
+  `gpt-4.1-mini` a `full` run costs about $0.03. LLM spend so far: $0.36 (dev).

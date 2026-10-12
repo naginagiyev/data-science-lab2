@@ -752,3 +752,33 @@ Findings from the decision logs of the worst cells:
 - **Model time.** At 120 s the LLM stages take 10 to 25 s, which the model stage of `full` does not
   get. This is part of the comparison (same wall-clock budget for every system) and is reported, not
   corrected.
+
+## 2026-10-12 · P7.9 · Dev iteration (part 4): second nano round, mini check, stop
+
+- `full` iteration 2 (nano, after the part-3 fixes; most answers from the cache, $0.007 for 12 runs):
+  12/12 ok. kinghousedata l0 109,733 (was 114,453) and l3 114,523 (was 128,840); the other cells
+  within noise of iteration 1. Without creditcardfraud (2 test positives), `full` >= `rules` on all
+  cells but kinghousedata l3, where they are equal within 0.2%.
+- Is-this-a-good-customer l3 (`generic` 0.660 vs `rules`/`full` 0.652): understood as noise. The
+  table has 1,378 training rows and about 39 test positives; the final plan of `rules` and `full` is P0
+  (only the two id columns dropped), and the dropped saved index has roc_auc 0.515 with the target,
+  so `generic` does not gain from a leak. On this small table the gate kept P0 even though every
+  single step had a positive leave-one-out effect (folds of about 460 rows make P1 vs P0 noisy).
+- **Mini check** (`gpt-4.1-mini`, grid `p7-mini.json`, results `benchmark/results/p7-mini.csv`):
+
+| dataset | level | full (mini) | full (nano) | rules | generic | LLM calls | cost (USD) |
+|---|---|---|---|---|---|---|---|
+| ibmchurn (roc_auc) | 0 | 0.8420 | 0.8422 | 0.8405 | 0.8391 | 8 | 0.0149 |
+| ibmchurn (roc_auc) | 3 | 0.8376 | 0.8375 | 0.8350 | 0.8212 | 12 | 0.0288 |
+| kinghousedata (rmse) | 0 | 109,776 | 109,733 | 109,776 | 114,912 | 13 | 0.0246 |
+| kinghousedata (rmse) | 3 | 114,749 | 114,523 | 114,343 | 152,848 | 21 | 0.0454 |
+| houses (rmse) | 0 | 0.2285 | 0.2290 | 0.2300 | 0.2318 | 11 | 0.0251 |
+| houses (rmse) | 3 | 0.2344 | 0.2343 | 0.2374 | 0.2926 | 18 | 0.0374 |
+
+- **Measured cost per `full` run:** nano $0.0092 (iteration 1, no cache); mini $0.029 mean, $0.045
+  max (target <= $0.05). Most tokens are edatool agent calls; level-3 files cost more (more issues to
+  review).
+- **Stop.** Success 100% (36 `full` runs, 48 free runs, all ok after the verify fix); mini cost per
+  run <= $0.05; on the messy level-3 files `full` >= `rules` >= `generic` (kinghousedata l3: `full` and
+  `rules` equal within 0.4%), and the exceptions are written down above. Paid `full` runs: 31 of 40
+  (1 semantic check, 12 + 12 nano, 6 mini). Development spend: $0.36 of $1.50.
