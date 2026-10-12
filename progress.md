@@ -109,8 +109,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P7.9 Dev iteration · 2026-10-12 · f8d8f91 · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
 
 ## P8. Robustness and performance
-- [x] P8.1 Torture suite · 2026-10-12 · (next) · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
-- [ ] P8.2 Fault injection
+- [x] P8.1 Torture suite · 2026-10-12 · 15c1960 · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
+- [x] P8.2 Fault injection · 2026-10-12 · (next) · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
 - [ ] P8.3 Performance
 - [ ] P8.4 Reproducibility test
 - [ ] P8.5 Fresh-clone test
