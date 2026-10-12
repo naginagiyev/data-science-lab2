@@ -839,3 +839,23 @@ Findings from the decision logs of the worst cells:
   column after both were dropped, which is out of range when the second column comes first (SDSS17).
   It now uses the smaller of the two positions. Every file written before had the second column after
   the first (otherwise it would have failed), so no existing file changes.
+
+## 2026-10-12 · P9.3 · Smoke grid and freeze
+
+- Smoke grid (2 dev5k datasets x levels 0, 3 x seed 0 x 10 systems, 60 s, `full` with nano): first
+  38/40 ok. FLAML failed on both level-3 files because LightGBM inside FLAML refuses JSON characters in
+  column names (`Unnamed: 0` from the saved-index mess type). The FLAML adapter now replaces
+  `[ ] { } " , :` in column names, the same rule as the LightGBM baseline (a user of FLAML would do
+  this first; without it FLAML would fail on every messy file for a naming detail). After the fix:
+  40/40 ok. `full` cost $0.003 for 4 runs (nano).
+- FLAML on houses l3 scored rmse 1.249 (dummy 0.565): its predictions are almost constant and 1.1
+  below the true mean. Checked: the training file reads correctly and the saved index does not predict
+  the target (Spearman -0.014). The near-unique text columns (customer_id, the packed column) become
+  categories that never occur in the test file. This is FLAML's own behaviour on messy text columns,
+  not an adapter bug, so it stays.
+- `python -m benchmark.runner --grid <name> --check`: the 6 full grids (`main`, `leaks`,
+  `ablations`, `types`, `subsets`, `budgets`) load, every cell has its files, and the first cell
+  starts (`v1` in `subsets` is not started: it calls an LLM outside the v2 spend control). Every pilot
+  grid cell has its files.
+- Tag `v2-freeze` after this commit. From now on, method changes are not allowed; bug fixes go to
+  `docs/deviations.md` with a re-run of the affected cells.

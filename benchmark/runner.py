@@ -193,8 +193,9 @@ def run_grid(name, workers=None, registry_path=None, results_folder=None, system
     return rows
 
 # checks a grid without running it: every cell has its files and a known...
-# system, and the first cell's system starts (it is stopped after `seconds`);...
-# returns a list of problems
+# system, and the first cell's system starts (it is stopped after `seconds`;...
+# systems that call an LLM outside the v2 spend control, like v1, are not...
+# started); returns a list of problems
 def check_grid(name, seconds=20, registry_path=None):
     grid = load_grid(name)
     registry = load_registry(registry_path)
@@ -205,6 +206,8 @@ def check_grid(name, seconds=20, registry_path=None):
     if problems:
         return problems
     cell = cells[0]
+    if registry[cell["system"]].get("llm") and not registry[cell["system"]].get("settings"):
+        return problems
     files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"])
     truth = json.loads((files / "truth.json").read_text(encoding="utf-8"))
     workdir = workdirs_dir / secrets.token_hex(4)

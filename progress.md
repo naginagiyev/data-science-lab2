@@ -117,8 +117,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 
 ## P9. Pilot experiments (no full benchmark)
 - [x] P9.1 Materialize · 2026-10-12 · df33b79 · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
-- [x] P9.2 Pre-registration · 2026-10-12 · (next) · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
-- [ ] P9.3 Smoke grid and freeze
+- [x] P9.2 Pre-registration · 2026-10-12 · dce6c06 · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
+- [x] P9.3 Smoke grid and freeze · 2026-10-12 · (next) · smoke 40/40 ok (after the FLAML column-name fix); the 6 full grids pass --check; tag v2-freeze
 - [ ] P9.4 E7 framer accuracy
 - [ ] P9.5 pilot-main
 - [ ] P9.6 pilot-leaks

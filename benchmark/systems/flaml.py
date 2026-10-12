@@ -1,3 +1,4 @@
+import re
 import sys
 import time
 import pandas as pd
@@ -8,11 +9,14 @@ STARTED = time.perf_counter()
 METRICS = {"roc_auc": "roc_auc", "log_loss": "log_loss", "rmse": "rmse"}
 
 # baseline FLAML: AutoML.fit with the cell budget, the fixed metric, the seed...
-# and 4 threads on pd.read_csv input
+# and 4 threads on pd.read_csv input (JSON characters in column names are...
+# replaced, as in the LightGBM baseline, because LightGBM inside FLAML refuses them)
 def fit_predict(arguments):
+    safe = lambda name: re.sub(r"[\[\]{}\",:]", "_", str(name))
     train = pd.read_csv(arguments.train)
     target = train.pop(arguments.target)
-    tests = [pd.read_csv(path)[train.columns] for path in arguments.tests]
+    tests = [pd.read_csv(path)[train.columns].rename(columns=safe) for path in arguments.tests]
+    train = train.rename(columns=safe)
     automl = AutoML()
     automl.fit(
         train, target, task="regression" if arguments.task == "regression" else "classification",
