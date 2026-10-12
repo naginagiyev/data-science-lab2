@@ -799,3 +799,27 @@ Findings from the decision logs of the worst cells:
   parameters, CatBoost is skipped, the verify error is in checks.json, the model predicts), and one
   `full` run where every LLM call raises (slow test, 19 s: translator plan, template report). The
   provider-failure paths are also covered by fast unit tests (cleaner, summary, agent model).
+
+## 2026-10-12 · P8.3 and P8.4 · Performance and reproducibility
+
+- `benchmark/performance.py` runs a file through the CLI in a subprocess and samples the resident
+  memory of the whole process tree with psutil every 0.5 s; results in
+  `benchmark/results/performance.json`.
+- First measurement (`rules`, 300 s): creditcardfraud took 375 s. Causes and fixes:
+  - edatool verify ran on all 227k training rows (99 s for a 45 s stage). Verify now uses at most
+    `verify.max_rows` (20,000) training rows.
+  - The engine searched on a 50,000-row sample but refitted on all rows without reserving the time
+    (71 s). `refit_plan` now estimates the refit from the fold preparation and the best trial, scaled
+    to all rows; when it does not fit in the time left, only the best family is refitted, and if
+    that still does not fit, it is refitted on the search sample (both logged).
+  - The model stage took all remaining time, so the test stage ran past the budget.
+    `Budget.model_seconds` keeps 4% of the total budget for the test and report stages.
+- Final measurement (300 s, wall time including interpreter start): creditcardfraud (284,807 rows)
+  286 s, peak 2.14 GB, test roc_auc 0.971; the 1,000,000-row torture file (141,957 training rows
+  after the demo-mode duplicate removal) 267 s, peak 1.35 GB. `full` was not measured: there are no
+  cached LLM answers for these files and the plan allows it only from the cache.
+- Reproducibility (`tests/testreproducible.py`): two `full` runs with the same seed and a warm LLM
+  cache give identical plans, CV scores and test scores; the second run asks the provider only for the
+  summary (its facts include the run id and stage times). The test turns Optuna off, because a
+  time-bounded search runs a different number of trials under a different machine load; with Optuna on,
+  results are reproducible only up to that.

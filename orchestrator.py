@@ -48,9 +48,11 @@ VARIANT_OPTIONS = {
     "rules+ag": dict(BASE, review=False, cleaner=False, engine="autogluon"),
 }
 VARIANTS = list(VARIANT_OPTIONS)
+FINISH_SHARE = 0.04
 
 # the time budget of one run: a deadline for the whole run and a limit per...
-# stage; the model stage gets everything that is left, at least min_model_seconds
+# stage; the model stage gets everything that is left except a small reserve...
+# for the test and report stages, at least min_model_seconds
 class Budget:
     def __init__(self, total_seconds, stage_seconds, min_model_seconds):
         self.start = time.monotonic()
@@ -69,7 +71,7 @@ class Budget:
         return min(self.stage_seconds.get(name, available), available)
 
     def model_seconds(self):
-        return max(self.remaining(), self.min_model_seconds)
+        return max(self.remaining() - FINISH_SHARE * self.total_seconds, self.min_model_seconds)
 
 # everything one run needs: settings, run folder, context, budget, LLM client,...
 # variant options and the objects that stages hand to each other
@@ -368,7 +370,8 @@ def check_data(state):
 
 # stage 08: data checks of every step on the folds of a sample; the LLM...
 # variants repair failing steps (at most max_repairs times), the others drop...
-# them; then edatool verify of the plan (skipped when the stage time is used up)
+# them; then edatool verify of the plan on at most verify.max_rows training rows...
+# (skipped when the stage time is used up)
 def stage_compile(state):
     deadline = time.monotonic() + state.budget.stage_limit("compile")
     task = state.context.task
@@ -391,6 +394,8 @@ def stage_compile(state):
         verification = {"skipped": "no time left in the compile stage"}
     elif state.settings.verify.enabled and compiled.steps:
         train = state.objects["train"]
+        if len(train) > state.settings.verify.max_rows:
+            train = train.sample(state.settings.verify.max_rows, random_state=state.settings.seed)
         try:
             verification = verify_plan(state.objects["report"], compiled, train.drop(columns=[task.target]), train[task.target].to_numpy(), task.target, run_dir=state.folder.file("verify"), max_snapshots=state.settings.verify.max_snapshots)
         except Exception as error:

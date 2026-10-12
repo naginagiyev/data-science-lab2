@@ -26,7 +26,7 @@
   "leakage": {"drop_semantic_only": true},
   "cleaner": {"enabled": true, "show_values": true, "max_values_per_column": 15, "max_repairs": 3, "max_refines": 2},
   "checks": {"max_parse_failure": 0.05, "max_column_growth": 10, "op_seconds": 30},
-  "verify": {"enabled": true, "max_snapshots": 6},
+  "verify": {"enabled": true, "max_snapshots": 6, "max_rows": 20000},
   "gate": {
     "enabled": true,
     "folds": 3,

@@ -202,6 +202,23 @@ def search_sample(frame, y, folds, task, max_rows, seed):
     logger.info(f"Search on a sample of {max_rows} of {len(frame)} rows; the refit uses all rows")
     return frame.iloc[chosen], y[chosen], [fold for fold in sample_folds if fold]
 
+# the refit within the run's end: the refit time of a family is estimated from...
+# its fold preparation and its best trial, scaled to all rows; when the...
+# estimate does not fit, only the best family is refitted, and if that still...
+# does not fit, it is refitted on the search sample
+def refit_plan(chosen, results, prep_times, frame, y, full_frame, full_y, n_folds, end):
+    fold_rows = max(1.0, len(frame) * (1 - 1 / max(2, n_folds)))
+    scale = len(full_frame) / fold_rows
+    estimate = lambda family: 1.2 * scale * (prep_times.get(prep_kind(family), 0.0) + results[family].get("seconds", 0.0)) / max(1, n_folds) if family in results else 0.0
+    left = end - time.monotonic()
+    if len(chosen) == 2 and sum(estimate(family) for family in chosen) > left:
+        logger.info(f"The refit of {' + '.join(chosen)} would not fit in {left:.0f} s; only {chosen[0]} is refitted")
+        chosen = chosen[:1]
+    if len(full_frame) > len(frame) and estimate(chosen[0]) > left:
+        logger.info(f"The refit on all {len(full_frame)} rows would take about {estimate(chosen[0]):.0f} s ({left:.0f} s left); the refit uses the search sample of {len(frame)} rows")
+        return chosen, frame, y
+    return chosen, full_frame, full_y
+
 # the model stage: cross-validated search of every candidate family under the...
 # time budget, an average of the best two families when it beats the best one,...
 # and a refit on all training rows; the dummy model always exists; with a...
@@ -221,6 +238,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
         scorer = lambda oof: oof_score(task, y_true, target_transform.inverse(oof), n_classes)
     prepared = {}
     prep_seconds = 0.0
+    prep_times = {}
     results = {}
     trial_log = []
     candidates = [family for family in settings.candidates if family in {"dummy", "linear", "lightgbm", "catboost"}]
@@ -236,6 +254,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
                 prep_start = time.monotonic()
                 prepared[kind] = prepare_folds(frame, y, folds, lambda kind=kind: make_prep(kind), row_filter)
                 prep_seconds = time.monotonic() - prep_start
+                prep_times[kind] = prep_seconds
             left = hard_deadline - time.monotonic()
             share = SHARES.get(family, 0.0) / max(1e-9, sum(SHARES.get(name, 0.0) for name in candidates[position:]))
             family_seconds = left * share if family != "dummy" else left
@@ -245,6 +264,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
             best, log = search_family(family, task, metric, prepared[kind], y, n_classes, seed, settings, family_seconds, hard_deadline, scorer)
             trial_log += log
             if "params" in best:
+                best["seconds"] = next((entry["seconds"] for entry in log if entry["trial"] == best.get("trial")), 0.0)
                 results[family] = best
                 logger.info(f"{family}: CV {metric} {best['raw_score']:.5f} ({len(log)} trials)")
         except Exception as error:
@@ -257,10 +277,11 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
         ensemble_score = scorer(average) if scorer is not None else oof_score(task, y, average, n_classes)
         if oriented(metric, ensemble_score) > results[ranked[0]]["score"]:
             chosen = ranked[:2]
+    chosen, refit_frame, refit_y = refit_plan(chosen, results, prep_times, frame, y, full_frame, full_y, len(folds), start + seconds)
     members = []
     for family in chosen:
         try:
-            members.append((family, *refit(family, task, results[family], full_frame, full_y, make_prep, seed, settings.n_jobs, row_filter)))
+            members.append((family, *refit(family, task, results[family], refit_frame, refit_y, make_prep, seed, settings.n_jobs, row_filter)))
         except Exception as error:
             logger.warning(f"Refit of {family} failed: {type(error).__name__}: {error}")
     if not members:

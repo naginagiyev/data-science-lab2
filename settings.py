@@ -85,6 +85,7 @@ class ChecksSettings(Section):
 class VerifySettings(Section):
     enabled: bool
     max_snapshots: int
+    max_rows: int
 
 # options of the validation gate: folds, sample size, per-operation tests...
 # and the tolerance of each metric
