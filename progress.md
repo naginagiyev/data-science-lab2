@@ -5,9 +5,9 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.0421 of $1.50
-- pilot: $0.00 of $2.75
-- total: $0.0421 (target about $4, hard maximum $5)
+- development: $0.39 of $1.50
+- pilot: $1.62 of $2.75
+- total: $2.01 (target about $4, hard maximum $5; final, 2026-10-14)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
@@ -142,14 +142,71 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P11.3 Demo · 2026-10-14 · 0e68aaf · benchmark/showcase.py; real run in docs/showcase.md: concrete level 3, rmse autogluon 12.93, full 4.11, full+ag 4.20
 
 ## P12. Final quality check and handover
-- [ ] P12.1 Checks · in progress (2026-10-14): DONE full suite incl. slow (216 passed, 0 failed, 18.6 min, at 0e68aaf); DONE secret scan (no key-shaped string in files or history; .env ignored, untracked); TODO reproduce --grid smoke, git status clean
-- [ ] P12.2 Handover
+- [x] P12.1 Checks · 2026-10-14 · dc3a41c · full suite incl. slow 216 passed (18.6 min); secret scan clean (files and history); reproduce --grid smoke works (40 finished cells skipped); style test passes; git status clean
+- [x] P12.2 Handover · 2026-10-14 · (this commit) · handover section below
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)
 - [ ] S3 Full grids (only if the user asks)
 - [ ] S4 AutoGluon Assistant baseline
+
+## Handover (2026-10-14)
+
+**What was built.** Agentic AutoML v2: a 12-stage pipeline in which the LLM chooses and sets up tested
+cleaning operations and code checks every step (data checks, edatool verify, a cross-validation gate).
+Variants `generic`, `rules`, `full`, `full+ag`, `rules+ag`, `freecode` and five ablations; an own
+engine and AutoGluon/FLAML backends; a sandbox for generated code; run folders with every decision,
+LLM call and cost; the improved auditor edatool (vendored) and its benchmark. A messy-table benchmark
+with ground truth: 15 Group A datasets, 12 mess types, 4 levels, natural mess (Group C), a leakage set
+(Group D), five baselines, a resumable runner, analysis, figures, a projection and one-command
+reproduction. 216 tests pass (fast suite about 2.5 minutes).
+
+**Pilot results** (`docs/results.md`; 8 datasets, one seed for the LLM systems, 120 s per run, a small
+sample):
+- Messy files (levels 2 and 3): `full` is ahead of every baseline in 11 to 15 of 16 cells; Wilcoxon
+  over the 16 cells, Holm-corrected: vs AutoGluon p = 0.029, vs skrub 0.019, vs LightGBM 0.017.
+  The 16 cells come from only 8 datasets, so they are not independent; the bootstrap interval over
+  datasets of `full` vs AutoGluon at levels 2 and 3 is [-0.13, 0.33] (it crosses 0).
+- `full+ag` vs AutoGluon (plug-in) at levels 2 and 3: mean +0.126 normalized, interval [0.02, 0.30].
+- `rules` (no LLM) is as good as `full` on these files (mean normalized 0.986 at level 3).
+- Clean files (level 0): `full` vs `generic` -0.033 (outside the pre-registered 0.02 margin; no harm
+  is not shown).
+- Leaks: `full` found 5 of 5 leak columns with no false drop; AutoGluon and LightGBM look almost
+  perfect with the leak and fall sharply when it is masked.
+- Natural mess (Group C, 3 datasets): no gain (all systems within 0.006).
+- Reliability: `full` 23 of 24 runs in `pilot-main` (one time-out); repair accuracy of the cleaning
+  stage from 0.99 (booleans) to 0.54 (units) and 0.00 (impossible values); reading robustness: v2
+  reads 12 of 15 layout files, the CSV-based baselines 0 of 15; framer 36 of 40 targets right with
+  the LLM (32 with rules).
+
+**Projection** (`docs/projection.md`): power of the full benchmark (15 datasets x 3 seeds) for
+`full` vs AutoGluon 0.28, vs skrub 0.79, vs LightGBM 0.61, `full+ag` vs AutoGluon 0.68; held-out
+check 3 of 4 inside (reliable); budget order the same at 120 s and 300 s. Recommendation: the full
+benchmark is not worth running yet for RQ1 as it is; first fix the two weaknesses below, then run a
+reduced benchmark (`leaks`, the plug-in comparison) or more datasets.
+
+**LLM spend:** $2.01 of the $5 cap (development $0.39, experiments $1.62).
+
+**What failed or was skipped, and why.**
+- Two weaknesses of the frozen system, kept as failures by the pre-registration: stages still do their
+  work when their time limit is already used up (2 time-outs of `full`), and a regression target with
+  decimal commas (layout files) is not converted (3 reading failures).
+- TabPFN skipped (weights gated); v1 and AIDE never run (the plan forbids it; no AIDE adapter); the
+  full grids written and checked but not run (the plan leaves them to the user).
+- Harness bugs found and fixed during the pilot are in `docs/deviations.md`.
+
+**Limitations.** A small pilot (8 datasets, one seed for the LLM systems, 120 s on an emulated x86
+laptop); the controlled mess comes from our own corruptor; the gate is noisy on small tables;
+the sandbox is a safety net, not a security boundary.
+
+**Plan for the thesis semester.** Fix the two weaknesses (enforce stage limits; decimal commas in
+the target) and log them as deviations; re-run the affected pilot cells; then run `leaks` and a
+reduced `main` (all 15 datasets, 3 seeds, levels 0 and 3) on a stronger machine with 300 s;
+re-check the projection; add AIDE if time allows; write the thesis from the generated results.
+
+**Files of the last phase (P12).** Created: none. Edited: `progress.md`,
+`benchmark/results/spend.json`. Deleted: none.
 
 ## Open problems
 - Solved in P7.9: nano's semantic name review flagged normal features as post-event leaks (stricter edatool prompt).
@@ -274,3 +331,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   figure, table and result document; the projection says the full benchmark is not worth running
   yet for RQ1 (power 0.28 for full vs autogluon), with a held-out check of 3/4 and a stable budget
   order; a new reader can install, run the demo and reproduce a grid from the README.
+- **P12 (2026-10-14).** Created: nothing. Edited: `progress.md` (checks, handover, final spend),
+  `benchmark/results/spend.json`. Deleted: nothing. What changed: the full test suite with the slow
+  tests passes (216 tests), the secret scan is clean, the one-command reproduction works, and the
+  handover above sums up the project.
