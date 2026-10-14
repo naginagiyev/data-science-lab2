@@ -125,8 +125,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.7 pilot-ablations · 2026-10-12 · e8f6849 · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
 - [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · 1575c26 · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
 - [x] P9.9 pilot-seed · 2026-10-14 · 9be559d · 96/96 ok (free systems, seed 1); paused and resumed without loss
-- [x] P9.10 pilot-natural · 2026-10-14 · (next) · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
-- [ ] P9.11 pilot-budget
+- [x] P9.10 pilot-natural · 2026-10-14 · 65d417a · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
+- [x] P9.11 pilot-budget · 2026-10-14 · (next) · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
 - [ ] P9.12 E8 audit benchmark (final)
 - [ ] P9.13 Held-out cells
 
