@@ -139,10 +139,10 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 ## P11. Documentation and demo
 - [x] P11.1 Code quality pass · 2026-10-14 · a32b032 · one dead function removed, two wired (leak table CLI, optional-stop rule in the runner); ruff F clean; tests pass
 - [x] P11.2 Documentation · 2026-10-14 · 7cd1bed · README (install, quick start, CLI, variants, sandbox limits, reproduction with time and cost, folder map), docs/architecture.md, benchmark/reproduce.py
-- [x] P11.3 Demo · 2026-10-14 · (next) · benchmark/showcase.py; real run in docs/showcase.md: concrete level 3, rmse autogluon 12.93, full 4.11, full+ag 4.20
+- [x] P11.3 Demo · 2026-10-14 · 0e68aaf · benchmark/showcase.py; real run in docs/showcase.md: concrete level 3, rmse autogluon 12.93, full 4.11, full+ag 4.20
 
 ## P12. Final quality check and handover
-- [ ] P12.1 Checks
+- [ ] P12.1 Checks · in progress (2026-10-14): DONE full suite incl. slow (216 passed, 0 failed, 18.6 min, at 0e68aaf); DONE secret scan (no key-shaped string in files or history; .env ignored, untracked); TODO reproduce --grid smoke, git status clean
 - [ ] P12.2 Handover
 
 ## Stretch goals (only after P12)
@@ -264,3 +264,13 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   findings: `full` found every leak; the cleaning variants beat AutoGluon on the messy level-3 files;
   no gain on naturally messy files; two weaknesses of the frozen system (time limits not enforced once
   the budget is used up; decimal commas in a regression target). Experiments spend: $1.61 of $2.75.
+- **P10 and P11 (2026-10-14).** Created: `benchmark/analysis.py`, `benchmark/figures.py`,
+  `benchmark/resultsdoc.py`, `benchmark/projection.py`, `benchmark/repairs.py`,
+  `benchmark/reproduce.py`, `benchmark/showcase.py`, `docs/results.md`, `docs/projection.md`,
+  `docs/architecture.md`, `docs/showcase.md`, `benchmark/results/figures/`, `benchmark/results/tables/`,
+  tests (`testanalysis`, `testprojection`, `testrepairs`). Edited: `README.md` (rewritten for v2),
+  `orchestrator.py` (stop_after option), `benchmark/runner.py`, `benchmark/leaks.py`,
+  `modelling/cv.py`. Deleted: the unused `cross_val_oof`. What changed: one command regenerates every
+  figure, table and result document; the projection says the full benchmark is not worth running
+  yet for RQ1 (power 0.28 for full vs autogluon), with a held-out check of 3/4 and a stable budget
+  order; a new reader can install, run the demo and reproduce a grid from the README.
