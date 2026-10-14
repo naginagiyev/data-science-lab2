@@ -137,8 +137,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P10.4 projection · 2026-10-14 · 2b1b0f5 · docs/projection.md generated: power 0.28 (full vs autogluon), 0.79 (vs skrub), 0.68 (full+ag vs autogluon); held-out 3/4; budget order stable; recommendation: not worth running the full benchmark yet
 
 ## P11. Documentation and demo
-- [x] P11.1 Code quality pass · 2026-10-14 · (next) · one dead function removed, two wired (leak table CLI, optional-stop rule in the runner); ruff F clean; tests pass
-- [ ] P11.2 Documentation
+- [x] P11.1 Code quality pass · 2026-10-14 · a32b032 · one dead function removed, two wired (leak table CLI, optional-stop rule in the runner); ruff F clean; tests pass
+- [x] P11.2 Documentation · 2026-10-14 · (next) · README (install, quick start, CLI, variants, sandbox limits, reproduction with time and cost, folder map), docs/architecture.md, benchmark/reproduce.py
 - [ ] P11.3 Demo
 
 ## P12. Final quality check and handover

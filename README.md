@@ -1,140 +1,133 @@
-# Agentic AutoML
+# Agentic AutoML v2
 
-An agentic machine learning automation tool. You give it a training dataset, and it handles the rest — from analysis to a tuned model.
+AutoML for messy tables. Real tables hold numbers written as text with units, dates as text, many
+spellings of one category, hidden missing values, id columns and leaky columns. v2 lets an LLM
+**choose and set up tested cleaning operations**, and lets **code check every step**: data checks,
+issue-level verification with the auditor `edatool`, and a cross-validation gate that keeps only
+steps that do not hurt. The model is trained by an own engine (LightGBM, CatBoost, linear, with
+Optuna) or, as a plug-in, by AutoGluon or FLAML.
 
----
+This repository also holds the messy-table benchmark used to test it (controlled mess with ground
+truth, natural mess, a leakage set) and the results of a pilot study. The build plan is
+`buildplan.md`; the work log is `progress.md`; every judgment call is in `docs/decisions.md`.
 
-## What It Does
+## Install
 
-This tool runs a full machine learning pipeline with no input from you other than the dataset path:
-
-1. **Detects the target column** and the task type
-2. **Analyzes the dataset** with exploratory data analysis (EDA)
-3. **Fills the project configuration** (metric, minimum score, etc.) from the EDA report
-4. **Plans and runs preprocessing** — cleaning, encoding, scaling
-5. **Splits the data** into training and test sets
-6. **Trains a model** using an AI-generated training plan
-7. **Tunes the model** for better performance
-
-It supports **binary classification**, **multi-class classification** and **regression** tasks.
-
----
-
-## How to Run
-
-```bash
-uv run main.py
-```
-
-You will be asked to provide the path to your training dataset. After that, the tool decides everything automatically.
-
----
-
-## Environment Variables
-
-Create a `.env` file in the project root with the following key:
+Windows, macOS or Linux with [uv](https://docs.astral.sh/uv/). The project uses Python 3.12
+(x86_64 on Windows on ARM, see `.python-version`).
 
 ```
-OPENAI_API_KEY=your_openai_key
-```
-
----
-
-## Project Structure
-
-```
-agentic-automl/
-├── main.py               # Entry point
-├── agents/               # AI agents for each pipeline step
-├── tools/                # Helper tools (EDA, data split, metrics, etc.)
-├── prompts/              # Prompt templates for the agents
-├── llms/                 # LLM integration
-├── configuration/        # Key project configurations
-├── sandbox/              # Workspace for agents and tools
-└── models/               # Trained model artifacts
-```
-
-### LLM modules (`llms/`)
-
-| File | Role |
-|------|------|
-| `generation.py` | Planning, reasoning, and structured extraction via the OpenAI Chat API |
-| `codex.py` | Code generation and repair |
-
-Both read system prompts from `prompts/` and use API keys from your environment (see **Environment Variables**).
-
-### Agents (`agents/`)
-
-| File | Role |
-|------|------|
-| `targetdetector.py` | Detects the target column of the dataset |
-| `configfiller.py` | Fills the project configuration from the EDA report |
-| `planner.py` | Builds preprocessing and training plans |
-| `processoragent.py` | Generates and runs preprocessing code (with fix loops) |
-| `trainagent.py` | Generates and runs training code (with fix loops) |
-| `evaluationagent.py` | Scores the model and tuning loops |
-
-### Tools (`tools/`)
-
-These scripts do **not** call the LLM; they run fixed steps the pipeline depends on.
-
-| File | Role |
-|------|------|
-| `eda.py` | Exploratory data analysis report |
-| `datasplitter.py` | Train / validation / test split |
-| `coderunner.py` | Runs generated scripts as subprocesses |
-| `datareader.py` | Loads CSV/TSV and basic checks |
-| `metrics.py` | Maps metric names to scikit-learn scores |
-
-### Prompts (`prompts/`)
-
-Markdown files used as system or task prompts:
-
-| File | Used for |
-|------|----------|
-| `targetdetector.md` | Target column detection |
-| `configfiller.md` | Filling configuration from EDA |
-| `processingplanprompt.md` | Preprocessing plan |
-| `trainplanprompt.md` | Training plan |
-| `codexcodeprompt.md` | Code generation |
-| `codexfixprompt.md` | Code repair |
-| `processorreasoningprompt.md` | Preprocessing fix-loop reasoning |
-| `trainreasoningprompt.md` | Training fix-loop reasoning |
-| `evaluationprompt.md` | Hyperparameter tuning suggestions |
-
-### Other configuration (`configuration/`)
-
-| File | Role |
-|------|------|
-| `constants.json` | Split ratios, tuning limits, paths |
-| `metrics.json` | Allowed metric names per task type |
-| `modeloptions.md` | Model shortlist for the planner |
-| `edaconfig.py` | EDA settings |
-
-During a run, the active settings for the project are written under `configuration/` (for example `configuration.json` for the run).
-
----
-
-## Testing the project
-
-1. Install dependencies (see **Requirements**).
-2. Set `OPENAI_API_KEY` in the root `.env` file.
-3. Run `uv run main.py` and pass a path to a small CSV.
-4. Check outputs under `sandbox/` (processed data, scripts, logs, `tuning.json`), `models/` and `configuration/` for the updated JSON.
-
-For prompt or agent changes, edit the matching file in `prompts/` or `agents/`, then repeat a short run to confirm the pipeline still completes.
-
----
-
-## Requirements
-
-- [uv](https://docs.astral.sh/uv/) (it installs Python 3.10 for you)
-- An OpenAI API key
-
-Install dependencies:
-
-```bash
 uv sync
 ```
 
-Add a new dependency with `uv add <package>`, so it is saved in `pyproject.toml` and `uv.lock`.
+The LLM variants need an OpenAI key in a file `.env` at the project root (never committed):
+
+```
+OPENAI_API_KEY=sk-...
+```
+
+Optional baseline and backend environments (each in its own folder, so their pins never touch the
+main environment): `uv run python -m benchmark.envs.install flaml autogluon edabench`.
+
+## Quick start
+
+Train on one CSV file, Excel sheet, JSON or parquet file:
+
+```
+uv run python main.py run data/ibmchurn.csv --target Churn --variant full --budget 120
+```
+
+The run prints one line per stage and writes a run folder in `runs/`: `report.md` (task, split, audit
+issues, leak decisions, the plan with each step's gate effect, scores next to a dummy model, time
+and LLM cost per stage), `decisions.jsonl`, `llm.jsonl`, `plans.json`, `model.joblib` and more.
+Predict new rows from the raw file format:
+
+```
+uv run python main.py predict runs/<run folder>/model.joblib new_rows.csv --out predictions.csv
+uv run python main.py report runs/<run folder>
+```
+
+Without arguments, `uv run python main.py` starts an interactive mode. A five-minute demo that
+compares AutoGluon, `full` and `full+ag` on one messy file (LLM answers from the cache, $0):
+
+```
+uv run python -m benchmark.showcase
+```
+
+## Command line
+
+`main.py run <data>` options: `--target`, `--task` (binary, multiclass, regression), `--variant`,
+`--budget` (seconds, default 300), `--seed`, `--backend` (own, autogluon, flaml), `--ask` (confirm
+the target when the framer is unsure), `--mode` (demo or benchmark), `--out`, `--settings` (a JSON
+file merged over `configuration/settings.json`) and `--set key=value` (for example
+`--set gate.enabled=false`).
+
+## Variants
+
+| Variant | Audit | LLM review | Cleaning plan | Gate | Repair | Engine |
+|---|---|---|---|---|---|---|
+| `generic` | no | no | none (typing and encoding only) | no | no | own |
+| `rules` | yes | no | rules translate the audit issues | yes | no | own |
+| `full` | yes | yes | LLM plan from the operation catalog | yes | yes | own |
+| `full+ag`, `rules+ag` | as `full`, `rules` | | | | | AutoGluon on the prepared data |
+| `freecode` | yes | yes | LLM writes a cleaning class (sandbox) | yes | trial runs | own |
+| `full-noreview`, `full-nogate`, `full-norepair`, `full-nosamples`, `full-noleakguard` | ablations of `full` | | | | | own |
+
+Generated code (the `custom` operation and `freecode`) runs in a separate Python process with an AST
+check of imports and names, a time limit, a temporary folder and no API key. This is a safety net,
+not a security boundary: do not run it on untrusted data or prompts.
+
+## Reproduce the benchmark
+
+One command per grid; finished cells are skipped, so a stopped run can be started again:
+
+```
+uv run python -m benchmark.reproduce --grid smoke    # about 25 min, < $0.01
+uv run python -m benchmark.reproduce --grid pilot    # about 8 h, about $1.7
+```
+
+`pilot` writes the benchmark files (OpenML downloads on first use), runs every pilot grid, the repair
+checks and the framer test, and generates `benchmark/results/figures/`, `benchmark/results/tables/`,
+`docs/results.md` and `docs/projection.md`. The dev pool needs four local files in `data/` (git-ignored):
+`ibmchurn.csv` (IBM Telco Customer Churn), `kinghousedata.csv` (King County house sales),
+`winequality.csv` (Wine Quality) and `creditcardfraud.csv` (Credit Card Fraud Detection), all public
+Kaggle datasets; the smoke grid uses ibmchurn. Every other dataset comes from OpenML.
+
+The full grids are written and checked but were not run in this project; estimates from the pilot
+(2 workers, `gpt-4.1-mini`; see `docs/projection.md`):
+
+| Grid | Runs | Time | LLM cost |
+|---|---|---|---|
+| `main` | 1,440 | about 36 h | about $5.2 |
+| `leaks` | 210 | about 6 h | about $0.9 |
+| `ablations` | 288 | about 12 h | about $2.1 |
+| `types` | 320 | about 9 h | about $1.9 |
+| `subsets` (v1 only) | 12 | not measured | not measured |
+| `budgets` | 45 | about 2.5 h | about $0.4 |
+
+Run them with `uv run python -m benchmark.reproduce --grid main` (and so on).
+
+## Results
+
+`docs/results.md` (pilot results, small sample) and `docs/projection.md` (what the full benchmark
+would show, with power estimates and a recommendation). The design and the protocol are fixed in
+`docs/preregistration.md`; every later change is in `docs/deviations.md`.
+
+## Folder map
+
+```
+main.py, orchestrator.py   CLI and the 12-stage pipeline (one function for demo and benchmark)
+settings.py, schemas.py    settings (configuration/settings.json) and typed records
+paths.py                   every path of the project
+agents/                    framer, cleaner (plan, repair, refine), free-code writer, summary
+llms/                      LLM client (structured output, cache, retries, budgets, spend ledger)
+operations/                the typed cleaning operations, translator, compiler
+checks/                    data checks and verify, leak guard, validation gate
+modelling/                 engine, cross-validation, fitted model, AutoGluon/FLAML backends
+tools/                     reader, glance, splitter, run folder, metrics, report, sandbox
+prompts/                   the LLM prompts
+edatool/, edabench/        the auditor and its own benchmark (vendored and improved)
+benchmark/                 datasets, corruptor, leaks, runner, systems, grids, analysis, results
+tests/                     fast suite (uv run pytest -q) and slow tests (-m slow)
+docs/                      decisions, deviations, data cards, pre-registration, results, architecture
+```
