@@ -104,7 +104,8 @@ def budget_check(main, budget):
     return pd.DataFrame(rows)
 
 # the mechanism check: gain over generic per mess type next to the repair...
-# accuracy of that type (benchmark/results/repairs.csv when present)
+# accuracy of that type (benchmark/results/repairs.csv when present; the full...
+# variant's own repairs when they exist)
 def mechanism_check(types):
     gains = []
     data = analysis.normalized(types) if not types.empty else pd.DataFrame()
@@ -116,7 +117,10 @@ def mechanism_check(types):
     repairs_file = results_dir / "repairs.csv"
     if table.empty or not repairs_file.exists():
         return table
-    repairs = pd.read_csv(repairs_file).groupby("mess")["accuracy"].mean().rename("repair_accuracy")
+    repairs = pd.read_csv(repairs_file)
+    repairs = repairs[repairs["cells"] > 0]
+    repairs = repairs[repairs["variant"] == "full"] if (repairs["variant"] == "full").any() else repairs
+    repairs = repairs.groupby("mess").apply(lambda part: part["repaired"].sum() / part["cells"].sum(), include_groups=False).rename("repair_accuracy")
     table = table.join(repairs, on="mess")
     table["explained"] = (table["gain_over_generic"] <= 0) | (table["repair_accuracy"] >= 0.5)
     return table
@@ -179,6 +183,8 @@ def build(folder=None, out=None, repetitions=2000):
     lines += ["| comparison | levels | datasets | mean | 95% interval | with seed noise |", "|---|---|---|---|---|---|"]
     for (system, baseline, levels), value in effects.items():
         lines.append(f"| {system} vs {baseline} | {levels} | {value['datasets']} | {show(value['mean'])} | [{show(value['low'])}, {show(value['high'])}] | [{show(value['low_seed'])}, {show(value['high_seed'])}] |")
+    failures = main[(main["system"] == "full") & ~main["status"].eq("ok")].groupby("level").size()
+    lines += ["", "Failed `full` runs in `pilot-main` (counted with the dummy score): " + (", ".join(f"level {level}: {count}" for level, count in failures.items()) if len(failures) else "none") + "."]
     lines += ["", "## Power of the full benchmark (15 datasets x 3 seeds, Holm-corrected Wilcoxon, 2,000 simulations)", ""]
     lines += [f"- {name}: {show(value, 2)}" for name, value in powers.items()]
     lines += ["", "## Checks", ""]
@@ -208,6 +214,9 @@ def build(folder=None, out=None, repetitions=2000):
     lines.append(f"- Plug-in (full+ag vs autogluon): power {show(powers['full+ag vs autogluon (levels 2+3)'], 2)}.")
     lines += ["", "## Estimated time and cost of the full grids (from the measured pilot runs)", "", "| grid | runs | hours (2 workers) | LLM cost (USD) |", "|---|---|---|---|"]
     lines += [f"| {row.grid} | {row.runs} | {row.hours_2_workers:.1f} | {row.llm_cost_usd:.2f} |" for row in estimates.itertuples()]
+    unmeasured = sorted({system for name in FULL_GRIDS for system in load_grid(name)["systems"]} - set(measured["system"]))
+    if unmeasured:
+        lines += ["", f"Systems without pilot runs ({', '.join(unmeasured)}) are counted with their full time budget and no LLM cost, so their grids are underestimated."]
     text = "\n".join(lines) + "\n"
     (out or docs_dir / "projection.md").write_text(text, encoding="utf-8", newline="\n")
     return {"effects": effects, "powers": powers, "holdout": checked, "budget": budgets, "mechanism": mechanism, "estimates": estimates, "noise": noise}
