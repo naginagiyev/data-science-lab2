@@ -959,3 +959,21 @@ Findings from the decision logs of the worst cells:
   non-numeric and the run stops ("Only 0 labeled rows"). A real weakness of the frozen system
   (recommended fix before a full benchmark: convert decimal commas in a regression target).
 - Harness and evaluation fixes during this task are listed in `docs/deviations.md`.
+
+## 2026-10-14 · P9.9 to P9.12 · pilot-seed, pilot-natural, pilot-budget, E8
+
+- Paused on 2026-10-14 at the user's request during `pilot-seed` (84/96 done, all processes ended);
+  resumed later with the runner, no cell lost.
+- `pilot-seed` (seed 1, free systems, levels 0 and 3): 96/96 ok, $0. Used by the projection for the
+  seed noise.
+- `pilot-natural` (Group C: HR_Analytics, in_vehicle_coupon, heloc; seed 0): 12/12 ok, $0.12. `full`,
+  `generic` and AutoGluon are within 0.006 roc_auc of each other on all three files (LightGBM a little
+  lower): no gain from the cleaning stage on these naturally messy files.
+- `pilot-budget` (Bank_Customer_Churn and diamonds, level 3, 300 s): 4/4 ok. The order of `full` and
+  AutoGluon is the same at 120 s and 300 s (`full` ahead on Bank_Customer_Churn, AutoGluon ahead on
+  diamonds).
+- E8 (`python -m edabench.evaluate benchmark`, deterministic): recall 0.987 (strict 0.978), precision
+  0.855 on 372 injected issues, the same as after P4. Copied to `benchmark/results/edabench-final.*`;
+  the baseline comparison (ydata-profiling, cleanlab, old eda.py) of P4.1 is in
+  `benchmark/results/edabench-baselines.*`. The P4.1 files in `edabench/results/` stay unchanged.
+- Experiments spend after P9.12: $1.61 of $2.75.

@@ -123,8 +123,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.5 pilot-main · 2026-10-12 · 5d3d1fd · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
 - [x] P9.6 pilot-leaks · 2026-10-12 · 90b0a13 · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
 - [x] P9.7 pilot-ablations · 2026-10-12 · e8f6849 · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
-- [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · (next) · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
-- [ ] P9.9 pilot-seed
+- [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · 1575c26 · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
+- [x] P9.9 pilot-seed · 2026-10-14 · (next) · 96/96 ok (free systems, seed 1); paused and resumed without loss
 - [ ] P9.10 pilot-natural
 - [ ] P9.11 pilot-budget
 - [ ] P9.12 E8 audit benchmark (final)
@@ -150,6 +150,25 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [ ] S2 LLM swap (RQ6)
 - [ ] S3 Full grids (only if the user asks)
 - [ ] S4 AutoGluon Assistant baseline
+
+## Resume here (paused on 2026-10-14 at the user's request)
+
+- Nothing is running. Results so far are committed or saved in `benchmark/results/` (the runner skips
+  finished cells).
+- Next, in this order (each in the background, never two timed grids at once):
+  1. `uv run python -m benchmark.runner --grid pilot-seed` (12 cells left), then
+     `--grid pilot-natural` (12 cells, 3 paid) and `--grid pilot-budget` (4 cells, 300 s). Commit
+     P9.9, P9.10, P9.11.
+  2. P9.12: `uv run python -m edabench.evaluate benchmark`, copy `edabench/results/benchmark-deterministic.*`
+     and `baselines.*` to `benchmark/results/` as the final E8 files, then restore the P4.1 baseline
+     files in `edabench/results/` with `git checkout`.
+  3. P9.13: `uv run python -m benchmark.projection --predict` (writes
+     `benchmark/results/holdout-predictions.csv`), commit it and copy the numbers into section 7 of
+     `docs/preregistration.md`, then `uv run python -m benchmark.runner --grid pilot-main --holdout`.
+  4. P10: `python -m benchmark.figures`, `python -m benchmark.resultsdoc` (writes `docs/results.md`;
+     `benchmark/resultsdoc.py` has no test yet), `python -m benchmark.projection` (writes
+     `docs/projection.md`); then P11 and P12.
+- Spend: dev $0.39 of $1.50, experiments $1.48 of $2.75 (`benchmark/results/spend.json`).
 
 ## Open problems
 - Solved in P7.9: nano's semantic name review flagged normal features as post-event leaks (stricter edatool prompt).
