@@ -1,7 +1,7 @@
 {
   "totals": {
-    "dev": 0.3874223000000001,
-    "experiments": 1.4846950999999982
+    "dev": 0.38758720000000013,
+    "experiments": 1.6147478999999978
   },
   "calls": [
     {
@@ -11055,6 +11055,429 @@
       "input_tokens": 993,
       "output_tokens": 141,
       "cost_usd": 0.00015570000000000002
+    },
+    {
+      "time": "2026-10-14T09:35:44+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 993,
+      "output_tokens": 164,
+      "cost_usd": 0.00016490000000000002
+    },
+    {
+      "time": "2026-10-14T10:43:38+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4118,
+      "output_tokens": 17,
+      "cost_usd": 0.0016744000000000002
+    },
+    {
+      "time": "2026-10-14T10:43:39+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4100,
+      "output_tokens": 69,
+      "cost_usd": 0.0017504
+    },
+    {
+      "time": "2026-10-14T10:43:39+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4062,
+      "output_tokens": 17,
+      "cost_usd": 0.0016520000000000003
+    },
+    {
+      "time": "2026-10-14T10:43:39+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4086,
+      "output_tokens": 17,
+      "cost_usd": 0.0016616
+    },
+    {
+      "time": "2026-10-14T10:43:39+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5152,
+      "output_tokens": 168,
+      "cost_usd": 0.0023296000000000002
+    },
+    {
+      "time": "2026-10-14T10:43:40+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4436,
+      "output_tokens": 78,
+      "cost_usd": 0.0018992
+    },
+    {
+      "time": "2026-10-14T10:43:40+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4566,
+      "output_tokens": 75,
+      "cost_usd": 0.0019464
+    },
+    {
+      "time": "2026-10-14T10:43:40+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4715,
+      "output_tokens": 284,
+      "cost_usd": 0.0023404000000000003
+    },
+    {
+      "time": "2026-10-14T10:43:41+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4393,
+      "output_tokens": 87,
+      "cost_usd": 0.0018964000000000001
+    },
+    {
+      "time": "2026-10-14T10:43:41+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4322,
+      "output_tokens": 85,
+      "cost_usd": 0.0018648000000000002
+    },
+    {
+      "time": "2026-10-14T10:43:41+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4529,
+      "output_tokens": 110,
+      "cost_usd": 0.0019876
+    },
+    {
+      "time": "2026-10-14T10:43:41+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4579,
+      "output_tokens": 48,
+      "cost_usd": 0.0019084
+    },
+    {
+      "time": "2026-10-14T10:43:41+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5620,
+      "output_tokens": 34,
+      "cost_usd": 0.0023024
+    },
+    {
+      "time": "2026-10-14T10:43:42+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4475,
+      "output_tokens": 53,
+      "cost_usd": 0.0018748
+    },
+    {
+      "time": "2026-10-14T10:43:42+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4553,
+      "output_tokens": 76,
+      "cost_usd": 0.0019428
+    },
+    {
+      "time": "2026-10-14T10:43:42+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4708,
+      "output_tokens": 66,
+      "cost_usd": 0.0019887999999999998
+    },
+    {
+      "time": "2026-10-14T10:43:42+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4982,
+      "output_tokens": 115,
+      "cost_usd": 0.0021768
+    },
+    {
+      "time": "2026-10-14T10:43:43+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5083,
+      "output_tokens": 517,
+      "cost_usd": 0.0028604
+    },
+    {
+      "time": "2026-10-14T10:43:43+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6224,
+      "output_tokens": 360,
+      "cost_usd": 0.0030656000000000004
+    },
+    {
+      "time": "2026-10-14T10:43:44+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6774,
+      "output_tokens": 42,
+      "cost_usd": 0.0027768000000000003
+    },
+    {
+      "time": "2026-10-14T10:43:45+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5471,
+      "output_tokens": 240,
+      "cost_usd": 0.0025724000000000003
+    },
+    {
+      "time": "2026-10-14T10:43:46+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5871,
+      "output_tokens": 59,
+      "cost_usd": 0.0024428
+    },
+    {
+      "time": "2026-10-14T10:43:48+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 7619,
+      "output_tokens": 667,
+      "cost_usd": 0.0041148
+    },
+    {
+      "time": "2026-10-14T10:43:49+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 8707,
+      "output_tokens": 49,
+      "cost_usd": 0.0035612000000000005
+    },
+    {
+      "time": "2026-10-14T10:43:52+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6024,
+      "output_tokens": 632,
+      "cost_usd": 0.0034208000000000003
+    },
+    {
+      "time": "2026-10-14T10:43:57+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5472,
+      "output_tokens": 730,
+      "cost_usd": 0.0033568
+    },
+    {
+      "time": "2026-10-14T10:43:58+00:00",
+      "category": "experiments",
+      "source": "compile/repair",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1070,
+      "output_tokens": 77,
+      "cost_usd": 0.0005512000000000001
+    },
+    {
+      "time": "2026-10-14T10:44:04+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6260,
+      "output_tokens": 843,
+      "cost_usd": 0.0038528
+    },
+    {
+      "time": "2026-10-14T10:44:10+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 7153,
+      "output_tokens": 845,
+      "cost_usd": 0.004213200000000001
+    },
+    {
+      "time": "2026-10-14T10:45:33+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1523,
+      "output_tokens": 180,
+      "cost_usd": 0.0008972
+    },
+    {
+      "time": "2026-10-14T10:45:34+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1760,
+      "output_tokens": 167,
+      "cost_usd": 0.0009712000000000001
+    },
+    {
+      "time": "2026-10-14T10:45:37+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1769,
+      "output_tokens": 151,
+      "cost_usd": 0.0009492000000000001
+    },
+    {
+      "time": "2026-10-14T10:45:56+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5193,
+      "output_tokens": 589,
+      "cost_usd": 0.0030196000000000003
+    },
+    {
+      "time": "2026-10-14T10:45:57+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 7014,
+      "output_tokens": 34,
+      "cost_usd": 0.0028600000000000006
+    },
+    {
+      "time": "2026-10-14T10:46:03+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 10139,
+      "output_tokens": 1624,
+      "cost_usd": 0.006654
+    },
+    {
+      "time": "2026-10-14T10:46:21+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 21524,
+      "output_tokens": 2565,
+      "cost_usd": 0.0127136
+    },
+    {
+      "time": "2026-10-14T10:46:23+00:00",
+      "category": "experiments",
+      "source": "audit/edatool-agent",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 25584,
+      "output_tokens": 84,
+      "cost_usd": 0.010368
+    },
+    {
+      "time": "2026-10-14T10:46:50+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 12244,
+      "output_tokens": 4197,
+      "cost_usd": 0.011612800000000001
+    },
+    {
+      "time": "2026-10-14T10:48:01+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1787,
+      "output_tokens": 126,
+      "cost_usd": 0.0009164
+    },
+    {
+      "time": "2026-10-14T10:54:59+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2916,
+      "output_tokens": 843,
+      "cost_usd": 0.0025152000000000004
+    },
+    {
+      "time": "2026-10-14T10:57:49+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1901,
+      "output_tokens": 150,
+      "cost_usd": 0.0010004
+    },
+    {
+      "time": "2026-10-14T10:57:50+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1669,
+      "output_tokens": 161,
+      "cost_usd": 0.0009252
+    },
+    {
+      "time": "2026-10-14T10:57:51+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2099,
+      "output_tokens": 195,
+      "cost_usd": 0.0011515999999999998
+    },
+    {
+      "time": "2026-10-14T10:57:52+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1878,
+      "output_tokens": 236,
+      "cost_usd": 0.0011288000000000001
+    },
+    {
+      "time": "2026-10-14T10:57:53+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2332,
+      "output_tokens": 163,
+      "cost_usd": 0.0011936000000000002
+    },
+    {
+      "time": "2026-10-14T10:57:55+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2152,
+      "output_tokens": 206,
+      "cost_usd": 0.0011904
     }
   ]
 }

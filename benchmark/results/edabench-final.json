@@ -1,0 +1,3665 @@
+{
+  "overall": {
+    "injected": 372,
+    "recall": 0.9865591397849462,
+    "strict_recall": 0.978494623655914,
+    "precision": 0.8546168958742633,
+    "true_positive": 435,
+    "false_positive": 74
+  },
+  "runs": [
+    {
+      "dataset": "credit-g",
+      "task": "binary-classification",
+      "strength": "low",
+      "rows": 1008,
+      "seconds": 1.53,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 14,
+      "false_positive": []
+    },
+    {
+      "dataset": "credit-g",
+      "task": "binary-classification",
+      "strength": "medium",
+      "rows": 1028,
+      "seconds": 1.35,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9803921568627451,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9803921568627451,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9861111111111112,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 13,
+      "false_positive": []
+    },
+    {
+      "dataset": "credit-g",
+      "task": "binary-classification",
+      "strength": "high",
+      "rows": 1078,
+      "seconds": 1.39,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.974025974025974,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9646302250803859,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.967741935483871,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9695121951219512,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 12,
+      "false_positive": []
+    },
+    {
+      "dataset": "bank-marketing",
+      "task": "binary-classification",
+      "strength": "low",
+      "rows": 45551,
+      "seconds": 9.07,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9944994499449945,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9934065934065934,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9977924944812362,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9934065934065934,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9955947136563876,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9949238578680203,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6647230320699709,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "V1"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "V13_copy"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "bank-marketing",
+      "task": "binary-classification",
+      "strength": "medium",
+      "rows": 46457,
+      "seconds": 8.95,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9836850119643246,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.988415300546448,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9864746945898779,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": false,
+          "strict": false
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9890590809628008,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9863945578231292,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9858295182036189,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6498599439775911,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 17,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "V1"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "bank-marketing",
+      "task": "binary-classification",
+      "strength": "high",
+      "rows": 48724,
+      "seconds": 9.32,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9631470567350706,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9640369580668088,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9643796658371845,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9699570815450643,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9720430107526882,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9617271835132483,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9630102946396876,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "one_to_one",
+          "code": "E06",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6354166666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "V12_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "V10"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "V12_copy"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "australian",
+      "task": "binary-classification",
+      "strength": "low",
+      "rows": 696,
+      "seconds": 0.77,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 12,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "A2"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "A7"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "australian",
+      "task": "binary-classification",
+      "strength": "medium",
+      "rows": 710,
+      "seconds": 0.68,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9714285714285714,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9714285714285714,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9855072463768115,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.8571428571428571,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 12,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "A2"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "A7"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "australian",
+      "task": "binary-classification",
+      "strength": "high",
+      "rows": 745,
+      "seconds": 0.76,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.936936936936937,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9719626168224299,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9674418604651163,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.8571428571428571,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 12,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "A7"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "churn",
+      "task": "binary-classification",
+      "strength": "low",
+      "rows": 5038,
+      "seconds": 1.79,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.99009900990099,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 17,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "account_length"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "churn",
+      "task": "binary-classification",
+      "strength": "medium",
+      "rows": 5138,
+      "seconds": 1.78,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9803921568627451,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9861932938856015,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9920634920634921,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9615384615384615,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.970873786407767,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 17,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "total_eve_calls"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "total_night_calls"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "churn",
+      "task": "binary-classification",
+      "strength": "high",
+      "rows": 5388,
+      "seconds": 1.73,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9603072983354674,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9658725048293625,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.962772785622593,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9433962264150945,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9615384615384615,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.65,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 17,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "total_eve_charge"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "electricity",
+      "task": "binary-classification",
+      "strength": "low",
+      "rows": 45653,
+      "seconds": 3.6,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9923329682365827,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9966996699669968,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9988974641675854,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9934354485776805,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9966996699669968,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 16,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "nswdemand"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "electricity",
+      "task": "binary-classification",
+      "strength": "medium",
+      "rows": 46561,
+      "seconds": 3.49,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9890877346137058,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9871487693313004,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9871487693313004,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.7854671280276816,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9875789932447157,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6535211267605634,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 14,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "transfer"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "electricity",
+      "task": "binary-classification",
+      "strength": "high",
+      "rows": 48832,
+      "seconds": 3.93,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9631571489301403,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9630206857466704,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9619303707896971,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9700854700854701,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9622027180067951,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6272493573264781,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 15,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "period"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "segment",
+      "task": "multi-class-classification",
+      "strength": "low",
+      "rows": 2328,
+      "seconds": 1.28,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": false,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.0875912408759124,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.20689655172413793,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "exblue.mean"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "vedge.mean_copy"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "segment",
+      "task": "multi-class-classification",
+      "strength": "medium",
+      "rows": 2374,
+      "seconds": 1.38,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.983050847457627,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9914529914529915,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9957081545064378,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9914529914529915,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": false,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.3778501628664495,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.2222222222222222,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 12,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "rawblue.mean"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "rawgreen.mean"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "vedge.mean_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "combined_total"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "segment",
+      "task": "multi-class-classification",
+      "strength": "high",
+      "rows": 2489,
+      "seconds": 1.5,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9678321678321679,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9597780859916781,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.961111111111111,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9600000000000001,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.969187675070028,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": false,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.762114537444934,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.631578947368421,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 14,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "combined_total"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "rawred.mean"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "vedge.mean_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "combined_total"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "abalone",
+      "task": "regression",
+      "strength": "low",
+      "rows": 4208,
+      "seconds": 0.87,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "height_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "length"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "diameter"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "height_copy"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "abalone",
+      "task": "regression",
+      "strength": "medium",
+      "rows": 4292,
+      "seconds": 0.48,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.990521327014218,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9858490566037736,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.988179669030733,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9545454545454545,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.990228013029316,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9976133651551313,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6666666666666666,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 16,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "diameter"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "abalone",
+      "task": "regression",
+      "strength": "high",
+      "rows": 4501,
+      "seconds": 0.57,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9631336405529953,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9557926829268293,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9631336405529953,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9767441860465117,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9333333333333333,
+          "fix_ok": true
+        },
+        {
+          "kind": "label_variants",
+          "code": "B05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9642105263157895,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9661016949152543,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": false,
+          "strict": false
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "conflicts",
+          "code": "A05",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.6285714285714286,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 16,
+      "false_positive": [
+        {
+          "code": "E09",
+          "columns": [
+            "length"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "cpuact",
+      "task": "regression",
+      "strength": "low",
+      "rows": 8233,
+      "seconds": 3.75,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.993939393939394,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": false,
+          "strict": false
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_dates",
+          "code": "B09",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "B02",
+          "columns": [
+            "runqsz"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "rchar"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "freemem"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "rchar"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "freemem"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "lread_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "final_assessment"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "cpuact",
+      "task": "regression",
+      "strength": "medium",
+      "rows": 8397,
+      "seconds": 3.62,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9879518072289156,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9915356711003627,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9903381642512078,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9761904761904763,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9891435464414957,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_dates",
+          "code": "B09",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "packed",
+          "code": "B08",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "B02",
+          "columns": [
+            "swrite"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "sread"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "freeswap"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "wchar_freemem_packed"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "sread"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "freeswap"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "wchar_freemem_packed"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "lread_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "final_assessment"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "cpuact",
+      "task": "regression",
+      "strength": "high",
+      "rows": 8806,
+      "seconds": 4.25,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9616588419405321,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9680976762504924,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9688608592826173,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": false,
+          "strict": false
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9425287356321839,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9654359780047134,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "mixed_dates",
+          "code": "B09",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "packed",
+          "code": "B08",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "B02",
+          "columns": [
+            "wchar"
+          ]
+        },
+        {
+          "code": "D02",
+          "columns": [
+            "combined_total"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "rchar"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "freeswap"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "runqsz_freemem_packed"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "rchar"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "freeswap"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "runqsz_freemem_packed"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "lread_copy"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "combined_total"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "final_assessment"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "boston",
+      "task": "regression",
+      "strength": "low",
+      "rows": 509,
+      "seconds": 0.58,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 18,
+      "false_positive": [
+        {
+          "code": "D05",
+          "columns": [
+            "LSTAT"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "LSTAT"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "NOX"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "PTRATIO"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "boston",
+      "task": "regression",
+      "strength": "medium",
+      "rows": 519,
+      "seconds": 0.64,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9803921568627451,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": false,
+          "strict": false
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 14,
+      "false_positive": [
+        {
+          "code": "D05",
+          "columns": [
+            "LSTAT"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "LSTAT"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "RM"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "boston",
+      "task": "regression",
+      "strength": "high",
+      "rows": 544,
+      "seconds": 0.56,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9743589743589743,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing",
+          "code": "C02",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9559748427672956,
+          "fix_ok": true
+        },
+        {
+          "kind": "hidden_missing_type",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true,
+          "link_ok": true
+        },
+        {
+          "kind": "sentinel",
+          "code": "C03",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9806451612903226,
+          "fix_ok": true
+        },
+        {
+          "kind": "outliers",
+          "code": "D02",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "negatives",
+          "code": "D01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "number_format",
+          "code": "B01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9743589743589743,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicate_column",
+          "code": "A03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "linear_relation",
+          "code": "E07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "units",
+          "code": "B07",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 16,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "RM"
+          ]
+        },
+        {
+          "code": "D05",
+          "columns": [
+            "PTRATIO"
+          ]
+        },
+        {
+          "code": "E04",
+          "columns": [
+            "PTRATIO"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "NOX"
+          ]
+        },
+        {
+          "code": "E09",
+          "columns": [
+            "RM"
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "airfoil",
+      "task": "regression",
+      "strength": "low",
+      "rows": 1511,
+      "seconds": 0.34,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 5,
+      "false_positive": []
+    },
+    {
+      "dataset": "airfoil",
+      "task": "regression",
+      "strength": "medium",
+      "rows": 1541,
+      "seconds": 0.34,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9868421052631579,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 5,
+      "false_positive": []
+    },
+    {
+      "dataset": "airfoil",
+      "task": "regression",
+      "strength": "high",
+      "rows": 1616,
+      "seconds": 0.36,
+      "complete": true,
+      "records": [
+        {
+          "kind": "missing",
+          "code": "C01",
+          "found": true,
+          "strict": true,
+          "row_f1": 0.9656652360515021,
+          "fix_ok": true
+        },
+        {
+          "kind": "constant_column",
+          "code": "E01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "leakage",
+          "code": "G01",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        },
+        {
+          "kind": "duplicates",
+          "code": "A04",
+          "found": true,
+          "strict": true,
+          "row_f1": 1.0,
+          "fix_ok": true
+        },
+        {
+          "kind": "id_column",
+          "code": "E03",
+          "found": true,
+          "strict": true,
+          "fix_ok": true
+        }
+      ],
+      "true_positive": 5,
+      "false_positive": [
+        {
+          "code": "D02",
+          "columns": [
+            "displacement_thickness"
+          ]
+        }
+      ]
+    }
+  ]
+}
