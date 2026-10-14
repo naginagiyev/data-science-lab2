@@ -3,6 +3,7 @@ import json
 import argparse
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from orchestrator import run
 from settings import load_settings
 from tools.reader import read_table
@@ -32,7 +33,9 @@ def missing(value):
     return value is None or (isinstance(value, float) and np.isnan(value)) or str(value).strip() == ""
 
 # the share of a column's corrupted cells that are repaired in one candidate...
-# prepared column (dates are compared by their year, month and day parts)
+# prepared column (dates are compared by their year, month and day parts;...
+# booleans are repaired when the prepared values map one to one onto the two...
+# original labels, so "yes"/"no" restored as 1/0 counts)
 def column_accuracy(prepared, cells, column, candidate, mess):
     values = prepared[candidate]
     if mess == "dates":
@@ -42,6 +45,12 @@ def column_accuracy(prepared, cells, column, candidate, mess):
         return sum(all(same(prepared.at[row, name], value) for name, value in zip(parts, pd.Timestamp(original).timetuple()[:3])) for row, original in zip(cells["position"], cells["original"]))
     if mess in MISSING_TYPES:
         return sum(missing(values.iat[row]) or same(values.iat[row], original) for row, original in zip(cells["position"], cells["original"]))
+    if mess == "booleans":
+        pairs = pd.DataFrame({"original": cells["original"].astype(str).to_numpy(), "prepared": [str(values.iat[row]) for row in cells["position"]]})
+        mapping = pairs.groupby("original")["prepared"].agg(lambda part: part.mode().iat[0])
+        if mapping.nunique() < len(mapping) or mapping.map(lambda value: value in {"nan", "None", ""}).any():
+            return 0
+        return int((pairs["prepared"] == pairs["original"].map(mapping)).sum())
     return sum(same(values.iat[row], original) for row, original in zip(cells["position"], cells["original"]))
 
 # repair accuracy of one prepared training table against the ground truth of...
@@ -80,17 +89,41 @@ def check_file(dataset, mess, variant="rules", budget=120):
     prepared = AgentSteps(list(plan.steps) if plan is not None else []).fit(features).transform(features)
     return score_prepared(prepared, folder, list(features.columns), variant, len(plan.steps) if plan is not None else 0)
 
+# scores the prepared training tables that the LLM runs of a grid saved...
+# (prepared.parquet in benchmark mode) against the ground truth of their cells
+def score_saved_runs(grid):
+    results = pd.read_csv(results_dir / f"{grid}.csv")
+    rows = []
+    for row in results[results["status"].eq("ok") & results["run_dir"].notna()].itertuples():
+        prepared_file = Path(str(row.run_dir)) / "prepared.parquet"
+        folder = cell_dir(row.group, row.dataset, int(row.level), int(row.seed), row.mess_types)
+        if not prepared_file.exists() or not (folder / "cells.parquet").exists():
+            continue
+        truth = json.loads((folder / "truth.json").read_text(encoding="utf-8"))
+        raw_columns = [column for column in pd.read_csv(folder / "train.csv", nrows=0).columns if column != truth["target"]]
+        plans = json.loads((Path(str(row.run_dir)) / "plans.json").read_text(encoding="utf-8"))
+        rows += score_prepared(pd.read_parquet(prepared_file), folder, raw_columns, row.system, len(plans[-1]["steps"]) if plans else 0)
+    return rows
+
 # command line: checks the chosen datasets and mess types and writes...
-# benchmark/results/repairs.csv (rows of finished files are kept)
+# benchmark/results/repairs.csv (rows of finished files are kept); with...
+# --from-grid it scores the saved prepared tables of a grid's runs instead
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="E6: repair accuracy of the cleaning stage only.")
     parser.add_argument("--datasets", nargs="*", default=GROUP_A)
     parser.add_argument("--types", nargs="*", default=REPAIR_TYPES)
     parser.add_argument("--variant", default="rules")
+    parser.add_argument("--from-grid", help="score the prepared tables saved by the LLM runs of this grid instead")
     arguments = parser.parse_args()
     output = results_dir / "repairs.csv"
     done = pd.read_csv(output) if output.exists() else pd.DataFrame(columns=COLUMNS)
+    if arguments.from_grid:
+        rows = pd.DataFrame(score_saved_runs(arguments.from_grid))
+        kept = done[~done["variant"].isin(set(rows["variant"]))] if not rows.empty else done
+        pd.concat([kept, rows], ignore_index=True).to_csv(output, index=False, lineterminator="\n")
+        print(f"{len(rows)} column rows from {arguments.from_grid}")
+        return 0
     finished = set(zip(done["dataset"], done["mess"], done["variant"]))
     for dataset in arguments.datasets:
         for mess in arguments.types:

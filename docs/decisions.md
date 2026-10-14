@@ -937,3 +937,25 @@ Findings from the decision logs of the worst cells:
   dummy; on the other 3 datasets `full` is 0.991 to 1.000), lightgbm 0.673, flaml 0.631. On this
   small sample the ablated parts change little; every v2 variant with a cleaning stage is far above
   the systems without one.
+
+## 2026-10-14 · P9.8 · pilot-types, repair accuracy, E6b reading
+
+- `pilot-types` (4 datasets x 4 key types x full/generic/autogluon, level 3): 47/48 ok, $0.34. The
+  failure is again `full` on students_dropout (spellings), the same stage-limit time-out as in
+  `pilot-main`. Mean normalized score per type (full / autogluon / generic): packed 1.000 / 0.868 /
+  0.952; units 1.000 / 0.910 / 0.934; mixed units 0.971 / 0.976 / 0.957; spellings 0.747 (time-out
+  counted as dummy) / 0.995 / 0.984.
+- Repair accuracy of the cleaning stage (`benchmark/results/repairs.csv`; share of corrupted training
+  cells restored): cleaning-only `rules` on all 15 Group A datasets (95 + 15 files): booleans 0.988,
+  fake missing 0.938, packed 0.889, dates 0.825, mixed units 0.788, spellings 0.711, units 0.539,
+  impossible values 0.004 (the translator has no rule that finds sign flips or x100 scale errors);
+  `full` (from the prepared tables of `pilot-types`, 4 datasets): packed 0.996, mixed units 0.826,
+  spellings 0.818, units 0.690. Plain missing values and ids are not repair types (nothing to restore).
+- E6b reading robustness (`reading` grid: 5 free systems x the 15 layout files, level 3, 120 s;
+  `benchmark/results/reading.csv`): `generic` and `rules` read 12/15 files and train; LightGBM,
+  skrub and AutoGluon 0/15 (their CSV readers fail on the title rows, `;` and cp1252, or take the
+  title line as the header). The 3 failures of `generic` and `rules` are the regression files: the
+  target is written with decimal commas ("39,6") and is not converted, so every target value looks
+  non-numeric and the run stops ("Only 0 labeled rows"). A real weakness of the frozen system
+  (recommended fix before a full benchmark: convert decimal commas in a regression target).
+- Harness and evaluation fixes during this task are listed in `docs/deviations.md`.

@@ -24,3 +24,12 @@ def test_score_prepared(tmp_path):
     assert rows["weight"]["cells"] == 3 and rows["weight"]["repaired"] == 2
     assert rows["size"]["accuracy"] == 1.0
     assert rows["age"]["accuracy"] == 1.0 and rows["age"]["false_nan_rate"] == 0.0
+
+# yes/no originals restored as 1/0 count as repaired; a mapping that merges...
+# both labels does not
+def test_boolean_mapping(tmp_path):
+    write_cell(tmp_path, {"row": [10, 11, 12, 13], "column": ["smoker"] * 4, "original": ["yes", "no", "yes", "no"], "corrupted": ["Y", "N", "TRUE", "f"], "type": ["booleans"] * 4})
+    good = pd.DataFrame({"smoker": [1.0, 0.0, 1.0, 0.0]})
+    merged = pd.DataFrame({"smoker": [1.0, 1.0, 1.0, 1.0]})
+    assert score_prepared(good, tmp_path, ["smoker"], "rules", 1)[0]["accuracy"] == 1.0
+    assert score_prepared(merged, tmp_path, ["smoker"], "rules", 1)[0]["accuracy"] == 0.0

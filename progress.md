@@ -122,8 +122,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.4 E7 framer accuracy · 2026-10-12 · b76f241 · 40 datasets: rules 32/40 targets (31/40 with task), rules + mini 36/40 (35/40); $0.025
 - [x] P9.5 pilot-main · 2026-10-12 · 5d3d1fd · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
 - [x] P9.6 pilot-leaks · 2026-10-12 · 90b0a13 · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
-- [x] P9.7 pilot-ablations · 2026-10-12 · (next) · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
-- [ ] P9.8 pilot-types and E6b reading robustness
+- [x] P9.7 pilot-ablations · 2026-10-12 · e8f6849 · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
+- [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · (next) · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
 - [ ] P9.9 pilot-seed
 - [ ] P9.10 pilot-natural
 - [ ] P9.11 pilot-budget
@@ -156,6 +156,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - Small tables (about 1,400 rows): the gate's P1 vs P0 comparison is noisy and can keep P0 although every step helps alone (P9 pilot: watch Is-this-a-good-customer-sized datasets).
 - Solved in P8.3: large-file overruns (verify sample, refit estimate, finish reserve).
 - Found in P9.5 (not fixed, frozen method): stages still do their work when their time limit is already 0, so a run with a slow audit can overrun its budget (1 time-out in 22 full runs). Fix before a full benchmark.
+- Found in P9.8 (not fixed, frozen method): a regression target with decimal commas (layout files) is not converted, so the run stops with 0 labeled rows.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,

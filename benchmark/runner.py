@@ -154,7 +154,10 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
     seconds = time.perf_counter() - start
     meta_file = out / "meta.json"
     meta = json.loads(meta_file.read_text(encoding="utf-8")) if meta_file.exists() else {}
-    result = score_cell(truth["task"], files / "train.csv", files / "test_labels.csv", out / "predictions0.csv", truth["target"])
+    try:
+        result = score_cell(truth["task"], files / "train.csv", files / "test_labels.csv", out / "predictions0.csv", truth["target"])
+    except Exception as error:
+        result = {"status": "failed", "error": f"scoring: {type(error).__name__}: {error}"[:300], "metric": truth["metric"], "score": None, "dummy_score": None, "secondary": {}}
     if timed_out:
         result.update(status="failed", error=f"time-out after {timeout:.0f} s", score=result["dummy_score"])
     elif result["status"] == "failed" and meta.get("error"):

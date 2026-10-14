@@ -1,12 +1,17 @@
 import math
 import numpy as np
 import pandas as pd
+from tools.reader import read_table
 from benchmark.systems.common import label_key
 from tools.metrics import align_probabilities, compute_scores
 
-# reads one column of a CSV file as raw text
+# reads one column of a CSV file as raw text (files with a messy layout, such...
+# as title rows or ";" separators, fall back to the edatool loader)
 def read_column(path, column):
-    return pd.read_csv(path, dtype=str, keep_default_na=False, usecols=[column])[column]
+    try:
+        return pd.read_csv(path, dtype=str, keep_default_na=False, usecols=[column])[column]
+    except (ValueError, UnicodeDecodeError, pd.errors.ParserError):
+        return read_table(path)[0][column]
 
 # returns the true values: label keys for classification, floats for regression
 def true_values(labels, task):
@@ -19,10 +24,15 @@ def true_values(labels, task):
 def scoring_classes(train_labels, test_labels):
     return sorted(set(label_key(value) for value in train_labels) | set(test_labels))
 
-# the prediction of the dummy model: training class shares or the training mean
+# the prediction of the dummy model: training class shares or the training...
+# mean (decimal commas, as in the layout files, are read as decimal points)
 def dummy_prediction(train_labels, task, rows, classes):
     if task == "regression":
-        return np.full(rows, pd.to_numeric(train_labels).mean())
+        values = pd.Series(train_labels).astype(str).str.strip()
+        numbers = pd.to_numeric(values, errors="coerce")
+        if numbers.isna().any():
+            numbers = pd.to_numeric(values.str.replace(",", ".", regex=False), errors="coerce")
+        return np.full(rows, numbers.mean())
     keys = pd.Series([label_key(value) for value in train_labels])
     shares = keys.value_counts(normalize=True)
     probabilities = np.array([shares.get(label, 0.0) for label in classes])
