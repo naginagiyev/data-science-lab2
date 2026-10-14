@@ -128,11 +128,11 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.10 pilot-natural · 2026-10-14 · 65d417a · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
 - [x] P9.11 pilot-budget · 2026-10-14 · f8cf261 · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
 - [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · b677fe7 · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
-- [x] P9.13 Held-out cells · 2026-10-14 · (next) · predictions committed first (f78ebf7); 3 of 4 actual scores inside their intervals (projection not unreliable)
+- [x] P9.13 Held-out cells · 2026-10-14 · 5f69553 · predictions committed first (f78ebf7); 3 of 4 actual scores inside their intervals (projection not unreliable)
 
 ## P10. Analysis
 - [x] P10.1 analysis.py · 2026-10-12 · d8b1322 · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
-- [ ] P10.2 benchmark/figures.py
+- [x] P10.2 figures.py · 2026-10-14 · (next) · python -m benchmark.figures regenerates 8 figures (PDF, PNG) and 13 tables (CSV, MD)
 - [ ] P10.3 docs/results.md
 - [ ] P10.4 benchmark/projection.py and docs/projection.md
 

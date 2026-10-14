@@ -46,10 +46,12 @@ def score_vs_level(frame):
     data = analysis.normalized(frame)
     levels = sorted(data["level"].unique())
     figure, axis = plt.subplots(figsize=(7.4, 4.0))
-    for system in [name for name in SYSTEMS if name in set(data["system"])]:
+    shown = [name for name in SYSTEMS if name in set(data["system"])]
+    for position, system in enumerate(shown):
         points = [level_interval(data, system, level) for level in levels]
         means = [point[0] for point in points]
-        axis.errorbar(levels, means, yerr=[[mean - low for mean, low, _ in points], [high - mean for mean, _, high in points]], color=COLORS[system], marker=MARKERS[system], markersize=6, linewidth=2, capsize=3, label=system)
+        offset = (position - (len(shown) - 1) / 2) * 0.04
+        axis.errorbar([level + offset for level in levels], means, yerr=[[mean - low for mean, low, _ in points], [high - mean for mean, _, high in points]], color=COLORS[system], marker=MARKERS[system], markersize=6, linewidth=2, capsize=3, label=system)
     axis.set_xticks(levels)
     axis.set_xlabel("mess level")
     axis.set_ylabel("mean normalized score (1 = best in cell, 0 = dummy)")
@@ -121,11 +123,11 @@ def leak_scores(frame):
     for position, (system, row) in enumerate(summary.iterrows()):
         axis.plot([row["deployment_normalized"], row["naive_normalized"]], [position, position], color=GRID, linewidth=3)
         axis.plot(row["naive_normalized"], position, "o", color=MUTED, markersize=7, label="naive (leak in the test file)" if position == 0 else None)
-        axis.plot(row["deployment_normalized"], position, "o", color=COLORS.get(system, "#2a78d6"), markersize=8, label="deployment (leak masked)" if position == 0 else None)
+        axis.plot(row["deployment_normalized"], position, "o", color="#2a78d6", markersize=8, label="deployment (leak masked)" if position == 0 else None)
     axis.set_yticks(range(len(summary)), summary.index)
-    axis.set_xlabel("mean normalized score")
+    axis.set_xlabel("mean normalized score (1 = best deployment score in the cell, 0 = dummy)")
     axis.grid(axis="x", color=GRID, linewidth=0.8)
-    axis.legend(frameon=False, fontsize=8, loc="lower right")
+    axis.legend(frameon=False, fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0))
     save(figure, "leaks")
     return table(summary, "leaks-naive-vs-deployment")
 
