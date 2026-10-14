@@ -76,8 +76,12 @@ def add_leak(raw, name, target, task, seed):
     spec.update(dataset=name, target=target, agreement=AGREEMENT[spec["strength"]] if task != "regression" else None)
     return leaked, spec
 
-# the leak table of docs/datasets.md
+# writes the leak table (benchmark/results/leaks.md) for docs/datasets.md;...
+# python -m benchmark.leaks regenerates it
 def write_leak_table():
     lines = ["One leak column per Group D dataset (`benchmark/leaks.py`). In `test_features.csv` the column is empty", "(deployment); `test_features_naive.csv` keeps it.", "", "| Dataset | Leak column | Style | Strength |", "|---|---|---|---|"]
     lines += [f"| {name} | `{spec['column']}` | {spec['style']} | {spec['strength']} |" for name, spec in LEAKS.items()]
     (results_dir / "leaks.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
+if __name__ == "__main__":
+    write_leak_table()

@@ -985,3 +985,15 @@ Findings from the decision logs of the worst cells:
   0.7359 and autogluon 0.7164; concrete full rmse 3.714 inside; concrete autogluon rmse 11.979 outside
   [9.175, 10.272], worse than predicted). By the pre-registered rule (at least 3 of 4) the projection
   is not called unreliable.
+
+## 2026-10-14 · P11.1 · Code quality pass
+
+- Searched every project module for top-level functions and classes that nothing references. The
+  corruptor (dispatch by `globals()`) and the edatool detectors (registered by name) are used
+  dynamically. Three were really unused: `modelling/cv.py: cross_val_oof` (superseded by the engine's
+  own fold loop) is removed; `benchmark/leaks.py: write_leak_table` gets a command line
+  (`python -m benchmark.leaks` regenerates `benchmark/results/leaks.md`, byte-identical);
+  `benchmark/spend.py: optional_stopped` (the "$4: stop optional LLM work" rule of §1.4) is now
+  checked by the runner, which skips LLM cells once the total spend reaches it (harness only; the
+  total is about $2, so no past result is affected).
+- `ruff check --select F .` is clean; the style test passes.

@@ -133,8 +133,8 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
         "budget_s": float(cell["budget"]), "git_hash": git_hash(), "started_at": now_text(),
     }
     settings = load_settings(assignments=grid.get("settings", []))
-    if entry.get("llm") and not spend.check_allowed(0.0, settings.spend.model_copy(update={"category": "experiments"}))[0]:
-        row.update(status="skipped-spend", error="the experiments spend cap is reached")
+    if entry.get("llm") and (not spend.check_allowed(0.0, settings.spend.model_copy(update={"category": "experiments"}))[0] or spend.optional_stopped(settings.spend)):
+        row.update(status="skipped-spend", error="the experiments spend cap or the optional-stop level is reached")
         append_result(results_file, row, lock)
         return row
     extra = [argument for item in grid.get("settings", []) for argument in ("--set", item)] if entry.get("settings") else []

@@ -1,4 +1,3 @@
-import time
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
@@ -58,13 +57,3 @@ def oof_score(task, y, oof, n_classes):
 # an empty out-of-fold array of the right shape
 def empty_oof(rows, task, n_classes):
     return np.full(rows, np.nan) if task == "regression" else np.full((rows, n_classes), np.nan)
-
-# fits a fresh model per fold and returns the out-of-fold predictions and the...
-# seconds used; make_model() returns an unfitted estimator
-def cross_val_oof(fold_data, make_model, task, n_classes, rows):
-    start = time.perf_counter()
-    oof = empty_oof(rows, task, n_classes)
-    for fold in fold_data:
-        model = make_model().fit(fold.train_x, fold.train_y)
-        oof[fold.valid_rows] = model_predictions(model, fold.valid_x, task, n_classes)
-    return oof, time.perf_counter() - start
