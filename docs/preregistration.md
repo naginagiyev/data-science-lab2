@@ -137,3 +137,16 @@ intervals.
 - No dataset is removed after the pilot starts. After the freeze, method changes because of pilot
   results are not allowed; bug fixes are logged in `docs/deviations.md` and every affected cell is
   re-run.
+
+### 7.1 Held-out predictions (committed on 2026-10-14, before the held-out cells ran)
+
+Computed with the rule above by `python -m benchmark.projection --predict` from the other
+`pilot-main` cells (`benchmark/results/holdout-predictions.csv`). The interval of `full` uses 5 other
+datasets, because its students_dropout level-3 run failed and has no score.
+
+| dataset | system | metric | prediction | 95% interval |
+|---|---|---|---|---|
+| E-CommereShippingData | full | roc_auc | 0.7377 | [0.6954, 0.7441] |
+| E-CommereShippingData | autogluon | roc_auc | 0.7197 | [0.6758, 0.7566] |
+| concrete_compressive_strength | full | rmse | 3.8314 | [3.6116, 3.8646] |
+| concrete_compressive_strength | autogluon | rmse | 9.7706 | [9.1749, 10.2716] |

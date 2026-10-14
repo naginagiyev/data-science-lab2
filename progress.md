@@ -127,7 +127,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.9 pilot-seed · 2026-10-14 · 9be559d · 96/96 ok (free systems, seed 1); paused and resumed without loss
 - [x] P9.10 pilot-natural · 2026-10-14 · 65d417a · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
 - [x] P9.11 pilot-budget · 2026-10-14 · f8cf261 · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
-- [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · (next) · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
+- [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · b677fe7 · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
 - [ ] P9.13 Held-out cells
 
 ## P10. Analysis
