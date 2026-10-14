@@ -128,7 +128,7 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P9.10 pilot-natural · 2026-10-14 · 65d417a · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
 - [x] P9.11 pilot-budget · 2026-10-14 · f8cf261 · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
 - [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · b677fe7 · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
-- [ ] P9.13 Held-out cells
+- [x] P9.13 Held-out cells · 2026-10-14 · (next) · predictions committed first (f78ebf7); 3 of 4 actual scores inside their intervals (projection not unreliable)
 
 ## P10. Analysis
 - [x] P10.1 analysis.py · 2026-10-12 · d8b1322 · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
@@ -150,25 +150,6 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [ ] S2 LLM swap (RQ6)
 - [ ] S3 Full grids (only if the user asks)
 - [ ] S4 AutoGluon Assistant baseline
-
-## Resume here (paused on 2026-10-14 at the user's request)
-
-- Nothing is running. Results so far are committed or saved in `benchmark/results/` (the runner skips
-  finished cells).
-- Next, in this order (each in the background, never two timed grids at once):
-  1. `uv run python -m benchmark.runner --grid pilot-seed` (12 cells left), then
-     `--grid pilot-natural` (12 cells, 3 paid) and `--grid pilot-budget` (4 cells, 300 s). Commit
-     P9.9, P9.10, P9.11.
-  2. P9.12: `uv run python -m edabench.evaluate benchmark`, copy `edabench/results/benchmark-deterministic.*`
-     and `baselines.*` to `benchmark/results/` as the final E8 files, then restore the P4.1 baseline
-     files in `edabench/results/` with `git checkout`.
-  3. P9.13: `uv run python -m benchmark.projection --predict` (writes
-     `benchmark/results/holdout-predictions.csv`), commit it and copy the numbers into section 7 of
-     `docs/preregistration.md`, then `uv run python -m benchmark.runner --grid pilot-main --holdout`.
-  4. P10: `python -m benchmark.figures`, `python -m benchmark.resultsdoc` (writes `docs/results.md`;
-     `benchmark/resultsdoc.py` has no test yet), `python -m benchmark.projection` (writes
-     `docs/projection.md`); then P11 and P12.
-- Spend: dev $0.39 of $1.50, experiments $1.48 of $2.75 (`benchmark/results/spend.json`).
 
 ## Open problems
 - Solved in P7.9: nano's semantic name review flagged normal features as post-event leaks (stricter edatool prompt).
@@ -270,3 +251,16 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
   1,000,000 rows) finish inside 300 s with at most 2.14 GB of memory, after three time fixes (verify
   on a row sample, a refit time estimate, a reserve for the test stage); the same seed and a warm
   cache give the same plans and scores; a fresh clone installs and passes the tests.
+- **P9 (2026-10-14).** Created: `docs/preregistration.md`, `benchmark/framereval.py`, the pilot, smoke,
+  reading and full grid files in `benchmark/grids/`, and the result files `files.json`, `smoke.csv`,
+  `framer.csv`, `pilot-main.csv`, `pilot-leaks.csv`, `pilot-ablations.csv`, `pilot-types.csv`,
+  `repairs.csv`, `reading.csv`, `pilot-seed.csv`, `pilot-natural.csv`, `pilot-budget.csv`,
+  `edabench-final.*`, `edabench-baselines.*`, `holdout-predictions.csv`. Edited: `benchmark/runner.py`
+  (mess and budget lists, held-out cells, grid check, per-cell scoring errors),
+  `benchmark/materialize.py` (manifest), `benchmark/corruptor.py` (packed position bug),
+  `benchmark/scoring.py` (layout files, decimal commas), `benchmark/systems/flaml.py` (column
+  names), `docs/decisions.md`, `docs/deviations.md`. Deleted: nothing. What changed: the pilot ran
+  (about 560 runs) after the pre-registration (tag `prereg`) and the freeze (tag `v2-freeze`). Main
+  findings: `full` found every leak; the cleaning variants beat AutoGluon on the messy level-3 files;
+  no gain on naturally messy files; two weaknesses of the frozen system (time limits not enforced once
+  the budget is used up; decimal commas in a regression target). Experiments spend: $1.61 of $2.75.

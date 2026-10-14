@@ -1,7 +1,7 @@
 {
   "totals": {
     "dev": 0.38758720000000013,
-    "experiments": 1.6147478999999978
+    "experiments": 1.6183774999999978
   },
   "calls": [
     {
@@ -11478,6 +11478,42 @@
       "input_tokens": 2152,
       "output_tokens": 206,
       "cost_usd": 0.0011904
+    },
+    {
+      "time": "2026-10-14T11:10:02+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1553,
+      "output_tokens": 188,
+      "cost_usd": 0.000922
+    },
+    {
+      "time": "2026-10-14T11:10:04+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1784,
+      "output_tokens": 194,
+      "cost_usd": 0.001024
+    },
+    {
+      "time": "2026-10-14T11:10:37+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1424,
+      "output_tokens": 146,
+      "cost_usd": 0.0008032
+    },
+    {
+      "time": "2026-10-14T11:10:39+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1613,
+      "output_tokens": 147,
+      "cost_usd": 0.0008804
     }
   ]
 }

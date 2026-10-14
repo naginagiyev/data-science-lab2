@@ -977,3 +977,11 @@ Findings from the decision logs of the worst cells:
   the baseline comparison (ydata-profiling, cleanlab, old eda.py) of P4.1 is in
   `benchmark/results/edabench-baselines.*`. The P4.1 files in `edabench/results/` stay unchanged.
 - Experiments spend after P9.12: $1.61 of $2.75.
+
+## 2026-10-14 · P9.13 · Held-out cells
+
+- The 4 held-out cells ran last (`--holdout`), after the predictions were committed (f78ebf7): 4/4
+  ok. 3 of 4 actual scores fell inside their predicted 95% intervals (E-CommereShippingData full
+  0.7359 and autogluon 0.7164; concrete full rmse 3.714 inside; concrete autogluon rmse 11.979 outside
+  [9.175, 10.272], worse than predicted). By the pre-registered rule (at least 3 of 4) the projection
+  is not called unreliable.
