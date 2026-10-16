@@ -4,7 +4,6 @@
   "skrub": {"python": "main", "module": "benchmark.systems.skrub", "llm": false},
   "flaml": {"python": "benchmark/envs/flaml/.venv/Scripts/python.exe", "module": "benchmark.systems.flaml", "llm": false},
   "autogluon": {"python": "benchmark/envs/autogluon/.venv/Scripts/python.exe", "module": "benchmark.systems.autogluon", "llm": false},
-  "v1": {"python": "benchmark/legacy/v1/.venv/Scripts/python.exe", "script": "benchmark/legacy/v1/headless.py", "llm": true, "needs_key": true, "timeout": 1200},
   "generic": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "generic"], "llm": false, "settings": true, "variant": "generic"},
   "rules": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "rules"], "llm": false, "settings": true, "variant": "rules"},
   "rules+ag": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "rules+ag"], "llm": false, "settings": true, "variant": "rules+ag"},

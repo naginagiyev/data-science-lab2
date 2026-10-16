@@ -57,7 +57,7 @@ Failed `full` runs in `pilot-main` (counted with the dummy score): level 3: 1.
 
 - RQ1 (messy data): not worth running yet: no comparison reaches a power of 0.8 with the effects seen in the pilot.
 - RQ2 (no harm, level 0): mean difference of full vs generic -0.033 (spread over datasets 0.071); equivalence margin 0.02.
-- RQ3 to RQ5: see `docs/results.md` (leak detection, reliability and cost, ablations); their full grids are `leaks`, `subsets` and `ablations`.
+- RQ3 to RQ5: see `docs/results.md` (leak detection, reliability and cost, ablations); their full grids are `leaks` and `ablations`.
 - Plug-in (full+ag vs autogluon): power 0.68.
 
 ## Estimated time and cost of the full grids (from the measured pilot runs)
@@ -68,7 +68,4 @@ Failed `full` runs in `pilot-main` (counted with the dummy score): level 3: 1.
 | leaks | 210 | 5.8 | 0.89 |
 | ablations | 288 | 11.8 | 2.08 |
 | types | 320 | 9.4 | 1.87 |
-| subsets | 12 | 1.2 | 0.00 |
 | budgets | 45 | 2.5 | 0.35 |
-
-Systems without pilot runs (v1) are counted with their full time budget and no LLM cost, so their grids are underestimated.

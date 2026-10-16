@@ -96,7 +96,7 @@ def test_runner_scores_handmade_file(tmp_path, monkeypatch):
     (adapter_dir / "handmade.py").write_text(HANDMADE_ADAPTER)
     registry = tmp_path / "registry.json"
     registry.write_text(json.dumps({"handmade": {"python": "main", "module": "handmade", "args": ["--handmade", str(handmade)], "llm": False}}))
-    monkeypatch.setattr(runner, "system_environment", lambda threads=4, keep_key=False: dict(os.environ, PYTHONPATH=str(adapter_dir)))
+    monkeypatch.setattr(runner, "system_environment", lambda threads=4: dict(os.environ, PYTHONPATH=str(adapter_dir)))
     grid = tmp_path / "toy.json"
     grid.write_text(json.dumps({"name": "toy", "systems": ["handmade"], "datasets": ["toyset"], "levels": [0], "seeds": [0], "budget": 30}))
     monkeypatch.setattr(runner, "load_grid", lambda name: json.loads(grid.read_text()))
@@ -106,8 +106,8 @@ def test_runner_scores_handmade_file(tmp_path, monkeypatch):
     assert math.isclose(rows[0]["score"], expected)
     assert rows[0]["dummy_score"] == 0.5
     assert rows[0]["llm_calls"] == 2 and rows[0]["cost_usd"] == 0.01
-    saved = pd.read_csv(tmp_path / "results" / "toy.csv")
-    assert math.isclose(saved["score"][0], expected)
+    saved = pd.read_csv(tmp_path / "results" / "runs.csv")
+    assert saved["grid"].tolist() == ["toy"] and math.isclose(saved["score"][0], expected)
     assert runner.run_grid("toy", registry_path=registry, results_folder=tmp_path / "results") == []
     shutil.rmtree(tmp_path / "outputs")
 

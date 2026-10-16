@@ -997,3 +997,27 @@ Findings from the decision logs of the worst cells:
   checked by the runner, which skips LLM cells once the total spend reaches it (harness only; the
   total is about $2, so no past result is affected).
 - `ruff check --select F .` is clean; the style test passes.
+
+## 2026-10-16 · P13 · Workspace cleanup
+
+- Asked by the user: remove what is not needed, organize the folders, and join results that were
+  spread over many files. The user checked the removal list first.
+- Removed: the frozen v1 copy `benchmark/legacy/v1/` and its environment (never run; restorable from
+  the tag `v1-dslab1` and the git history), with the `subsets` grid, the `v1` registry entry, the v1
+  adapter test and the v1-only code in the runner; the dev grids `p2-*`, `p3-generic`, `p5-rules`,
+  `p7-*` (their result rows are kept); `benchmark/envs/tabpfn.txt` (TabPFN was skipped);
+  `edabench/runlegacy.py` (unused); duplicate copies of the audit results.
+- Joined: the 17 per-grid result files into `benchmark/results/runs.csv` (rows unchanged; the column
+  `grid` names the experiment; the runner resumes per grid from it); the 11 tables into
+  `benchmark/results/tables.md` (same Markdown); the leak table, corruptor examples and natural-mess
+  check are written straight into `docs/datasets.md` (byte-identical). `docs/results.md` and
+  `docs/projection.md` regenerate with the same numbers.
+- The audit results live only in `edabench/results/`; the final P9.12 run is `benchmark-final.*`.
+  `docs/results.md` (E8) now shows it (recall 0.987, precision 0.855) instead of the P4.1 numbers it
+  showed by mistake (0.986, 0.896).
+- Moved to `docs/`: `buildplan.md`, `progress.md`, `study.html`, and the original design inputs
+  (`architecture/`, before git-ignored) as `docs/background/` (now in git).
+- Git-ignored data deleted: AutoGluon backend models (`cache/b`, 4.9 GB), the saved `model.joblib`
+  of every benchmark run folder (554 MB; reports, decisions, LLM logs and predictions are kept),
+  work folders, dev run folders, the generated 1M-row file, the edabench baseline cache and Python
+  caches. Kept: the LLM caches, OpenML downloads, benchmark files and run logs.

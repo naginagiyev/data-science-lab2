@@ -1,7 +1,6 @@
 import zlib
 import numpy as np
 import pandas as pd
-from paths import results_dir
 
 # one post-event leak column per Group D dataset: its name, its style and its...
 # strength (strong: 98% agreement or target x U(0.97, 1.03); moderate: 80%...
@@ -76,12 +75,11 @@ def add_leak(raw, name, target, task, seed):
     spec.update(dataset=name, target=target, agreement=AGREEMENT[spec["strength"]] if task != "regression" else None)
     return leaked, spec
 
-# writes the leak table (benchmark/results/leaks.md) for docs/datasets.md;...
-# python -m benchmark.leaks regenerates it
-def write_leak_table():
+# the leak table of docs/datasets.md; python -m benchmark.leaks prints it
+def leak_table():
     lines = ["One leak column per Group D dataset (`benchmark/leaks.py`). In `test_features.csv` the column is empty", "(deployment); `test_features_naive.csv` keeps it.", "", "| Dataset | Leak column | Style | Strength |", "|---|---|---|---|"]
     lines += [f"| {name} | `{spec['column']}` | {spec['style']} | {spec['strength']} |" for name, spec in LEAKS.items()]
-    (results_dir / "leaks.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    return "\n".join(lines)
 
 if __name__ == "__main__":
-    write_leak_table()
+    print(leak_table())

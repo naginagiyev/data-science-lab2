@@ -9,9 +9,12 @@ LOWER_IS_BETTER = {"rmse", "log_loss"}
 CELL = ["dataset", "level", "seed", "mess_types", "budget_s"]
 NEMENYI_Q = {2: 1.960, 3: 2.343, 4: 2.569, 5: 2.728, 6: 2.850, 7: 2.949, 8: 3.031, 9: 3.102, 10: 3.164}
 
-# reads the results of one or more grids; a missing file gives no rows
+# reads the results of one or more grids from runs.csv; a missing file or grid...
+# gives no rows
 def load_results(names, folder=None):
-    frames = [pd.read_csv((folder or results_dir) / f"{name}.csv") for name in names if ((folder or results_dir) / f"{name}.csv").exists()]
+    path = (folder or results_dir) / "runs.csv"
+    frame = pd.read_csv(path) if path.exists() else pd.DataFrame(columns=["grid"])
+    frames = [frame[frame["grid"] == name] for name in names if (frame["grid"] == name).any()]
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 # higher-is-better scores: rmse and log_loss change sign; a failed run gets the...

@@ -9,7 +9,7 @@ from benchmark.runner import expand_cells, load_grid
 
 COMPARISONS = [("full", "autogluon"), ("full", "skrub"), ("full", "lightgbm"), ("full", "generic"), ("full+ag", "autogluon")]
 HOLDOUT = [("E-CommereShippingData", "full"), ("E-CommereShippingData", "autogluon"), ("concrete_compressive_strength", "full"), ("concrete_compressive_strength", "autogluon")]
-FULL_GRIDS = ["main", "leaks", "ablations", "types", "subsets", "budgets"]
+FULL_GRIDS = ["main", "leaks", "ablations", "types", "budgets"]
 
 # the standard deviation of the normalized score between seeds 0 and 1 of the...
 # free systems (pilot-main seed 0 vs pilot-seed seed 1, same cells); both seeds...
@@ -159,7 +159,7 @@ def build(folder=None, out=None, repetitions=2000):
     load = lambda name: analysis.load_results([name], folder)
     main, seed, budget, types = load("pilot-main"), load("pilot-seed"), load("pilot-budget"), load("pilot-types")
     if main.empty:
-        raise SystemExit("pilot-main.csv is missing; run the pilot first")
+        raise SystemExit("runs.csv has no pilot-main rows; run the pilot first")
     noise = seed_noise(main, seed) if not seed.empty else np.nan
     effects = {}
     for system, baseline in COMPARISONS:
@@ -210,7 +210,7 @@ def build(folder=None, out=None, repetitions=2000):
     lines += ["", "## Recommendation per research question", ""]
     lines.append(f"- RQ1 (messy data): {recommendation({key: value for key, value in powers.items() if key.startswith('full vs')}, holdout_ok, budget_ok)}.")
     lines.append(f"- RQ2 (no harm, level 0): mean difference of full vs generic {show(level0[0])} (spread over datasets {show(level0[1])}); equivalence margin 0.02.")
-    lines.append("- RQ3 to RQ5: see `docs/results.md` (leak detection, reliability and cost, ablations); their full grids are `leaks`, `subsets` and `ablations`.")
+    lines.append("- RQ3 to RQ5: see `docs/results.md` (leak detection, reliability and cost, ablations); their full grids are `leaks` and `ablations`.")
     lines.append(f"- Plug-in (full+ag vs autogluon): power {show(powers['full+ag vs autogluon (levels 2+3)'], 2)}.")
     lines += ["", "## Estimated time and cost of the full grids (from the measured pilot runs)", "", "| grid | runs | hours (2 workers) | LLM cost (USD) |", "|---|---|---|---|"]
     lines += [f"| {row.grid} | {row.runs} | {row.hours_2_workers:.1f} | {row.llm_cost_usd:.2f} |" for row in estimates.itertuples()]

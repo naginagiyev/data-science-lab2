@@ -10,13 +10,12 @@ import itertools
 import threading
 import subprocess
 from benchmark import spend
-from dotenv import dotenv_values
 from settings import load_settings
 from tools.runfolder import now_text
 from benchmark.scoring import score_cell
 from benchmark.materialize import cell_dir
 from concurrent.futures import ThreadPoolExecutor
-from paths import benchmark_outputs_dir, env_file, grids_dir, logs_dir, results_dir, root_dir, systems_registry_file, workdirs_dir
+from paths import benchmark_outputs_dir, grids_dir, logs_dir, results_dir, root_dir, systems_registry_file, workdirs_dir
 
 COLUMNS = [
     "grid", "system", "variant", "dataset", "group", "level", "mess_types", "seed", "budget_s", "status", "error",
@@ -57,12 +56,12 @@ def is_holdout(cell, grid):
 def cell_key(row):
     return (str(row["system"]), str(row["dataset"]), str(row["group"]), str(row["level"]), str(row["mess_types"] if "mess_types" in row else row["mess"]), str(row["seed"]), str(float(row["budget_s"] if "budget_s" in row else row["budget"])))
 
-# returns the keys of the cells that are already in the results file
-def done_keys(results_file):
+# returns the keys of the cells of one grid that are already in the results file
+def done_keys(results_file, grid_name):
     if not results_file.exists():
         return set()
     with results_file.open(encoding="utf-8", newline="") as handle:
-        return {cell_key(row) for row in csv.DictReader(handle)}
+        return {cell_key(row) for row in csv.DictReader(handle) if row["grid"] == grid_name}
 
 # appends one result row to the results CSV (writes the header first)
 def append_result(results_file, row, lock):
@@ -90,12 +89,9 @@ def kill_tree(process):
         process.kill()
 
 # the environment of a system process: 4 threads, UTF-8 output, the project on...
-# the path, and no API key (LLM adapters read it from .env themselves); a system...
-# that reads the key only from the environment (v1) gets it with keep_key
-def system_environment(threads=4, keep_key=False):
+# the path, and no API key (LLM adapters read it from .env themselves)
+def system_environment(threads=4):
     environment = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
-    if keep_key:
-        environment["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY") or dotenv_values(env_file).get("OPENAI_API_KEY") or ""
     for name in THREAD_VARIABLES:
         environment[name] = str(threads)
     environment["PYTHONIOENCODING"] = "utf-8"
@@ -108,9 +104,8 @@ def cell_command(entry, cell, files, truth, workdir, out, extra_arguments):
     python = sys.executable if entry["python"] == "main" else str(root_dir / entry["python"])
     names = ["test_features.csv"] + (["test_features_naive.csv"] if (files / "test_features_naive.csv").exists() else [])
     tests = [str(files / name) for name in names]
-    start = ["-m", entry["module"]] if "module" in entry else [str(root_dir / entry["script"])]
     return [
-        python, *start, *entry.get("args", []),
+        python, "-m", entry["module"], *entry.get("args", []),
         "--train", str(files / "train.csv"), "--test", ",".join(tests), "--target", truth["target"],
         "--task", truth["task"], "--metric", truth["metric"], "--budget", str(cell["budget"]), "--seed", str(cell["seed"]),
         "--workdir", str(workdir), "--out", str(out), *extra_arguments,
@@ -143,7 +138,7 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
     log_dir.mkdir(parents=True, exist_ok=True)
     start = time.perf_counter()
     with (log_dir / f"{cell_id}.log").open("w", encoding="utf-8") as log:
-        process = subprocess.Popen(command, cwd=root_dir, stdout=log, stderr=subprocess.STDOUT, env=system_environment(keep_key=entry.get("needs_key", False)))
+        process = subprocess.Popen(command, cwd=root_dir, stdout=log, stderr=subprocess.STDOUT, env=system_environment())
         try:
             process.wait(timeout=timeout)
             timed_out = False
@@ -181,8 +176,8 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
 def run_grid(name, workers=None, registry_path=None, results_folder=None, systems=None, limit=None, holdout=False):
     grid = load_grid(name)
     registry = load_registry(registry_path)
-    results_file = (results_folder or results_dir) / f"{grid['name']}.csv"
-    finished = done_keys(results_file)
+    results_file = (results_folder or results_dir) / "runs.csv"
+    finished = done_keys(results_file, grid["name"])
     cells = [cell for cell in expand_cells(grid) if cell_key(cell) not in finished and (not systems or cell["system"] in systems) and is_holdout(cell, grid) == holdout]
     cells = cells[:limit] if limit else cells
     lock = threading.Lock()
@@ -196,9 +191,8 @@ def run_grid(name, workers=None, registry_path=None, results_folder=None, system
     return rows
 
 # checks a grid without running it: every cell has its files and a known...
-# system, and the first cell's system starts (it is stopped after `seconds`;...
-# systems that call an LLM outside the v2 spend control, like v1, are not...
-# started); returns a list of problems
+# system, and the first cell's system starts (it is stopped after `seconds`);...
+# returns a list of problems
 def check_grid(name, seconds=20, registry_path=None):
     grid = load_grid(name)
     registry = load_registry(registry_path)
@@ -209,8 +203,6 @@ def check_grid(name, seconds=20, registry_path=None):
     if problems:
         return problems
     cell = cells[0]
-    if registry[cell["system"]].get("llm") and not registry[cell["system"]].get("settings"):
-        return problems
     files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"])
     truth = json.loads((files / "truth.json").read_text(encoding="utf-8"))
     workdir = workdirs_dir / secrets.token_hex(4)

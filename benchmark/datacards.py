@@ -1,6 +1,7 @@
 import sys
 import json
 from edatool import audit
+from benchmark.leaks import leak_table
 from paths import docs_dir, results_dir
 from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt, write_layout
 from benchmark.datasets import GROUP_A, GROUP_C, LOCAL_DATASETS, MANIFEST, OPENML_DATASETS, dataset_spec, load_dataset
@@ -64,8 +65,8 @@ def card(name, entry):
         f"- Why: {why}.", f"- Known mess: {mess}.", "",
     ]
 
-# writes docs/datasets.md from the manifest and the result files of the...
-# corruptor, the leak generator and the natural-mess check
+# writes docs/datasets.md from the manifest, the corruptor examples, the leak...
+# table and the natural-mess check
 def write_cards():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     lines = [
@@ -90,16 +91,13 @@ def write_cards():
             lines += [f"## {title}", ""]
             for name in names:
                 lines += card(name, manifest[name])
-    for file_name, title in [("mess-examples.md", "Corruptor examples"), ("leaks.md", "Leak columns (Group D)"), ("natural-mess.md", "Natural mess")]:
-        path = results_dir / file_name
-        if path.exists():
-            lines += [f"## {title}", "", path.read_text(encoding="utf-8").strip(), ""]
+    for title, text in [("Corruptor examples", mess_examples()), ("Leak columns (Group D)", leak_table()), ("Natural mess", natural_mess())]:
+        lines += [f"## {title}", "", text.strip(), ""]
     CARDS_FILE.write_text("\n".join(lines).rstrip("\n") + "\n", encoding="utf-8", newline="\n")
 
 # one realistic example per mess type (level 3, one type at a time) from the...
-# first Group A dataset where the type applies; written to...
-# benchmark/results/mess-examples.md
-def write_mess_examples():
+# first Group A dataset where the type applies
+def mess_examples():
     lines = ["Level 3, one type at a time, seed 0; three changed cells per type (before → after).", ""]
     for kind in [kind for kind in TYPE_NUMBERS if kind not in {"layout", "leak"}]:
         for name in GROUP_A:
@@ -124,7 +122,7 @@ def write_mess_examples():
     head = sample_path.read_bytes().decode("cp1252").splitlines()[:5]
     sample_path.unlink()
     lines += ["- **10. layout** (credit-g, level 3: title rows, `;`, decimal commas, cp1252, footer; reader test E6b): first lines:", "", "```", *[line[:110] for line in head], "```"]
-    (results_dir / "mess-examples.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    return "\n".join(lines)
 
 # the columns that show the natural mess of each Group C dataset
 NATURAL_COLUMNS = {
@@ -138,8 +136,8 @@ NATURAL_COLUMNS = {
 
 # the natural-mess check of P6.5: top values of the messy columns and the...
 # deterministic audit findings (B, C and D codes) of every Group C dataset and...
-# of the replaced Food_Delivery_Time; written to benchmark/results/natural-mess.md
-def write_natural_mess():
+# of the replaced Food_Delivery_Time
+def natural_mess():
     lines = ["Checked on the downloaded versions (deterministic audit of the first 10,000 rows).", ""]
     for name in GROUP_C + ["Food_Delivery_Time"]:
         spec = dataset_spec(name)
@@ -155,12 +153,8 @@ def write_natural_mess():
             if column in raw:
                 top = raw[column].value_counts().head(5)
                 lines.append(f"  - `{column}`: " + ", ".join(f"`{value}` ({count})" for value, count in top.items()))
-    (results_dir / "natural-mess.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    return "\n".join(lines)
 
 if __name__ == "__main__":
-    if "--examples" in sys.argv:
-        write_mess_examples()
-    if "--natural" in sys.argv:
-        write_natural_mess()
     write_cards()
     sys.exit(0)

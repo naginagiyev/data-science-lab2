@@ -26,11 +26,12 @@ def results(seed=0, systems=SYSTEMS, levels=(0, 2, 3)):
 # budgets, and a generated report with a recommendation and grid estimates
 def test_projection(tmp_path):
     main = results()
-    main.to_csv(tmp_path / "pilot-main.csv", index=False)
     free = {name: value for name, value in SYSTEMS.items() if name in {"dummy", "lightgbm", "skrub", "autogluon", "generic"}}
-    results(1, free, (0, 3)).to_csv(tmp_path / "pilot-seed.csv", index=False)
+    seed = results(1, free, (0, 3))
     budget = results(0, {"dummy": 0.0, "full": 0.3, "autogluon": 0.25}, (3,))
-    budget[budget["dataset"].isin(DATASETS[:2])].assign(budget_s=300.0).to_csv(tmp_path / "pilot-budget.csv", index=False)
+    budget = budget[budget["dataset"].isin(DATASETS[:2])].assign(budget_s=300.0)
+    runs = [main.assign(grid="pilot-main"), seed.assign(grid="pilot-seed"), budget.assign(grid="pilot-budget")]
+    pd.concat(runs, ignore_index=True).to_csv(tmp_path / "runs.csv", index=False)
     predictions = projection.holdout_predictions(main)
     assert len(predictions) == 4 and (predictions["errors_from"] == 6).all()
     predictions.to_csv(tmp_path / "holdout-predictions.csv", index=False)

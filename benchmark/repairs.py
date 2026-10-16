@@ -11,6 +11,7 @@ from tools.runfolder import RunFolder
 from benchmark.datasets import GROUP_A
 from benchmark.materialize import cell_dir
 from operations.compiler import AgentSteps
+from benchmark.analysis import load_results
 from paths import results_dir, workdirs_dir
 
 REPAIR_TYPES = ["units", "mixed_units", "packed", "dates", "booleans", "spellings", "fake_missing", "impossible"]
@@ -92,7 +93,7 @@ def check_file(dataset, mess, variant="rules", budget=120):
 # scores the prepared training tables that the LLM runs of a grid saved...
 # (prepared.parquet in benchmark mode) against the ground truth of their cells
 def score_saved_runs(grid):
-    results = pd.read_csv(results_dir / f"{grid}.csv")
+    results = load_results([grid])
     rows = []
     for row in results[results["status"].eq("ok") & results["run_dir"].notna()].itertuples():
         prepared_file = Path(str(row.run_dir)) / "prepared.parquet"

@@ -9,7 +9,7 @@ Optuna) or, as a plug-in, by AutoGluon or FLAML.
 
 This repository also holds the messy-table benchmark used to test it (controlled mess with ground
 truth, natural mess, a leakage set) and the results of a pilot study. The build plan is
-`buildplan.md`; the work log is `progress.md`; every judgment call is in `docs/decisions.md`.
+`docs/buildplan.md`; the work log is `docs/progress.md`; every judgment call is in `docs/decisions.md`.
 
 ## Install
 
@@ -87,7 +87,7 @@ uv run python -m benchmark.reproduce --grid pilot    # about 8 h, about $1.7
 ```
 
 `pilot` writes the benchmark files (OpenML downloads on first use), runs every pilot grid, the repair
-checks and the framer test, and generates `benchmark/results/figures/`, `benchmark/results/tables/`,
+checks and the framer test, and generates `benchmark/results/figures/`, `benchmark/results/tables.md`,
 `docs/results.md` and `docs/projection.md`. The dev pool needs four local files in `data/` (git-ignored):
 `ibmchurn.csv` (IBM Telco Customer Churn), `kinghousedata.csv` (King County house sales),
 `winequality.csv` (Wine Quality) and `creditcardfraud.csv` (Credit Card Fraud Detection), all public
@@ -102,15 +102,16 @@ The full grids are written and checked but were not run in this project; estimat
 | `leaks` | 210 | about 6 h | about $0.9 |
 | `ablations` | 288 | about 12 h | about $2.1 |
 | `types` | 320 | about 9 h | about $1.9 |
-| `subsets` (v1 only) | 12 | not measured | not measured |
 | `budgets` | 45 | about 2.5 h | about $0.4 |
 
 Run them with `uv run python -m benchmark.reproduce --grid main` (and so on).
 
 ## Results
 
-`docs/results.md` (pilot results, small sample) and `docs/projection.md` (what the full benchmark
-would show, with power estimates and a recommendation). The design and the protocol are fixed in
+Every benchmark run is one row of `benchmark/results/runs.csv` (column `grid` names the
+experiment; the `p2-*` to `p7-*` grids are build checkpoints). `docs/results.md` (pilot results,
+small sample) and `docs/projection.md` (what the full benchmark would show, with power estimates
+and a recommendation). The design and the protocol are fixed in
 `docs/preregistration.md`; every later change is in `docs/deviations.md`.
 
 ## Folder map
@@ -129,5 +130,8 @@ prompts/                   the LLM prompts
 edatool/, edabench/        the auditor and its own benchmark (vendored and improved)
 benchmark/                 datasets, corruptor, leaks, runner, systems, grids, analysis, results
 tests/                     fast suite (uv run pytest -q) and slow tests (-m slow)
-docs/                      decisions, deviations, data cards, pre-registration, results, architecture
+docs/                      build plan, progress log, decisions, deviations, data cards,
+                           pre-registration, results, architecture, study.html, background/
+cache/                     git-ignored: LLM answer cache, OpenML downloads, benchmark files and
+                           run folders (report, decisions, LLM log of every benchmark run)
 ```

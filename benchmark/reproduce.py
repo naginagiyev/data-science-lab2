@@ -6,7 +6,7 @@ from benchmark.datasets import GROUP_A, GROUP_C, GROUP_D
 
 TYPES = ["ids", "packed", "dates", "booleans", "spellings", "mixed_units", "units", "impossible", "fake_missing", "plain_missing", "layout"]
 PILOT_GRIDS = ["pilot-main", "pilot-leaks", "pilot-ablations", "pilot-types", "pilot-seed", "pilot-natural", "pilot-budget", "reading"]
-FULL_GRIDS = ["main", "leaks", "ablations", "types", "subsets", "budgets"]
+FULL_GRIDS = ["main", "leaks", "ablations", "types", "budgets"]
 
 # runs one python module of this project and stops on an error
 def module(name, *arguments):

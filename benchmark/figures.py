@@ -1,19 +1,19 @@
 import sys
 import json
-import shutil
 import matplotlib
 import numpy as np
 import pandas as pd
 from benchmark import analysis
 import matplotlib.pyplot as plt
 from benchmark.materialize import cell_dir
-from paths import edabench_results_dir, figures_dir, results_dir, tables_dir
+from paths import figures_dir, results_dir, tables_file
 
 SYSTEMS = ["lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag"]
 COLORS = dict(zip(SYSTEMS, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]))
 MARKERS = dict(zip(SYSTEMS, ["o", "s", "D", "^", "v", "P", "X", "*"]))
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 BASELINES = ["autogluon", "skrub", "lightgbm", "flaml", "generic"]
+TABLES = {}
 matplotlib.use("Agg")
 plt.rcParams.update({"font.size": 9, "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED, "axes.spines.top": False, "axes.spines.right": False})
 
@@ -25,12 +25,15 @@ def save(figure, name):
         figure.savefig(figures_dir / f"{name}.{suffix}", dpi=200)
     plt.close(figure)
 
-# saves a table as CSV and Markdown
+# keeps a table as Markdown until write_tables puts every table into one file
 def table(frame, name, index=True):
-    tables_dir.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(tables_dir / f"{name}.csv", index=index, lineterminator="\n")
-    (tables_dir / f"{name}.md").write_text(frame.to_markdown(index=index, floatfmt=".4f") + "\n", encoding="utf-8", newline="\n")
+    TABLES[name] = frame.to_markdown(index=index, floatfmt=".4f")
     return frame
+
+# writes every kept table into tables.md, one section per table
+def write_tables():
+    sections = [f"## {name}\n\n{text}\n" for name, text in TABLES.items()]
+    tables_file.write_text("# Pilot tables\n\n" + "\n".join(sections), encoding="utf-8", newline="\n")
 
 # the bootstrap 95% interval of a system's mean normalized score at one level...
 # (resampling datasets)
@@ -106,10 +109,10 @@ def type_gains(frame):
     save(figure, "gain-per-type")
     return table(pivot, "gain-per-type")
 
-# figure 4: leak experiment: naive score (leak present at test time) vs...
-# deployment score (leak masked), normalized with the deployment cell's dummy...
-# and best
-def leak_scores(frame):
+# leak experiment: mean naive score (leak present at test time) and...
+# deployment score (leak masked) per system, normalized with the deployment...
+# cell's dummy and best
+def leak_summary(frame):
     data = analysis.normalized(frame)
     naive = frame["secondary"].map(lambda text: json.loads(text).get("naive_score") if isinstance(text, str) and text.startswith("{") else None)
     data = data.join(naive.rename("naive"), how="left")
@@ -118,7 +121,13 @@ def leak_scores(frame):
     sign = np.where(data["metric"].isin(analysis.LOWER_IS_BETTER), -1.0, 1.0)
     best = data.groupby(analysis.CELL)["oriented"].transform("max")
     data["naive_normalized"] = (data["naive"] * sign - data["dummy_oriented"]) / (best - data["dummy_oriented"])
-    summary = data.groupby("system")[["naive_normalized", "normalized"]].mean().rename(columns={"normalized": "deployment_normalized"})
+    return data.groupby("system")[["naive_normalized", "normalized"]].mean().rename(columns={"normalized": "deployment_normalized"})
+
+# figure 4: the leak summary as naive vs deployment points per system
+def leak_scores(frame):
+    summary = leak_summary(frame)
+    if summary.empty:
+        return summary
     figure, axis = plt.subplots(figsize=(6.4, 0.45 * len(summary) + 1.2))
     for position, (system, row) in enumerate(summary.iterrows()):
         axis.plot([row["deployment_normalized"], row["naive_normalized"]], [position, position], color=GRID, linewidth=3)
@@ -200,16 +209,13 @@ def build():
     if (results_dir / "framer.csv").exists():
         framer = pd.read_csv(results_dir / "framer.csv")
         table(framer[["rules_target_ok", "rules_task_ok", "llm_target_ok", "llm_task_ok"]].sum().to_frame("correct of 40"), "framer-accuracy")
-    for name in ["benchmark-deterministic.md", "baselines.md"]:
-        if (edabench_results_dir / name).exists():
-            tables_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy(edabench_results_dir / name, tables_dir / f"audit-{name}")
+    write_tables()
     return outputs
 
 # command line: python -m benchmark.figures
 def main():
     build()
-    print(f"Figures in {figures_dir}, tables in {tables_dir}")
+    print(f"Figures in {figures_dir}, tables in {tables_file}")
     return 0
 
 if __name__ == "__main__":

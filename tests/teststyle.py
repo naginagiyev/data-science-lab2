@@ -4,8 +4,8 @@ import tokenize
 import subprocess
 from paths import root_dir
 
-FROZEN_PREFIXES = ("benchmark/legacy/", "edabench/legacy/")
-SKIPPED_FILES = {"buildplan.md", "uv.lock"}
+FROZEN_PREFIXES = ("edabench/legacy/", "docs/background/")
+SKIPPED_FILES = {"docs/buildplan.md", "uv.lock"}
 TEXT_SUFFIXES = {".py", ".md", ".json", ".toml", ".txt"}
 PYTHON_NAME = re.compile(r"^[a-z0-9]+\.py$")
 FOLDER_NAME = re.compile(r"^[a-z0-9]+$")

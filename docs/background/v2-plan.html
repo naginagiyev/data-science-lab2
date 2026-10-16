@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture Plan v2</title>
+<meta name="description" content="Research and architecture plan for DS Lab 2 and the MSc thesis: niche, new design, keep/change/remove, evaluation and timeline.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f4f4f3;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --text: #1c1917;
+  --text-2: #57534e;
+  --text-3: #a8a29e;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+
+  --llm: #7c3aed;      --llm-soft: #f5f3ff;
+  --det: #0f766e;      --det-soft: #f0fdfa;
+  --exec: #b45309;     --exec-soft: #fffbeb;
+  --user: #15803d;     --user-soft: #f0fdf4;
+  --issue: #b91c1c;    --issue-soft: #fef2f2;  --issue-border: #fecaca;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(28,25,23,.04), 0 1px 3px rgba(28,25,23,.06);
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0c0e; --surface: #141417; --surface-2: #1b1b1f;
+    --border: #26262b; --border-strong: #34343a;
+    --text: #ececef; --text-2: #a1a1aa; --text-3: #63636b;
+    --accent: #818cf8; --accent-soft: #1e1b3a;
+    --llm: #a78bfa; --llm-soft: #221a36;
+    --det: #2dd4bf; --det-soft: #0f2522;
+    --exec: #fbbf24; --exec-soft: #2a2110;
+    --user: #4ade80; --user-soft: #10261a;
+    --issue: #f87171; --issue-soft: #2a1414; --issue-border: #4c1d1d;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c0c0e; --surface: #141417; --surface-2: #1b1b1f;
+  --border: #26262b; --border-strong: #34343a;
+  --text: #ececef; --text-2: #a1a1aa; --text-3: #63636b;
+  --accent: #818cf8; --accent-soft: #1e1b3a;
+  --llm: #a78bfa; --llm-soft: #221a36;
+  --det: #2dd4bf; --det-soft: #0f2522;
+  --exec: #fbbf24; --exec-soft: #2a2110;
+  --user: #4ade80; --user-soft: #10261a;
+  --issue: #f87171; --issue-soft: #2a1414; --issue-border: #4c1d1d;
+  --shadow: none;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.6 var(--sans); -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+code, pre, .mono { font-family: var(--mono); font-size: .86em; }
+code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 5px; word-break: break-word; }
+pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; line-height: 1.55; margin: 12px 0; }
+pre code { background: none; border: 0; padding: 0; font-size: 1em; }
+h1, h2, h3, h4 { line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+h3 { font-size: 17px; font-weight: 600; }
+h4 { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin: 18px 0 8px; }
+p { margin: 0 0 10px; }
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 3px 0; }
+
+/* ---------- layout ---------- */
+.shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1320px; margin: 0 auto; }
+aside.nav {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 28px 18px 28px 24px; border-right: 1px solid var(--border);
+}
+aside.nav .brand { font-weight: 700; font-size: 14px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+aside.nav .brand i { width: 9px; height: 9px; border-radius: 3px; background: var(--accent); display: inline-block; }
+aside.nav .group { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin: 18px 0 6px; }
+aside.nav a {
+  display: block; text-decoration: none; color: var(--text-2); font-size: 13px;
+  padding: 4px 10px; border-radius: 6px;
+}
+aside.nav a:hover { color: var(--text); background: var(--surface-2); }
+aside.nav a.active { color: var(--accent); background: var(--accent-soft); }
+main { padding: 40px 48px 120px; min-width: 0; }
+section.block { margin: 0 0 64px; }
+.section-intro { color: var(--text-2); max-width: 780px; margin-bottom: 20px; }
+
+.mobile-toc { display: none; }
+@media (max-width: 960px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  aside.nav { display: none; }
+  main { padding: 24px 16px 80px; }
+  .mobile-toc { display: block; margin: 0 0 28px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .mobile-toc summary { padding: 12px 14px; cursor: pointer; font-weight: 600; font-size: 14px; }
+  .mobile-toc nav { padding: 0 14px 12px; columns: 2; column-gap: 16px; }
+  .mobile-toc a { display: block; font-size: 13px; color: var(--text-2); text-decoration: none; padding: 3px 0; break-inside: avoid; }
+}
+
+/* ---------- hero ---------- */
+.hero { margin-bottom: 44px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.hero h1 { font-size: 34px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 12px; }
+.hero p { color: var(--text-2); max-width: 780px; font-size: 16px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 22px; }
+.btn {
+  font: 500 13px var(--sans); color: var(--text); background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer;
+}
+.btn:hover { background: var(--surface-2); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 28px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.stat span { font-size: 12.5px; color: var(--text-2); }
+
+/* ---------- part headers ---------- */
+.part-head { margin: 80px 0 36px; padding: 26px 0 0; border-top: 2px solid var(--border-strong); }
+.part-head h2 { font-size: 28px; letter-spacing: -.02em; }
+.part-head p { color: var(--text-2); max-width: 780px; margin-top: 8px; }
+
+/* ---------- chips / legend ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500;
+  padding: 2px 9px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap;
+}
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.k-llm { color: var(--llm); background: var(--llm-soft); }
+.k-det { color: var(--det); background: var(--det-soft); }
+.k-exec { color: var(--exec); background: var(--exec-soft); }
+.k-user { color: var(--user); background: var(--user-soft); }
+.k-keep { color: var(--user); background: var(--user-soft); }
+.k-change { color: var(--exec); background: var(--exec-soft); }
+.k-remove { color: var(--issue); background: var(--issue-soft); }
+.k-new { color: var(--accent); background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); white-space: nowrap; }
+
+/* ---------- callouts ---------- */
+.claim {
+  font-size: 18px; line-height: 1.5; font-weight: 500; background: var(--surface);
+  border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px;
+  padding: 18px 22px; box-shadow: var(--shadow); margin: 0 0 18px; max-width: 900px;
+}
+.claim small { display: block; font-size: 13.5px; color: var(--text-2); font-weight: 400; margin-top: 8px; }
+.callout {
+  border: 1px solid var(--border); border-left: 3px solid var(--accent); background: var(--accent-soft);
+  border-radius: 9px; padding: 12px 16px; margin: 18px 0; font-size: 14px; max-width: 900px;
+}
+.callout h4 { margin: 0 0 6px; color: var(--accent); }
+.callout ul { margin-top: 4px; }
+.callout.simple { border-left-color: var(--user); background: var(--user-soft); }
+.callout.simple h4 { color: var(--user); }
+.callout.warn { border-left-color: var(--exec); background: var(--exec-soft); }
+.callout.warn h4 { color: var(--exec); }
+.note { font-size: 13.5px; color: var(--text-2); border-left: 2px solid var(--border-strong); padding: 2px 0 2px 12px; margin: 14px 0 0; max-width: 900px; }
+
+/* ---------- flow diagram ---------- */
+.flow {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 28px 20px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center;
+}
+.node {
+  width: 100%; max-width: 460px; text-decoration: none; display: grid;
+  grid-template-columns: 34px 1fr; column-gap: 10px; align-items: start; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border-strong); border-left-width: 3px;
+  border-radius: 9px; padding: 10px 14px; transition: transform .12s, box-shadow .12s;
+}
+.node:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+.node .n { font-family: var(--mono); font-size: 12px; color: var(--text-3); padding-top: 1px; }
+.node .t { font-weight: 600; font-size: 14px; }
+.node .d { grid-column: 2; font-size: 12px; color: var(--text-2); font-family: var(--mono); }
+.node.k-llm { border-left-color: var(--llm); background: var(--surface); }
+.node.k-det { border-left-color: var(--det); background: var(--surface); }
+.node.k-exec { border-left-color: var(--exec); background: var(--surface); }
+.node.optional { border-style: dashed; border-left-style: solid; }
+.node .t::after { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
+.node.k-llm .t::after { background: var(--llm); }
+.node.k-det .t::after { background: var(--det); }
+.node.k-exec .t::after { background: var(--exec); }
+.arrow { width: 2px; height: 22px; background: var(--border-strong); position: relative; flex: none; }
+.arrow::after {
+  content: ""; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top: 6px solid var(--border-strong); border-bottom: 0;
+}
+.arrow.label { height: 34px; }
+.arrow.label span {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  font-size: 11px; color: var(--text-3); font-family: var(--mono);
+}
+.gate {
+  font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: center;
+  border: 1.5px dashed var(--border-strong); border-radius: 999px; padding: 5px 14px; background: var(--bg);
+}
+.phase { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin: 10px 0 10px; }
+
+/* ---------- stage cards ---------- */
+.stage {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 26px; margin: 0 0 18px; box-shadow: var(--shadow);
+}
+.stage > header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.stage .num {
+  font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text-3);
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; flex: none;
+}
+.stage .meta { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 6px; }
+.stage .lead { color: var(--text-2); }
+.io { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+.io > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 10px 14px; font-size: 13.5px; }
+.io h4 { margin: 0 0 6px; }
+.io ul { padding-left: 16px; }
+ol.steps { counter-reset: s; list-style: none; padding: 0; margin-top: 8px; }
+ol.steps > li { counter-increment: s; position: relative; padding-left: 30px; margin: 7px 0; }
+ol.steps > li::before {
+  content: counter(s); position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface-2); border: 1px solid var(--border); font-size: 11px; font-weight: 600;
+  display: grid; place-items: center; color: var(--text-2);
+}
+
+/* ---------- tables ---------- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); margin: 12px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td code { font-size: 12px; }
+td.nowrap { white-space: nowrap; }
+tr.sub td { background: var(--surface-2); font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); padding: 7px 14px; }
+
+/* ---------- cards ---------- */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
+.card h3 { font-size: 15px; margin-bottom: 8px; }
+.card .k { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+.card p, .card li { font-size: 13.5px; color: var(--text-2); }
+.card .fix { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+
+/* ---------- chains ---------- */
+.chain-label { font-size: 12px; font-weight: 600; color: var(--text-2); margin: 18px 0 8px; }
+.topo { display: flex; flex-wrap: wrap; align-items: stretch; }
+.topo .t-node { flex: 1 1 130px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.topo .t-node b { display: block; font-size: 13.5px; margin-bottom: 2px; }
+.topo .t-node span { color: var(--text-2); font-family: var(--mono); font-size: 11.5px; }
+.topo .t-arrow { flex: 0 0 28px; display: grid; place-items: center; color: var(--text-3); font-size: 16px; }
+.topo.bad .t-node { border-color: var(--issue-border); background: var(--issue-soft); }
+.topo.good .t-node { border-color: var(--det); background: var(--det-soft); }
+@media (max-width: 720px) {
+  .topo { flex-direction: column; }
+  .topo .t-arrow { flex-basis: 24px; transform: rotate(90deg); }
+}
+
+/* ---------- svg ---------- */
+.diagram-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.diagram-wrap svg { display: block; min-width: 680px; width: 100%; max-width: 900px; height: auto; margin: 0 auto; }
+.caption { font-size: 12.5px; color: var(--text-3); margin-top: 10px; text-align: center; }
+svg .box { fill: var(--surface-2); stroke: var(--border-strong); stroke-width: 1.2; }
+svg .box-llm { fill: var(--llm-soft); stroke: var(--llm); stroke-width: 1.2; }
+svg .box-det { fill: var(--det-soft); stroke: var(--det); stroke-width: 1.2; }
+svg .box-issue { fill: var(--issue-soft); stroke: var(--issue); stroke-width: 1.2; }
+svg .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+svg text { fill: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 600; }
+svg text.sub { fill: var(--text-2); font-family: var(--mono); font-size: 10.5px; font-weight: 400; }
+svg text.lbl { fill: var(--text-3); font-family: var(--mono); font-size: 11px; font-weight: 400; }
+svg text.axis { fill: var(--text-2); font-size: 12.5px; font-weight: 600; }
+svg .ln { stroke: var(--text-3); stroke-width: 1.4; fill: none; }
+svg .ln-dash { stroke: var(--border-strong); stroke-width: 1.2; fill: none; stroke-dasharray: 4 4; }
+svg .ln-accent { stroke: var(--accent); stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; }
+svg .head { fill: var(--text-3); }
+svg .head-accent { fill: var(--accent); }
+
+/* ---------- misc ---------- */
+ul.checklist { list-style: none; padding: 0; max-width: 900px; }
+ul.checklist li { padding-left: 30px; position: relative; margin: 9px 0; }
+ul.checklist li::before {
+  content: ""; position: absolute; left: 0; top: 3px; width: 16px; height: 16px;
+  border: 1.5px solid var(--border-strong); border-radius: 4px; background: var(--surface);
+}
+.tree { font-size: 12.5px; line-height: 1.6; }
+.tree .c { color: var(--text-3); }
+.tree .kk { color: var(--user); }
+.tree .kc { color: var(--exec); }
+.tree .kn { color: var(--accent); }
+footer { color: var(--text-3); font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="nav" aria-label="Contents">
+  <div class="brand"><i></i>Architecture Plan v2</div>
+  <div class="group">Start here</div>
+  <a href="#summary">The plan in one page</a>
+  <div class="group">Part 1 · Research</div>
+  <a href="#research101">Research in 5 minutes</a>
+  <a href="#market">The market today</a>
+  <a href="#gap">The gap, with an example</a>
+  <a href="#position">Your position</a>
+  <a href="#rq">Research questions</a>
+  <a href="#contrib">Your contributions</a>
+  <div class="group">Part 2 · Architecture</div>
+  <a href="#principles">Design principles</a>
+  <a href="#pipeline">The new pipeline</a>
+  <a href="#stages">Stage details</a>
+  <a href="#loop">The new agent loop</a>
+  <a href="#toolbox">Operations toolbox</a>
+  <a href="#leakage">Leakage guard</a>
+  <a href="#fallbacks">Never crash</a>
+  <a href="#llm">The LLM layer</a>
+  <a href="#runs">Run folder and state</a>
+  <div class="group">Part 3 · Keep / change / remove</div>
+  <a href="#files">File by file</a>
+  <a href="#deps">Dependencies</a>
+  <a href="#layout">Target layout</a>
+  <div class="group">Part 4 · Evaluation</div>
+  <a href="#benchmark">Benchmark design</a>
+  <a href="#mess">Types of messy data</a>
+  <a href="#baselines">Baselines</a>
+  <a href="#metrics">Metrics and statistics</a>
+  <a href="#ablations">Ablations</a>
+  <a href="#showcase">The showcase</a>
+  <div class="group">Part 5 · Plan</div>
+  <a href="#sem1">Semester 1, week by week</a>
+  <a href="#sem2">Semester 2, month by month</a>
+  <a href="#done">Definition of done</a>
+  <a href="#risks">Risks</a>
+  <a href="#reading">Reading list</a>
+  <a href="#sources">Sources</a>
+</aside>
+
+<main>
+
+<details class="mobile-toc">
+  <summary>Contents</summary>
+  <nav>
+    <a href="#summary">Plan in one page</a>
+    <a href="#research101">Research in 5 min</a>
+    <a href="#market">Market today</a>
+    <a href="#gap">The gap</a>
+    <a href="#position">Your position</a>
+    <a href="#rq">Research questions</a>
+    <a href="#contrib">Contributions</a>
+    <a href="#principles">Design principles</a>
+    <a href="#pipeline">New pipeline</a>
+    <a href="#stages">Stage details</a>
+    <a href="#loop">Agent loop</a>
+    <a href="#toolbox">Toolbox</a>
+    <a href="#leakage">Leakage guard</a>
+    <a href="#fallbacks">Never crash</a>
+    <a href="#llm">LLM layer</a>
+    <a href="#runs">Run folder</a>
+    <a href="#files">File by file</a>
+    <a href="#deps">Dependencies</a>
+    <a href="#layout">Target layout</a>
+    <a href="#benchmark">Benchmark</a>
+    <a href="#mess">Messy data types</a>
+    <a href="#baselines">Baselines</a>
+    <a href="#metrics">Metrics</a>
+    <a href="#ablations">Ablations</a>
+    <a href="#showcase">Showcase</a>
+    <a href="#sem1">Semester 1</a>
+    <a href="#sem2">Semester 2</a>
+    <a href="#done">Definition of done</a>
+    <a href="#risks">Risks</a>
+    <a href="#reading">Reading list</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</details>
+
+<section class="hero block" id="top">
+  <div class="eyebrow">DS Lab 2 → MSc thesis · 9 October 2026</div>
+  <h1>From a fragile pipeline to a research system</h1>
+  <p>This is the plan for your next two semesters. It answers three questions. Which problem on the market should your tool solve? How do you rebuild the code so that it does not break? How do you prove that it is better than other tools? Issue codes such as <b>B1</b> or <b>C1</b> point to <code>overview.md</code>. Library notes are in <code>libraries.md</code>.</p>
+  <div class="toolbar">
+    <button class="btn" id="toggle-theme" type="button">Toggle theme</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>1</b><span>clear niche: messy real-world tables</span></div>
+    <div class="stat"><b>5</b><span>research questions</span></div>
+    <div class="stat"><b>12</b><span>types of messy data to test</span></div>
+    <div class="stat"><b>6 + 2</b><span>must-have + should-have baselines</span></div>
+    <div class="stat"><b>5 · 20 · 11</b><span>current files to keep · change · remove</span></div>
+  </div>
+  <div class="legend">
+    <span class="chip k-llm">LLM decision</span>
+    <span class="chip k-det">Deterministic code</span>
+    <span class="chip k-exec">Sandboxed generated code</span>
+    <span class="chip k-user">User (optional)</span>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<section class="block" id="summary">
+  <h2>The plan in one page</h2>
+  <p class="section-intro">If you read only one section, read this one.</p>
+
+  <div class="claim">
+    When tables are messy, an agent that uses the LLM to <em>understand and repair the data</em>, and uses tested code to <em>verify every step and train the model</em>, builds better models than classical AutoML. It is also more reliable and cheaper than agents that write free code. When tables are clean, it is not worse.
+    <small>This is your main hypothesis. Your experiments will test it. Do not write it as a fact until the numbers support it.</small>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="k">The niche</div>
+      <h3>Messy, real-world tables</h3>
+      <p>Business data is full of numbers stored as text (<code>"8GB"</code>, <code>"$1,250"</code>), typos in categories, fake missing values (<code>-999</code>, <code>"?"</code>), ID columns and leaky columns. Classical AutoML assumes that someone already cleaned the table.</p>
+    </div>
+    <div class="card">
+      <div class="k">The idea</div>
+      <h3>The LLM proposes, the code verifies</h3>
+      <p>The LLM reads the columns like a data scientist. It picks cleaning steps from a fixed toolbox of tested operations. Code checks each step and builds one leak-free scikit-learn pipeline. It keeps the steps only if validation shows they help.</p>
+    </div>
+    <div class="card">
+      <div class="k">The engine</div>
+      <h3>Modelling is not the LLM's job</h3>
+      <p>A proven engine trains the model: LightGBM or CatBoost with Optuna, under a time budget. AutoGluon can plug in instead. The LLM never writes training code and never sees the test set.</p>
+    </div>
+    <div class="card">
+      <div class="k">The proof</div>
+      <h3>A messy-table benchmark</h3>
+      <p>Take clean datasets and add controlled mess at several levels. You know the truth, because you made the mess. Add leaky columns and some naturally messy datasets. Compare with AutoGluon, FLAML, skrub, LightGBM, your v1 and one or two LLM agents. Measure score, success rate, time and cost.</p>
+    </div>
+    <div class="card">
+      <div class="k">The timeline</div>
+      <h3>Two semesters</h3>
+      <p><b>Now:</b> rebuild the core, build the benchmark, get first results on about 15 datasets, write a paper-style report. <b>Next:</b> scale up, run ablations, try more LLMs, release the code, write the thesis and a workshop paper.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <h4>What you will not claim</h4>
+    <ul>
+      <li>That you beat AutoGluon on clean, well-prepared tables. You probably won't, and you don't need to.</li>
+      <li>That you win Kaggle or MLE-bench. Big labs compete there with 24-hour GPU runs.</li>
+      <li>Images, text-only data, time series or clustering. Only tabular binary, multi-class and regression. You already narrowed the scope in your last commits, so keep it that way.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<header class="part-head">
+  <div class="eyebrow">Part 1</div>
+  <h2>The research, in simple words</h2>
+  <p>You said this is your first time doing research. This part explains the research ideas you need, step by step: what a contribution is, what the market offers, where it fails, and where your tool fits.</p>
+</header>
+
+<section class="block" id="research101">
+  <h2>Research in 5 minutes</h2>
+  <p class="section-intro">A thesis is not a tool. It is a <b>claim</b>, plus <b>evidence</b> that the claim is true. The tool is only how you produce the evidence. Most applied ML papers follow the same five steps:</p>
+
+  <div class="topo">
+    <div class="t-node"><b>Problem</b><span>Real tables are messy</span></div>
+    <div class="t-arrow">→</div>
+    <div class="t-node"><b>Gap</b><span>Today's tools fail on them</span></div>
+    <div class="t-arrow">→</div>
+    <div class="t-node"><b>Idea</b><span>LLM proposes, code verifies</span></div>
+    <div class="t-arrow">→</div>
+    <div class="t-node"><b>Evidence</b><span>Benchmark, baselines, statistics</span></div>
+    <div class="t-arrow">→</div>
+    <div class="t-node"><b>Limits</b><span>Where it fails, honestly</span></div>
+  </div>
+
+  <h4>Words you will use every day</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>In simple words</th><th>In your thesis</th></tr></thead>
+      <tbody>
+        <tr><td><b>Baseline</b></td><td>An existing method that you compare against. A result means nothing without one.</td><td>Dummy, LightGBM, skrub, AutoGluon, FLAML, your v1, AIDE, MLZero</td></tr>
+        <tr><td><b>Benchmark</b></td><td>A fixed set of datasets plus fixed rules, so that every system is tested in the same way.</td><td>Your messy-table benchmark (<a href="#benchmark">Part 4</a>)</td></tr>
+        <tr><td><b>Budget</b></td><td>The same limit of time (and money) for every system. Without it, a system can win just by running longer.</td><td>For example, 10 minutes per dataset</td></tr>
+        <tr><td><b>Seed</b></td><td>The starting number for randomness. Different seeds give slightly different results, so you repeat each run with several seeds.</td><td>3 seeds now, 5 later. Report mean ± std.</td></tr>
+        <tr><td><b>Locked test set</b></td><td>Rows that no part of the system sees until the very end. You use them exactly once.</td><td>Fixes B2</td></tr>
+        <tr><td><b>Cross-validation (CV)</b></td><td>Split the training rows into k parts. Train on k−1 parts and score on the last one. Repeat k times and average. You get a stable score without touching the test set.</td><td>Used by the validation gate and the model search</td></tr>
+        <tr><td><b>Data leakage</b></td><td>During training, the model sees information that it will not have in real use. Scores look great, but the model fails in reality.</td><td>Split-first design and the <a href="#leakage">leakage guard</a></td></tr>
+        <tr><td><b>Ablation</b></td><td>Remove one part of your system and measure the change. This shows which parts really matter.</td><td><a href="#ablations">Ablations</a></td></tr>
+        <tr><td><b>Statistical test</b></td><td>A check that a difference is probably not luck.</td><td>Wilcoxon test, Friedman test with a critical-difference diagram</td></tr>
+        <tr><td><b>Hypothesis</b></td><td>The result you expect, written down <em>before</em> the experiment.</td><td>"The gap grows with the amount of mess"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout simple">
+    <h4>How examiners and reviewers read your work</h4>
+    <p>They look for four things: (1) a clear question; (2) a fair comparison with <em>strong</em> baselines; (3) enough repetitions and a statistical test, so that the result is not luck; (4) ablations that show <em>why</em> it works. DS Lab 1 had none of these (A1). This plan builds all four.</p>
+  </div>
+</section>
+
+<section class="block" id="market">
+  <h2>The market today</h2>
+  <p class="section-intro">Five families of tools try to automate ML on tables. Each one is strong at something and weak at something else. Your thesis sits in the space between them.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Family</th><th>Examples</th><th>Strong at</th><th>Weak at</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Classical AutoML</b></td>
+          <td>AutoGluon, FLAML, auto-sklearn, H2O AutoML, TPOT</td>
+          <td>Very strong and reliable on clean tables. Searches many models, tunes them and builds ensembles. AutoGluon is near the top of current tabular benchmarks (TabArena).</td>
+          <td>Does not understand meaning: <code>"8GB"</code> is a category, not the number 8. It cannot know that <code>refund_issued</code> is a leak, and a leak even <em>improves</em> its validation score. It assumes the table is already clean.</td>
+        </tr>
+        <tr>
+          <td><b>Tabular foundation models</b></td>
+          <td>TabPFN (Nature 2025, newer versions since), TabICL</td>
+          <td>Excellent accuracy on small and medium tables in seconds, with no tuning.</td>
+          <td>The same blindness to meaning. They need a clean table and have size limits.</td>
+        </tr>
+        <tr>
+          <td><b>Code-writing LLM agents</b></td>
+          <td>AIDE, DS-Agent, Data Interpreter, AutoKaggle, AutoML-Agent, iML</td>
+          <td>Read the data like a human. Flexible: they can write any Python.</td>
+          <td>Free code crashes in new ways on every dataset. Results vary between runs. ML code from LLMs often leaks. Many LLM calls cost money. They are tested mostly on Kaggle-style competitions (MLE-bench).</td>
+        </tr>
+        <tr>
+          <td><b>LLM + AutoML hybrids</b></td>
+          <td>AutoGluon Assistant (MLZero), LightAutoDS-Tab</td>
+          <td>Use an AutoML library as the engine, so they are stronger and more reliable than pure code agents.</td>
+          <td>From what I found, their papers test competition-style and multimodal tasks. They do not measure what happens when the table itself is messy or leaky.</td>
+        </tr>
+        <tr>
+          <td><b>LLM data cleaning</b></td>
+          <td>Bendinelli et al. 2025, AutoDCWorkflow, CleanAgent, LLMClean, ProfiliTable</td>
+          <td>Show that LLMs can find and fix many data errors.</td>
+          <td>Stop at cleaning. Most do not train a model end to end or compare against AutoML.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">MLE-bench (OpenAI, 2024) is the main benchmark for LLM agents. In the original paper, the best setup won a medal in about 17% of Kaggle competitions. In 2026, systems such as iML report about 45%. That race moves fast and needs a lot of compute, so don't run it. Pick a different question.</p>
+
+  <div class="callout">
+    <h4>What my search found (October 2026)</h4>
+    <p>I looked for work that tests agents <em>end to end on messy tables</em> (raw messy table → cleaning → model → score) against classical AutoML, and I did not find any. The closest works:</p>
+    <ul>
+      <li><b>Bendinelli et al. (ICLR 2025 workshop).</b> An LLM agent cleans a corrupted training set, but the model and the features stay fixed.</li>
+      <li><b>Budach et al. (2022).</b> They measure how data errors hurt ML models, without any LLM.</li>
+      <li><b>ProfiliTable (2026) and AutoDCWorkflow (2024).</b> They clean tables but do not train models.</li>
+    </ul>
+    <p>This is a strong sign that the gap is real, but a web search is not proof. In weeks 1–2, read the papers in the <a href="#reading">reading list</a> and confirm it.</p>
+  </div>
+</section>
+
+<section class="block" id="gap">
+  <h2>The gap, with an example</h2>
+  <p class="section-intro">Here are a few rows in the style of the public Kaggle "laptop prices" dataset. A person sees numbers, units and parts. Classical AutoML sees text.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>TypeName</th><th>Ram</th><th>Weight</th><th>Memory</th><th>ScreenResolution</th><th>Cpu</th><th>Price_euros</th></tr></thead>
+      <tbody>
+        <tr><td>Apple</td><td>Ultrabook</td><td><code>8GB</code></td><td><code>1.37kg</code></td><td><code>128GB SSD</code></td><td><code>IPS Panel Retina Display 2560x1600</code></td><td><code>Intel Core i5 2.3GHz</code></td><td>1339.69</td></tr>
+        <tr><td>HP</td><td>Notebook</td><td><code>8GB</code></td><td><code>1.86kg</code></td><td><code>256GB SSD</code></td><td><code>Full HD 1920x1080</code></td><td><code>Intel Core i5 7200U 2.5GHz</code></td><td>575.00</td></tr>
+        <tr><td>Dell</td><td>Gaming</td><td><code>16GB</code></td><td><code>2.2kg</code></td><td><code>128GB SSD + 1TB HDD</code></td><td><code>Full HD 1920x1080</code></td><td><code>Intel Core i7 7700HQ 2.8GHz</code></td><td>1499.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>What classical AutoML sees</th><th>What a data scientist (and your agent) sees</th></tr></thead>
+      <tbody>
+        <tr><td><code>Ram</code></td><td>The category "8GB". There is no order, so "16GB" is not "bigger".</td><td>The number 8 (GB)</td></tr>
+        <tr><td><code>Weight</code></td><td>Many different strings. Almost useless.</td><td>The number 1.37 (kg)</td></tr>
+        <tr><td><code>ScreenResolution</code></td><td>One long category</td><td>Width 2560, height 1600, IPS = yes, Retina = yes</td></tr>
+        <tr><td><code>Cpu</code></td><td>A category with many rare values</td><td>Brand Intel, family i5, 2.3 GHz</td></tr>
+        <tr><td><code>Memory</code></td><td>A category</td><td>SSD 128 GB, HDD 1000 GB</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">To be fair: AutoGluon can turn long text columns into word features, so it recovers a little. But it never knows that "1.37kg" is a weight. Your experiments must <em>measure</em> how much this matters. Do not assume it.</p>
+
+  <h4>Your own data folder already has this problem</h4>
+  <div class="cards">
+    <div class="card"><h3><code>ibmchurn.csv</code></h3><p><code>TotalCharges</code> is loaded as text (object dtype), not as a number. <code>customerID</code> is an ID. The target <code>Churn</code> is "Yes"/"No".</p></div>
+    <div class="card"><h3><code>kinghousedata.csv</code></h3><p><code>date</code> is text like <code>20141013T000000</code>. <code>yr_renovated = 0</code> means "never", which is a fake value, not a real year. <code>id</code> and <code>zipcode</code> are numbers, but not quantities.</p></div>
+    <div class="card"><h3><code>winequality.csv</code></h3><p>The target <code>quality</code> is an integer from 3 to 8. Is this regression or 6-class classification? A simple rule cannot know. The meaning decides (B8).</p></div>
+    <div class="card"><h3><code>creditcardfraud.csv</code></h3><p>Columns <code>V1</code>–<code>V28</code> are anonymised, so the LLM has no meaning to use. This makes it a perfect <b>"no harm" control</b>: your agent should change almost nothing here.</p></div>
+  </div>
+
+  <h3 style="margin-top:28px">Why not just let an LLM agent write all the code?</h3>
+  <div class="cards" style="margin-top:12px">
+    <div class="card"><h3>It crashes</h3><p>Free code fails in new ways on every dataset. Your v1 needed up to 10 repair rounds per stage and still failed sometimes.</p></div>
+    <div class="card"><h3>It leaks</h3><p>LLM-written ML code often fits a scaler before the split or tunes on the test set. A 2025 study also found that LLMs often fail to <em>notice</em> these mistakes in code. Your v1 had both problems (B1, B2).</p></div>
+    <div class="card"><h3>It varies</h3><p>Two runs on the same data can give very different pipelines and scores.</p></div>
+    <div class="card"><h3>It costs</h3><p>Many long LLM calls per dataset. Your v1 made up to about 60 calls per run.</p></div>
+  </div>
+  <div class="callout simple">
+    <h4>Your hidden advantage</h4>
+    <p>You know these failure modes from your own DS Lab 1 code. In the thesis you can describe them with real examples (overview.md is already that list). Few papers explain <em>why</em> agents fail. You can.</p>
+  </div>
+</section>
+
+<section class="block" id="position">
+  <h2>Your position: LLM proposes, code verifies</h2>
+  <p class="section-intro">Place the five families on two axes. On one axis: does the tool understand what the data <em>means</em>? On the other: is it reliable, verified and leak-free? The top-right corner is empty. That is your target.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 440" role="img" aria-label="Positioning map: understanding of meaning versus reliability">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head"/></marker>
+        <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head-accent"/></marker>
+      </defs>
+      <line class="ln" x1="90" y1="370" x2="700" y2="370" marker-end="url(#ah)"/>
+      <line class="ln" x1="90" y1="370" x2="90" y2="22" marker-end="url(#ah)"/>
+      <line class="ln-dash" x1="390" y1="30" x2="390" y2="370"/>
+      <line class="ln-dash" x1="90" y1="200" x2="690" y2="200"/>
+      <text class="axis" x="395" y="410" text-anchor="middle">Understands what the data means →</text>
+      <text class="axis" x="40" y="200" text-anchor="middle" transform="rotate(-90 40 200)">Reliable, verified, leak-free →</text>
+      <text class="lbl" x="96" y="388">low</text>
+      <text class="lbl" x="690" y="388" text-anchor="end">high</text>
+      <text class="lbl" x="82" y="366" text-anchor="end">low</text>
+      <text class="lbl" x="82" y="40" text-anchor="end">high</text>
+
+      <rect class="box-det" x="105" y="48" width="220" height="46" rx="8"/>
+      <text x="117" y="68">Classical AutoML</text>
+      <text class="sub" x="117" y="85">AutoGluon · FLAML · H2O</text>
+
+      <rect class="box-det" x="105" y="110" width="220" height="46" rx="8"/>
+      <text x="117" y="130">Tabular foundation models</text>
+      <text class="sub" x="117" y="147">TabPFN · TabICL</text>
+
+      <rect class="box-accent" x="470" y="48" width="210" height="46" rx="8"/>
+      <text x="482" y="68">Your v2 (target)</text>
+      <text class="sub" x="482" y="85">LLM proposes · code verifies</text>
+
+      <rect class="box-llm" x="410" y="150" width="250" height="46" rx="8"/>
+      <text x="422" y="170">LLM + AutoML hybrids</text>
+      <text class="sub" x="422" y="187">MLZero · LightAutoDS-Tab</text>
+
+      <rect class="box" x="450" y="210" width="230" height="46" rx="8"/>
+      <text x="462" y="230">LLM data-cleaning tools</text>
+      <text class="sub" x="462" y="247">clean only, no model</text>
+
+      <rect class="box-llm" x="440" y="270" width="240" height="46" rx="8"/>
+      <text x="452" y="290">Code-writing LLM agents</text>
+      <text class="sub" x="452" y="307">AIDE · DS-Agent · AutoML-Agent</text>
+
+      <rect class="box-issue" x="250" y="300" width="180" height="46" rx="8"/>
+      <text x="262" y="320">Your v1 (DS Lab 1)</text>
+      <text class="sub" x="262" y="337">free code · LLM judges</text>
+
+      <path class="ln-accent" d="M 360 300 L 360 120 Q 360 71 410 71 L 466 71" marker-end="url(#ah2)"/>
+      <text class="lbl" x="368" y="250">this thesis</text>
+    </svg>
+    <p class="caption">This is my qualitative reading of the field, not measured data. Your literature review should confirm it.</p>
+  </div>
+
+  <div class="callout simple">
+    <h4>In simple words: LEGO versus clay</h4>
+    <p>A code-writing agent sculpts the pipeline from clay every time. Anything is possible, but it often collapses. Your agent builds with LEGO blocks instead. You write and test each block (an "operation") once, and the LLM only decides <em>which</em> blocks to use and <em>with which settings</em>. For rare cases there is still a little clay (sandboxed custom code), but it must pass tests before you use it.</p>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <div class="k"><span class="chip k-llm">LLM does</span></div>
+      <ul>
+        <li>Picks the target and task type when they are unclear</li>
+        <li>Explains what each column means</li>
+        <li>Spots units, currencies, dates, spelling variants and fake missing values</li>
+        <li>Judges: "Is this value known at prediction time?"</li>
+        <li>Chooses toolbox operations and fills in their parameters</li>
+        <li>Repairs one operation from a short, structured error</li>
+        <li>Proposes new features (semester 2)</li>
+        <li>Writes a short summary of the run</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="k"><span class="chip k-det">Code does</span></div>
+      <ul>
+        <li>Reads files, profiles data, splits rows</li>
+        <li>Applies operations and checks the result</li>
+        <li>Measures statistical evidence of leakage</li>
+        <li>Cross-validates, and keeps or rejects LLM proposals</li>
+        <li>Searches and tunes the models</li>
+        <li>Uses the test set once</li>
+        <li>Logs every decision and every LLM call</li>
+        <li>Saves one model file and a report</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note"><b>Is it still "agentic"?</b> Yes. The agents make decisions, use tools, look at validation results and revise their plan. The difference is that the tools are tested and every decision is checked. This is a <em>workflow with agent decisions at fixed points</em>, which is more reliable than a free loop. Your thesis can argue for this design with data (see the "free code" ablation).</p>
+</section>
+
+<section class="block" id="rq">
+  <h2>Research questions and hypotheses</h2>
+  <p class="section-intro">Write these down before you run any experiment, and do not change them after you see the results. If a hypothesis turns out false, report it. That is still a result.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Question</th><th>Hypothesis</th><th>Measured by</th></tr></thead>
+      <tbody>
+        <tr><td class="nowrap"><b>RQ1</b><br>Messy data</td><td>When the table is messy, does the agent build better models than classical AutoML and LLM agents? Does the gap grow with the amount of mess?</td><td>Yes, and the gap grows as the mess level rises.</td><td>Normalized score per mess level, average rank, Wilcoxon test</td></tr>
+        <tr><td class="nowrap"><b>RQ2</b><br>No harm</td><td>On clean tables, is the agent as good as AutoML?</td><td>No significant difference from the same engine without the agent, and only a small gap to AutoGluon at the same budget.</td><td>Same as RQ1, at mess level 0</td></tr>
+        <tr><td class="nowrap"><b>RQ3</b><br>Leakage</td><td>Does the agent find leaky columns that other tools happily use?</td><td>It finds most injected leaks with few false alarms. AutoML uses the leaks and then fails in real use.</td><td>Precision and recall of leak detection; score on a leak-free test set</td></tr>
+        <tr><td class="nowrap"><b>RQ4</b><br>Reliability &amp; cost</td><td>How often does each system finish? How stable is it? What does it cost?</td><td>About 100% success, with lower variance and cost than code-writing agents.</td><td>Success rate, std over seeds, minutes, tokens, $</td></tr>
+        <tr><td class="nowrap"><b>RQ5</b><br>Design</td><td>Which parts matter? Do typed operations beat free code? Does the validation gate matter?</td><td>Typed operations give higher success with a similar or better score. The gate prevents harmful steps.</td><td><a href="#ablations">Ablations</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Optional RQ6 for semester 2: does it still work with a small or open-source LLM? That matters for cost and privacy, and it is easy to test once the LLM layer is configurable.</p>
+</section>
+
+<section class="block" id="contrib">
+  <h2>Your contributions</h2>
+  <p class="section-intro">These are the claims that will go into your abstract and introduction. A paper usually has 2–4.</p>
+  <ol class="steps">
+    <li><b>A benchmark.</b> Messy tables with known ground truth: a generator for 12 types of realistic mess at several levels, injected leaks, and naturally messy datasets, released as open source. A good benchmark is a valued contribution on its own.</li>
+    <li><b>A method.</b> An agent design in which the LLM proposes typed operations and code verifies them, with leak-free compilation, a validation gate and fallbacks.</li>
+    <li><b>An empirical study.</b> A fair comparison with classical AutoML and LLM agents on accuracy, reliability and cost, with statistics and ablations.</li>
+    <li><b>A plug-in result</b>, if the data supports it. The agent's cleaning also improves other AutoML systems, for example "agent + AutoGluon" beats "AutoGluon alone".</li>
+  </ol>
+
+  <h4>Possible titles</h4>
+  <ul>
+    <li><i>LLM Proposes, Code Verifies: Reliable Agentic AutoML for Messy Tabular Data</i></li>
+    <li><i>Reading the Table: Semantic Data-Preparation Agents for AutoML on Messy Data</i></li>
+    <li><i>Beyond Clean Benchmarks: Can LLM Agents Make AutoML Work on Messy Real-World Tables?</i></li>
+  </ul>
+
+  <h4>Abstract template (fill the blanks only with real numbers)</h4>
+  <pre><code>AutoML systems are strong on clean tables, but real-world tables are messy:
+numbers are stored as text, categories have many spellings, missing values are
+hidden, and some columns leak the target. LLM agents can read such tables, but
+they write fragile code, make leakage mistakes and are expensive. We present
+[NAME], an agent in which the LLM proposes typed data-preparation operations and
+deterministic code verifies, compiles and validates them before a standard
+AutoML engine trains the model. We also release [BENCH], a benchmark of [N]
+datasets with 12 types of controlled mess and known ground truth, plus naturally
+messy and leaky datasets. On messy data, [NAME] improves the normalized score
+over AutoGluon by [X] and over [AGENT] by [Y], finishes [Z]% of runs and costs
+[$C] per dataset. On clean data it is not significantly worse. Ablations show
+that typed operations and the validation gate are the key components.</code></pre>
+</section>
+
+<!-- ================================================================ -->
+<header class="part-head">
+  <div class="eyebrow">Part 2</div>
+  <h2>The new architecture</h2>
+  <p>This part describes v2. Every design rule comes from a problem you already found in DS Lab 1.</p>
+</header>
+
+<section class="block" id="principles">
+  <h2>Design principles</h2>
+  <p class="section-intro">Eight rules. When you are unsure how to build something, come back here.</p>
+  <div class="cards">
+    <div class="card"><div class="k">Rule 1</div><h3>LLM proposes, code verifies</h3><p>The LLM never decides something that code can check: types, nulls, exit codes, whether a file exists, scores.</p><div class="fix"><span class="tag">fixes C1</span></div></div>
+    <div class="card"><div class="k">Rule 2</div><h3>Typed actions first, free code last</h3><p>The LLM fills in a typed plan using the toolbox. Free code is a rare escape hatch, and it always runs in a sandbox.</p><div class="fix"><span class="tag">fixes fragility</span><span class="tag">D2</span></div></div>
+    <div class="card"><div class="k">Rule 3</div><h3>Leak-free by construction</h3><p>Split first. Every step that learns from data is a scikit-learn transformer fitted on training rows only. The test set is touched once.</p><div class="fix"><span class="tag">fixes B1</span><span class="tag">B2</span><span class="tag">B3</span></div></div>
+    <div class="card"><div class="k">Rule 4</div><h3>Every stage has a fallback</h3><p>If the LLM fails, a rule-based default takes over. A run always ends with a model and a report.</p><div class="fix"><span class="tag">fixes fragility</span><span class="tag">E5</span></div></div>
+    <div class="card"><div class="k">Rule 5</div><h3>Fixed rules, decided in advance</h3><p>The metric (chosen by task type), the time budget, the seeds and the splits come from settings, not from the LLM.</p><div class="fix"><span class="tag">fixes B7</span></div></div>
+    <div class="card"><div class="k">Rule 6</div><h3>One run = one folder</h3><p>All inputs, decisions, LLM calls, models and scores go to <code>runs/&lt;id&gt;/</code>. Runs never overwrite each other.</p><div class="fix"><span class="tag">fixes E2</span><span class="tag">C3</span><span class="tag">D4</span></div></div>
+    <div class="card"><div class="k">Rule 7</div><h3>Budgets everywhere</h3><p>Each stage has a time limit, and each run has a maximum number of LLM calls and a maximum cost. When a budget runs out, the fallbacks take over.</p><div class="fix"><span class="tag">fixes cost</span><span class="tag">B5</span></div></div>
+    <div class="card"><div class="k">Rule 8</div><h3>Same code for demo and benchmark</h3><p>One entry point. The benchmark calls the same function as the command line.</p><div class="fix"><span class="tag">fixes E1</span></div></div>
+  </div>
+</section>
+
+<section class="block" id="pipeline">
+  <h2>The new pipeline</h2>
+  <p class="section-intro">13 stages in 5 phases. Compare with v1: 17 stages, 14 LLM call sites and 3 generated scripts. In v2 the LLM works in 4–5 places and never writes training code. Click a stage to jump to its details.</p>
+
+  <div class="flow">
+    <div class="phase">Load and frame</div>
+    <a class="node k-det" href="#st1"><span class="n">01</span><span class="t">Read the file</span><span class="d">encoding · delimiter · header rows · Excel</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#st2"><span class="n">02</span><span class="t">Quick look</span><span class="d">names · dtypes · samples · pattern stats</span></a>
+    <div class="arrow"></div>
+    <a class="node k-llm" href="#st3"><span class="n">03</span><span class="t">Frame the task</span><span class="d">target · task type · metric · ID columns</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#st4"><span class="n">04</span><span class="t">Split</span><span class="d">locked test set · CV folds · train rows only from here</span></a>
+
+    <div class="arrow"></div>
+    <div class="phase">Understand</div>
+    <a class="node k-det" href="#st5"><span class="n">05</span><span class="t">Profile</span><span class="d">eda.py on train rows → profile.json</span></a>
+    <div class="arrow"></div>
+    <a class="node k-llm" href="#st6"><span class="n">06</span><span class="t">Audit columns and leaks</span><span class="d">meaning · problems · "known at prediction time?"</span></a>
+
+    <div class="arrow"></div>
+    <div class="phase">Prepare</div>
+    <a class="node k-llm" href="#st7"><span class="n">07</span><span class="t">Cleaning plan</span><span class="d">typed operations from the toolbox</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#st8"><span class="n">08</span><span class="t">Compile and check</span><span class="d">plan → sklearn Pipeline · data checks · repair ≤ 3</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#st9"><span class="n">09</span><span class="t">Validation gate</span><span class="d">CV: agent pipeline vs generic pipeline · refine ≤ 2</span></a>
+    <div class="arrow label"><span>not worse → agent pipeline · worse → generic pipeline</span></div>
+    <a class="node k-llm optional" href="#st10"><span class="n">10</span><span class="t">Feature ideas (semester 2)</span><span class="d">CAAFE-style · each idea gated</span></a>
+
+    <div class="arrow"></div>
+    <div class="phase">Model</div>
+    <a class="node k-det" href="#st11"><span class="n">11</span><span class="t">Model search</span><span class="d">dummy · linear · LightGBM · CatBoost · Optuna</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#st12"><span class="n">12</span><span class="t">Final test</span><span class="d">test set used once</span></a>
+
+    <div class="arrow"></div>
+    <div class="phase">Deliver</div>
+    <a class="node k-det" href="#st13"><span class="n">13</span><span class="t">Report and artifact</span><span class="d">model.joblib · report.md · decisions.jsonl</span></a>
+  </div>
+</section>
+
+<section class="block" id="stages">
+  <h2>Stage details</h2>
+  <p class="section-intro">For each stage: what it does, what goes in and out, and what happens when it fails.</p>
+
+  <article class="stage" id="st1">
+    <header><span class="num">01</span><div><h3>Read the file</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">keep tools/datareader.py</span></div></div></header>
+    <p class="lead">Make <code>datareader.py</code> the only way to read data. In v1, the target detector called <code>pd.read_csv</code> directly.</p>
+    <ol class="steps">
+      <li>Keep the delimiter sniffing and the encoding fallback you already have.</li>
+      <li>Detect junk rows above the header and notes below the table (common in Excel exports).</li>
+      <li>Strip spaces from column names and make duplicate names unique. Drop fully empty rows and columns.</li>
+      <li>Remove exact duplicate rows and log the count. Do this <em>before</em> the split, so that copies cannot end up in both train and test.</li>
+    </ol>
+    <div class="io">
+      <div><h4>Input</h4>File path</div>
+      <div><h4>Output</h4>Raw DataFrame + a short read report</div>
+      <div><h4>If it fails</h4>Try other encodings and delimiters. If none works, stop with a clear message. This is the only hard stop in the pipeline.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st2">
+    <header><span class="num">02</span><div><h3>Quick look</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">new</span></div></div></header>
+    <p class="lead">A small, cheap summary for the framer. For each column: name, dtype, missing %, number of unique values, 5 random values, and simple pattern stats such as "78% of values look like a number with a unit". In v1, the target detector saw only 2 sample values per column (B8).</p>
+    <div class="io">
+      <div><h4>Input</h4>Raw DataFrame</div>
+      <div><h4>Output</h4><code>glance.json</code></div>
+      <div><h4>Notes</h4>For big tables, use a sample of rows. For wide tables, send the columns in batches.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st3">
+    <header><span class="num">03</span><div><h3>Frame the task</h3><div class="meta"><span class="chip k-llm">LLM</span><span class="chip k-user">user can override</span><span class="tag">fixes B7 · B8</span></div></div></header>
+    <p class="lead">Decide the target, the task type, the metric, the ID columns and the time column (if there is one). This replaces <code>targetdetector.py</code>, <code>infer_task_type_from_target()</code> and <code>configfiller.py</code>.</p>
+    <ol class="steps">
+      <li>Code ranks target candidates: name hints, position, not an ID, not constant, cardinality.</li>
+      <li>The LLM chooses from the top candidates and returns a confidence and a reason (structured output).</li>
+      <li>Rules propose the task type. The LLM may override them in unclear cases, such as an ordinal 3–8 target, but it must give a reason.</li>
+      <li>The metric comes from the task type, not from the LLM: ROC-AUC for binary, log-loss for multi-class, RMSE for regression, as in AMLB and TabArena. No invented minimum score.</li>
+      <li>Command-line flags (<code>--target</code>, <code>--task</code>) override everything. In <code>--ask</code> mode, the user confirms when the confidence is low.</li>
+    </ol>
+    <div class="io">
+      <div><h4>Input</h4><code>glance.json</code>, optional flags</div>
+      <div><h4>Output</h4><code>TaskSpec</code></div>
+      <div><h4>If it fails</h4>Rules only: name hints, otherwise the last column.</div>
+    </div>
+    <p class="note">You can measure this stage for free. OpenML stores the true target of each dataset ("default target attribute"), so you can report framer accuracy on 100+ datasets. That is a small, clean result for your report.</p>
+  </article>
+
+  <article class="stage" id="st4">
+    <header><span class="num">04</span><div><h3>Split</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">fixes B1 · B2 · B3</span></div></div></header>
+    <p class="lead">Split the raw data <em>before</em> anything learns from it.</p>
+    <ol class="steps">
+      <li>Drop rows with a missing target and log the count.</li>
+      <li>Lock 20% as the test set, stratified for classification.</li>
+      <li>Make 5 CV folds on the remaining rows (stratified).</li>
+      <li>Save row indices to <code>split.json</code>, not CSV copies. From here on, every stage sees training rows only.</li>
+      <li>In benchmark mode, the harness gives the system the training file only and keeps the test file.</li>
+    </ol>
+    <div class="io">
+      <div><h4>Input</h4>Raw DataFrame, <code>TaskSpec</code></div>
+      <div><h4>Output</h4><code>split.json</code></div>
+      <div><h4>If it fails</h4>If a class has very few rows, use a non-stratified split and log a warning.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st5">
+    <header><span class="num">05</span><div><h3>Profile</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">keep tools/eda.py</span></div></div></header>
+    <p class="lead">Keep <code>eda.py</code>. At about 1,100 lines, it is your biggest deterministic asset. Change three things:</p>
+    <ol class="steps">
+      <li>Run it on training rows only.</li>
+      <li>Also write <code>profile.json</code>, a machine-readable output that code can use, next to the Markdown report.</li>
+      <li>Report possible conversions instead of applying them. Today it converts text-to-number columns in place, which hides a cleaning decision inside the EDA. Add pattern stats per column: number with unit, currency, percent, date-like, boolean-like, and sentinel-like values (<code>-999</code>, <code>0</code>, <code>"?"</code>, <code>"unknown"</code>).</li>
+    </ol>
+    <div class="io">
+      <div><h4>Input</h4>Training rows, <code>TaskSpec</code></div>
+      <div><h4>Output</h4><code>profile.json</code>, <code>profile.md</code></div>
+      <div><h4>If it fails</h4>Skip the broken section, log it and continue.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st6">
+    <header><span class="num">06</span><div><h3>Audit columns and leaks</h3><div class="meta"><span class="chip k-llm">LLM</span><span class="chip k-det">+ statistical checks</span><span class="tag">new</span></div></div></header>
+    <p class="lead">For each column, the LLM gives its meaning, a semantic type (number with unit, currency, date, category, free text, ID, boolean…), the problems it sees, and an answer to: <em>"Would this value be known at the moment of prediction?"</em> Code adds statistical evidence for leakage. See the <a href="#leakage">leakage guard</a>.</p>
+    <div class="io">
+      <div><h4>Input</h4><code>profile.json</code>, <code>TaskSpec</code></div>
+      <div><h4>Output</h4><code>audit.json</code> (one <code>ColumnAudit</code> per column)</div>
+      <div><h4>If it fails</h4>Semantic types from the profile rules only. Statistical leak tests only.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st7">
+    <header><span class="num">07</span><div><h3>Cleaning plan</h3><div class="meta"><span class="chip k-llm">LLM</span><span class="tag">replaces planner.py + processing.py</span></div></div></header>
+    <p class="lead">The LLM turns the audit into a plan: an ordered list of typed operations from the <a href="#toolbox">toolbox</a>, each with its parameters and a reason. The LLM no longer writes a free-text plan for another LLM to turn into a script.</p>
+    <div class="io">
+      <div><h4>Input</h4><code>audit.json</code>, <code>profile.json</code>, the toolbox catalog</div>
+      <div><h4>Output</h4><code>plan.json</code></div>
+      <div><h4>If it fails</h4>Use an empty plan, which means the generic pipeline only.</div>
+    </div>
+    <p class="note">The list of operations and their parameters is injected into the prompt from <code>operations/registry.py</code>. This way the prompt and the code can never disagree (C4).</p>
+  </article>
+
+  <article class="stage" id="st8">
+    <header><span class="num">08</span><div><h3>Compile and check</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="chip k-exec">custom ops sandboxed</span><span class="tag">fixes C1 · B1</span></div></div></header>
+    <p class="lead">Code validates the plan with Pydantic and builds one scikit-learn Pipeline: the agent's operations followed by a generic stage. It fits the pipeline on the training folds and runs data checks.</p>
+    <h4>Data checks (deterministic; they replace the LLM judges)</h4>
+    <ul>
+      <li>Output columns have the expected types. No infinite values. No column became all-missing.</li>
+      <li>No rows are lost.</li>
+      <li>The transform also works on <em>unseen</em> rows (the validation fold), not only on the rows it was fitted on.</li>
+      <li>It finishes within the time limit.</li>
+    </ul>
+    <h4>Repair</h4>
+    <p>If an operation fails, the LLM gets a short, structured error, for example: <code>parse_unit on Weight: 3% of values could not be parsed, examples: "1.3 kgs", "?"</code>. It may fix <em>that one operation</em>. After 3 failed repairs, the operation is dropped and logged.</p>
+    <div class="io">
+      <div><h4>Input</h4><code>plan.json</code>, training folds</div>
+      <div><h4>Output</h4>A checked pipeline + a check report</div>
+      <div><h4>If it fails</h4>Drop the broken operations and keep the rest.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st9">
+    <header><span class="num">09</span><div><h3>Validation gate</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="chip k-llm">LLM refines</span><span class="tag">new</span></div></div></header>
+    <p class="lead">Code compares two pipelines on the same CV folds with the same quick model (for example, LightGBM with default settings): <b>generic only</b> versus <b>agent + generic</b>. The agent pipeline is kept only if it is not worse, within a small tolerance.</p>
+    <ol class="steps">
+      <li><b>Refine.</b> The LLM sees the per-fold results and may revise the plan once or twice. This is where the agent learns from feedback.</li>
+      <li><b>The generic stage</b> always runs last: imputation, category encoding, simple date parts, and turning text into features. One option is to use skrub's <code>TableVectorizer</code> here. Then your "no LLM" ablation is exactly the skrub baseline, so every gain you show comes from the LLM itself.</li>
+    </ol>
+    <div class="callout warn">
+      <h4>Important subtlety</h4>
+      <p>The gate does <b>not</b> decide on leak removals. Removing a leak <em>lowers</em> the CV score, because the leak was "helping". If the gate decided, it would always keep the leak. Leak decisions use the leakage guard only.</p>
+    </div>
+  </article>
+
+  <article class="stage" id="st10">
+    <header><span class="num">10</span><div><h3>Feature ideas (semester 2)</h3><div class="meta"><span class="chip k-llm">LLM</span><span class="tag">optional</span></div></div></header>
+    <p class="lead">The LLM proposes a few new features in the style of CAAFE: ratios, differences, date gaps, group statistics. They are written as safe expressions, not free code. The gate keeps an idea only if CV improves. Keep this out of semester 1: cleaning and leakage are your core.</p>
+  </article>
+
+  <article class="stage" id="st11">
+    <header><span class="num">11</span><div><h3>Model search</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">replaces trainagent.py + evaluationagent.py</span><span class="tag">fixes B5 · B6</span></div></div></header>
+    <p class="lead">No LLM here.</p>
+    <ol class="steps">
+      <li>Candidates: dummy (always), logistic or ridge regression, LightGBM, CatBoost.</li>
+      <li>Optuna searches the hyperparameters within the time budget and scores them with the CV folds.</li>
+      <li>Pick the best CV score. Optionally, average the best two models.</li>
+      <li>Refit the whole pipeline (preparation + model) on all training rows.</li>
+    </ol>
+    <p class="note"><b>Plug-in backend.</b> You can give the same prepared data to AutoGluon or FLAML instead. This makes the key experiment possible: "agent + AutoGluon" versus "AutoGluon alone".</p>
+    <div class="io">
+      <div><h4>Input</h4>Accepted pipeline, training rows, CV folds</div>
+      <div><h4>Output</h4>One fitted Pipeline (preparation + model)</div>
+      <div><h4>If it fails</h4>Skip any candidate that crashes. The dummy model always exists.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st12">
+    <header><span class="num">12</span><div><h3>Final test</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">fixes B2 · B4</span></div></div></header>
+    <p class="lead">Predict the locked test set <b>once</b> and compute the metrics with a fixed <code>metrics.py</code>. Use probabilities for ROC-AUC and log-loss, the right averaging for binary versus multi-class, a safe MAPE, and full precision (round only for display).</p>
+    <div class="io">
+      <div><h4>Input</h4>Fitted pipeline, test rows</div>
+      <div><h4>Output</h4><code>scores.json</code></div>
+      <div><h4>Rule</h4>No stage may run after this one and change the model.</div>
+    </div>
+  </article>
+
+  <article class="stage" id="st13">
+    <header><span class="num">13</span><div><h3>Report and artifact</h3><div class="meta"><span class="chip k-det">Deterministic</span><span class="chip k-llm">short LLM summary</span><span class="tag">fixes C2 · C5</span></div></div></header>
+    <p class="lead">Save <code>model.joblib</code>: one Pipeline with preparation and model. Read the input columns from <code>feature_names_in_</code>, and keep the original labels with a label encoder. Then write <code>report.md</code> from a template: the task, the data problems found, the operations kept and rejected (with reasons and their CV effect), leak warnings, CV and test scores, and time and cost. The LLM may add a short summary paragraph. If that fails, the template is enough.</p>
+  </article>
+</section>
+
+<section class="block" id="loop">
+  <h2>The new agent loop</h2>
+  <p class="section-intro">The core loop changes. v1 was "generate, run, let an LLM judge, rewrite". v2 is "propose, validate, compile, check, gate".</p>
+  <div class="chain-label">v1 (DS Lab 1)</div>
+  <div class="topo bad">
+    <div class="t-node"><b>Generate</b><span>whole script</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Run</b><span>subprocess</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>LLM judges</b><span>reads stdout</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>LLM rewrites</b><span>whole file</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Repeat ≤ 10</b><span>then crash</span></div>
+  </div>
+  <div class="chain-label">v2</div>
+  <div class="topo good">
+    <div class="t-node"><b>Propose</b><span>typed ops (JSON)</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Validate</b><span>Pydantic schema</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Compile</b><span>sklearn Pipeline</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Check</b><span>data checks</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Gate</b><span>CV score</span></div><div class="t-arrow">→</div>
+    <div class="t-node"><b>Commit</b><span>or roll back</span></div>
+  </div>
+  <div class="table-wrap" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Aspect</th><th>v1</th><th>v2</th></tr></thead>
+      <tbody>
+        <tr><td>What the LLM writes</td><td>Whole Python scripts</td><td>A small JSON plan</td></tr>
+        <tr><td>Who decides "it works"</td><td>Another LLM call</td><td>Code checks and the CV score</td></tr>
+        <tr><td>When something breaks</td><td>Rewrite the whole file</td><td>Fix or drop one operation</td></tr>
+        <tr><td>Worst case</td><td>Crash after 10 attempts</td><td>Generic pipeline; the run still finishes</td></tr>
+        <tr><td>Leakage</td><td>Possible (fit before split, tune on test)</td><td>Prevented by design (fit on train folds only)</td></tr>
+        <tr><td>Reproducible</td><td>No</td><td>Yes (seeds, LLM cache, logs)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="toolbox">
+  <h2>The operations toolbox</h2>
+  <p class="section-intro">Each operation is a small scikit-learn transformer that you write and unit-test once. The LLM only picks operations and fills in their parameters. Start with about 12. Add more only when the benchmark shows a need.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Operation</th><th>What it does</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>drop_column</code></td><td>Removes ID, constant or leaky columns</td><td><code>customerID</code> → dropped</td></tr>
+        <tr><td><code>parse_number</code></td><td>Text → number. Removes symbols, thousand separators and suffixes (k, M).</td><td><code>"$1,250.00"</code> → 1250.0</td></tr>
+        <tr><td><code>parse_unit</code></td><td>Number with units → one common unit</td><td><code>"1.37kg"</code> → 1.37, <code>"800 g"</code> → 0.8</td></tr>
+        <tr><td><code>parse_datetime</code></td><td>Text → date with a given format, then date parts</td><td><code>"20141013T000000"</code> → 2014, 10, 13, Monday</td></tr>
+        <tr><td><code>date_difference</code></td><td>Days or years between two date columns</td><td>sale date − year built → house age</td></tr>
+        <tr><td><code>parse_boolean</code></td><td>Many spellings → 0/1</td><td><code>"Y"</code>, <code>"yes"</code>, <code>"TRUE"</code>, <code>"1"</code> → 1</td></tr>
+        <tr><td><code>missing_tokens</code></td><td>Fake missing values → real missing values</td><td><code>-999</code>, <code>"?"</code>, <code>"unknown"</code>, <code>yr_renovated = 0</code> → NaN</td></tr>
+        <tr><td><code>map_categories</code></td><td>Merges spellings of the same thing</td><td><code>"NY"</code>, <code>"new york"</code>, <code>"N.Y."</code> → <code>"New York"</code></td></tr>
+        <tr><td><code>valid_range</code></td><td>Impossible values → missing</td><td>age 450 → NaN</td></tr>
+        <tr><td><code>extract_pattern</code></td><td>Regex groups → new columns</td><td><code>"2560x1600"</code> → 2560, 1600</td></tr>
+        <tr><td><code>text_features</code></td><td>Long free text → a few numeric columns</td><td>description → TF-IDF + SVD (5–20 columns)</td></tr>
+        <tr><td><code>custom</code> <span class="chip k-exec">sandbox</span></td><td>Escape hatch: a generated transformer, tested before use</td><td><code>"128GB SSD + 1TB HDD"</code> → ssd_gb 128, hdd_gb 1000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note"><b>Why this is leak-free.</b> Parsing operations learn nothing from the data. Operations that do learn something (the category map, text features) learn it only inside <code>fit()</code>, on training rows. At prediction time, unseen values become "other" or missing.</p>
+
+  <h4>Example plan for the laptop table</h4>
+  <pre><code>{
+  "operations": [
+    {"op": "parse_unit", "column": "Weight", "unit_map": {"kg": 1.0, "g": 0.001},
+     "reason": "weight is stored as text with a unit"},
+    {"op": "parse_number", "column": "Ram", "remove": ["GB"],
+     "reason": "memory size is stored as text"},
+    {"op": "extract_pattern", "column": "ScreenResolution", "pattern": "(\\d+)x(\\d+)",
+     "into": ["screen_width", "screen_height"], "reason": "resolution is inside a long text"},
+    {"op": "extract_pattern", "column": "Cpu", "pattern": "([\\d.]+)GHz",
+     "into": ["cpu_ghz"], "reason": "clock speed is inside the CPU name"},
+    {"op": "custom", "column": "Memory", "into": ["ssd_gb", "hdd_gb"],
+     "reason": "several drives are packed into one text; no toolbox operation fits"}
+  ]
+}</code></pre>
+
+  <h4>Rules for the <code>custom</code> escape hatch</h4>
+  <ul>
+    <li>It must be one class with <code>fit()</code> and <code>transform()</code>, written by the LLM from <code>prompts/customop.md</code>.</li>
+    <li>It runs in a separate process with a time limit, in a temporary folder, with no API keys in the environment (D2).</li>
+    <li>It is tested on a training sample first and then on unseen rows. Only after that may it join the pipeline.</li>
+    <li>After 3 failed repairs it is dropped. Report how often <code>custom</code> was needed. If it is needed often, that is a sign you should add a new toolbox operation.</li>
+  </ul>
+</section>
+
+<section class="block" id="leakage">
+  <h2>The leakage guard</h2>
+  <p class="section-intro">Leakage is the most dangerous mistake, because it makes results look <em>better</em>. Classical AutoML cannot see it, because a leak improves the validation score. Your agent combines three kinds of evidence.</p>
+  <div class="cards">
+    <div class="card"><div class="k"><span class="chip k-det">Statistical (code)</span></div><p>One column alone predicts the target almost perfectly (for example, single-feature CV AUC above 0.98 or R² above 0.95). A column equals the target, or a simple function of it. Missing values appear in only one class.</p></div>
+    <div class="card"><div class="k"><span class="chip k-llm">Semantic (LLM)</span></div><p>"Would this value exist at the moment of prediction?" Examples: <code>refund_issued</code> when predicting fraud, <code>cancellation_date</code> when predicting churn, <code>final_grade</code> when predicting pass/fail.</p></div>
+    <div class="card"><div class="k"><span class="chip k-det">Structural (code)</span></div><p>ID-like columns, row numbers (<code>Unnamed: 0</code>), and timestamps after the event.</p></div>
+  </div>
+  <div class="table-wrap" style="margin-top:16px">
+    <table>
+      <thead><tr><th>Evidence</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Semantic + statistical</td><td>Drop the column. Report it as "leak removed".</td></tr>
+        <tr><td>Strong semantic only</td><td>Drop and report. In <code>--ask</code> mode, ask the user first.</td></tr>
+        <tr><td>Statistical only</td><td>Keep, but report a warning: "suspiciously strong, please check".</td></tr>
+        <tr><td>None</td><td>Keep.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">The thresholds are settings. Tune them on a separate set of datasets, never on the benchmark you report.</p>
+</section>
+
+<section class="block" id="fallbacks">
+  <h2>Never crash: a fallback for every stage</h2>
+  <p class="section-intro">This is how v2 survives the wind that destroyed v1. With these fallbacks, the only way a run can end without a model is a file that nobody can read.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Typical failure</th><th>Fallback</th></tr></thead>
+      <tbody>
+        <tr><td>01 Read</td><td>Wrong encoding or delimiter</td><td>Try alternatives. If none works, stop with a clear message (the only hard stop).</td></tr>
+        <tr><td>03 Frame</td><td>LLM error, invalid answer, low confidence</td><td>Rule-based target and task type. <code>--ask</code> mode asks the user.</td></tr>
+        <tr><td>04 Split</td><td>A class with very few rows</td><td>Non-stratified split + warning</td></tr>
+        <tr><td>05 Profile</td><td>A section crashes on a strange column</td><td>Skip that section and log it</td></tr>
+        <tr><td>06 Audit</td><td>LLM error</td><td>Rule-based semantic types; statistical leak tests only</td></tr>
+        <tr><td>07 Plan</td><td>Invalid JSON or an unknown operation</td><td>Ask again with the validation error (up to 2 times), then use an empty plan</td></tr>
+        <tr><td>08 Compile</td><td>An operation fails a check</td><td>Repair up to 3 times, then drop that operation</td></tr>
+        <tr><td>08 Custom</td><td>Crash or timeout in the sandbox</td><td>Repair up to 3 times, then drop it</td></tr>
+        <tr><td>09 Gate</td><td>The agent pipeline is worse</td><td>Use the generic pipeline</td></tr>
+        <tr><td>11 Model</td><td>A candidate crashes or runs out of time</td><td>Skip it. The dummy model always exists.</td></tr>
+        <tr><td>13 Report</td><td>The LLM summary fails</td><td>Template report without the summary</td></tr>
+        <tr><td>Any</td><td>The LLM budget is spent</td><td>Every agent returns "no answer" and the rules take over</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <h4>Torture tests</h4>
+    <p>Create <code>tests/</code> with about 20 tiny, strange files: one column, one row, all values missing, only one class, unicode headers, duplicate column names, a semicolon CSV, an Excel file with title rows, 500 columns, 1 million rows. The pipeline must finish on all of them, or stop with a clear message. Run these tests before every commit.</p>
+  </div>
+</section>
+
+<section class="block" id="llm">
+  <h2>The LLM layer</h2>
+  <p class="section-intro">Merge <code>llms/codex.py</code> and <code>llms/generation.py</code> into one small client, <code>llms/client.py</code>. Every agent calls the LLM through it.</p>
+  <ul>
+    <li><b>One function</b>, roughly <code>ask(prompt_name, inputs, schema)</code>, that returns a validated Pydantic object.</li>
+    <li><b>Model name, temperature (0 or low) and seed</b> come from settings and are never hardcoded (C3).</li>
+    <li><b>Retries.</b> API errors are retried with backoff (tenacity). If the answer does not match the schema, ask again with the validation error, at most 2 times.</li>
+    <li><b>A disk cache</b> keyed by model + prompt + inputs. Re-runs are free and identical, and tests can replay real answers without calling the API.</li>
+    <li><b>Every call is logged</b> to <code>runs/&lt;id&gt;/llm.jsonl</code>: stage, prompt name and version, tokens, latency, cost, success.</li>
+    <li><b>A budget guard.</b> When a run reaches its call or cost limit, the agents return "no answer" and the fallbacks take over.</li>
+    <li><b>Prompts</b> stay in <code>prompts/*.md</code>, but the lists inside them (operations, metrics) are injected from code (C4).</li>
+    <li><b>Semester 2:</b> add a second provider, or a local model, for RQ6.</li>
+  </ul>
+  <div class="callout warn">
+    <h4>Fairness rule</h4>
+    <p>In every comparison, use the same LLM for your agent and for the LLM baselines. While you develop, use a cheap model and the cache.</p>
+  </div>
+</section>
+
+<section class="block" id="runs">
+  <h2>Run folder and state</h2>
+  <p class="section-intro"><code>configuration/configuration.json</code> was shared global state (E2). It is replaced by a typed <code>RunContext</code> object that is passed between stages and saved after each stage. If a run crashes, open its folder and you will see exactly where and why.</p>
+  <pre class="tree"><code>runs/2026-11-12_1432_laptops/
+├── settings.json      <span class="c"># all settings used in this run</span>
+├── context.json       <span class="c"># RunContext, saved after every stage</span>
+├── glance.json        <span class="c"># quick look (stage 02)</span>
+├── split.json         <span class="c"># row indices: test set and CV folds</span>
+├── profile.json       <span class="c"># EDA on training rows (+ profile.md)</span>
+├── audit.json         <span class="c"># column meanings and leak evidence</span>
+├── plan.json          <span class="c"># proposed plan and final accepted plan</span>
+├── decisions.jsonl    <span class="c"># one line per decision: proposal, evidence, accepted, why</span>
+├── llm.jsonl          <span class="c"># one line per LLM call: stage, prompt, tokens, cost, time</span>
+├── custom/            <span class="c"># sandboxed custom operations, if any</span>
+├── model.joblib       <span class="c"># one Pipeline: preparation + model</span>
+├── scores.json        <span class="c"># CV and test scores, time, cost</span>
+└── report.md          <span class="c"># human-readable report</span></code></pre>
+  <h4>A sketch of the typed state (in <code>schemas.py</code>)</h4>
+  <pre><code>from typing import Literal
+from pydantic import BaseModel
+
+class TaskSpec(BaseModel):
+    target: str
+    task_type: Literal["binary", "multiclass", "regression"]
+    metric: str
+    id_columns: list[str] = []
+    confidence: float
+    reason: str
+
+class Decision(BaseModel):
+    stage: str
+    proposal: dict
+    evidence: str
+    accepted: bool
+    reason: str
+
+class RunContext(BaseModel):
+    run_id: str
+    data_path: str
+    task: TaskSpec | None = None
+    plan: list[dict] = []
+    decisions: list[Decision] = []
+    scores: dict = {}
+    llm_cost: float = 0.0</code></pre>
+  <p class="note">The <code>decisions</code> list is also research data. It lets you measure decision quality (for example, "how many proposed operations did the gate accept?"), not only final scores. A 2026 paper by Du et al. argues that agent papers should report exactly this.</p>
+</section>
+
+<!-- ================================================================ -->
+<header class="part-head">
+  <div class="eyebrow">Part 3</div>
+  <h2>Keep, change, remove</h2>
+  <p>Every file in the repository today (commit <code>483fcc9</code>, after your clean-up on 4 October), and what to do with it.</p>
+</header>
+
+<section class="block" id="files">
+  <h2>File by file</h2>
+  <p class="section-intro">"Change" can mean small edits or a rewrite under a new name. When the name changes, the new name is shown.</p>
+  <div class="legend" style="margin:0 0 6px">
+    <span class="chip k-keep">keep</span><span class="chip k-change">change</span><span class="chip k-remove">remove</span><span class="chip k-new">new (see layout)</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Verdict</th><th>What to do</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr class="sub"><td colspan="4">Root</td></tr>
+        <tr><td><code>main.py</code></td><td><span class="chip k-change">change</span></td><td>One entry point: <code>uv run main.py data/file.csv [--target] [--task] [--budget] [--ask]</code>. It only builds the settings and calls the orchestrator. Keep the rich/questionary look for interactive mode.</td><td>E1. The benchmark must call the same code.</td></tr>
+        <tr><td><code>main2.py</code></td><td><span class="chip k-remove">remove</span></td><td>Its step logging moves into the run folder (<code>decisions.jsonl</code>, <code>llm.jsonl</code>).</td><td>E1</td></tr>
+        <tr><td><code>clean.py</code></td><td><span class="chip k-remove">remove</span></td><td>Deleting a run folder replaces it.</td><td>D4: it can delete real data</td></tr>
+        <tr><td><code>paths.py</code></td><td><span class="chip k-keep">keep</span></td><td>Add <code>runs_dir</code>, <code>benchmark_dir</code> and a test-data dir.</td><td>Already uses pathlib</td></tr>
+        <tr><td><code>schemas.py</code></td><td><span class="chip k-change">change</span></td><td>Home of all typed models: <code>RunContext</code>, <code>TaskSpec</code>, <code>ColumnAudit</code>, operation models, <code>Decision</code>.</td><td>E2</td></tr>
+        <tr><td><code>pyproject.toml</code></td><td><span class="chip k-change">change</span></td><td>Python 3.12; remove ONNX and friends; add lightgbm, optuna, tenacity; dependency groups. See <a href="#deps">Dependencies</a>.</td><td>libraries.md §2.1</td></tr>
+        <tr><td><code>.python-version</code></td><td><span class="chip k-change">change</span></td><td><code>3.12</code></td><td>3.10 reaches end of life in October 2026</td></tr>
+        <tr><td><code>uv.lock</code></td><td><span class="chip k-change">change</span></td><td>Regenerate with <code>uv lock</code>.</td><td>—</td></tr>
+        <tr><td><code>README.md</code></td><td><span class="chip k-change">change</span></td><td>Update at the end of the semester: what it does, and how to reproduce the results with one command.</td><td>F</td></tr>
+        <tr><td><code>.gitignore</code></td><td><span class="chip k-keep">keep</span></td><td>Add <code>runs/</code> and the benchmark output folders.</td><td>—</td></tr>
+
+        <tr class="sub"><td colspan="4">agents/</td></tr>
+        <tr><td><code>targetdetector.py</code> → <code>framer.py</code></td><td><span class="chip k-change">change</span></td><td>Candidate ranking + LLM choice with a confidence; task type; ID and time columns; metric from rules.</td><td>B7, B8</td></tr>
+        <tr><td><code>configfiller.py</code></td><td><span class="chip k-remove">remove</span></td><td>The metric comes from the task type. No invented minimum score. Drop <code>explainableModel</code>.</td><td>B7</td></tr>
+        <tr><td><code>planner.py</code> → <code>cleaner.py</code></td><td><span class="chip k-change">change</span></td><td>Produces a typed JSON plan instead of free-text plans. Also owns the repair and refine steps.</td><td>C1, fragility</td></tr>
+        <tr><td><code>processoragent.py</code></td><td><span class="chip k-change">change</span></td><td>Merged: its loop idea moves into <code>agents/cleaner.py</code> and <code>operations/compiler.py</code>. No generated <code>processing.py</code>.</td><td>B1, C1</td></tr>
+        <tr><td><code>trainagent.py</code></td><td><span class="chip k-remove">remove</span></td><td>Replaced by <code>modelling/engine.py</code> (no LLM).</td><td>B6, fragility</td></tr>
+        <tr><td><code>evaluationagent.py</code></td><td><span class="chip k-remove">remove</span></td><td>Replaced by <code>modelling/engine.py</code> (Optuna on CV) and <code>modelling/evaluator.py</code> (test set once).</td><td>B2, B4, B5</td></tr>
+
+        <tr class="sub"><td colspan="4">llms/</td></tr>
+        <tr><td><code>codex.py</code></td><td><span class="chip k-change">change</span></td><td>Merged into <code>llms/client.py</code>.</td><td>C3</td></tr>
+        <tr><td><code>generation.py</code></td><td><span class="chip k-change">change</span></td><td>Merged into <code>llms/client.py</code>: settings, retries, cache, logging, budget.</td><td>C3</td></tr>
+
+        <tr class="sub"><td colspan="4">tools/</td></tr>
+        <tr><td><code>eda.py</code></td><td><span class="chip k-keep">keep</span></td><td>Run it on training rows. Add <code>profile.json</code> and pattern stats. Report conversions instead of applying them in place.</td><td>Your strongest asset</td></tr>
+        <tr><td><code>datareader.py</code></td><td><span class="chip k-keep">keep</span></td><td>Use it everywhere. Add header/footer detection, column-name cleanup and duplicate removal.</td><td>—</td></tr>
+        <tr><td><code>datasplitter.py</code></td><td><span class="chip k-change">change</span></td><td>Split the raw data first; stratify; make CV folds; save indices, not CSV copies.</td><td>B1, B2, B3</td></tr>
+        <tr><td><code>metrics.py</code></td><td><span class="chip k-change">change</span></td><td>Probabilities for AUC and log-loss; binary vs multi-class averaging; safe MAPE; full precision.</td><td>B4</td></tr>
+        <tr><td><code>coderunner.py</code></td><td><span class="chip k-change">change</span></td><td>Used only for custom operations: temp folder, no secrets in the environment, time limit, structured result.</td><td>D2</td></tr>
+
+        <tr class="sub"><td colspan="4">configuration/</td></tr>
+        <tr><td><code>constants.json</code> → <code>settings.json</code></td><td><span class="chip k-change">change</span></td><td>Seeds, split sizes, CV folds, time and LLM budgets, gate tolerance, leak thresholds.</td><td>B7</td></tr>
+        <tr><td><code>metrics.json</code></td><td><span class="chip k-change">change</span></td><td>One primary metric per task + the list of reported metrics. Injected into prompts.</td><td>C4</td></tr>
+        <tr><td><code>modeloptions.md</code></td><td><span class="chip k-remove">remove</span></td><td>The candidate models are defined in code.</td><td>B6</td></tr>
+        <tr><td><code>edaconfig.py</code></td><td><span class="chip k-keep">keep</span></td><td>File readers per extension.</td><td>—</td></tr>
+
+        <tr class="sub"><td colspan="4">prompts/</td></tr>
+        <tr><td><code>targetdetector.md</code> → <code>framer.md</code></td><td><span class="chip k-change">change</span></td><td>Richer input (stats + samples), candidates, confidence.</td><td>B8</td></tr>
+        <tr><td><code>configfiller.md</code></td><td><span class="chip k-remove">remove</span></td><td>—</td><td>B7</td></tr>
+        <tr><td><code>processingplanprompt.md</code> → <code>cleaningplan.md</code></td><td><span class="chip k-change">change</span></td><td>Asks for a typed plan. The operation catalog is injected from code.</td><td>C4</td></tr>
+        <tr><td><code>trainplanprompt.md</code></td><td><span class="chip k-remove">remove</span></td><td>No LLM training plans.</td><td>B6</td></tr>
+        <tr><td><code>codexcodeprompt.md</code> → <code>customop.md</code></td><td><span class="chip k-change">change</span></td><td>Only for the custom escape hatch: write one transformer class.</td><td>D2</td></tr>
+        <tr><td><code>codexfixprompt.md</code> → <code>repair.md</code></td><td><span class="chip k-change">change</span></td><td>Fix one operation from a structured error.</td><td>C1</td></tr>
+        <tr><td><code>processorreasoningprompt.md</code></td><td><span class="chip k-remove">remove</span></td><td>Replaced by deterministic data checks.</td><td>C1</td></tr>
+        <tr><td><code>trainreasoningprompt.md</code></td><td><span class="chip k-remove">remove</span></td><td>Replaced by deterministic checks.</td><td>C1</td></tr>
+        <tr><td><code>evaluationprompt.md</code></td><td><span class="chip k-remove">remove</span></td><td>Replaced by Optuna.</td><td>B5</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="deps">
+  <h2>Dependencies</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Action</th><th>Packages</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip k-change">upgrade</span></td><td>Python 3.10 → 3.12; numpy 1.26 → 2.x</td><td>Python 3.10 reaches end of life this month (October 2026).</td></tr>
+        <tr><td><span class="chip k-remove">remove</span></td><td>onnx, onnxmltools, onnxruntime, skl2onnx, cloudpickle, click</td><td>ONNX is replaced by one scikit-learn Pipeline saved with joblib. A bare <code>click</code> command does nothing, so use argparse instead.</td></tr>
+        <tr><td><span class="chip k-keep">keep</span></td><td>pandas, numpy, scipy, scikit-learn, catboost, pydantic, openai, python-dotenv, rich, questionary, tabulate</td><td>The core stack is good (libraries.md §1).</td></tr>
+        <tr><td><span class="chip k-new">add: core</span></td><td>lightgbm, optuna, tenacity</td><td>Modelling engine, hyperparameter search, API retries</td></tr>
+        <tr><td><span class="chip k-new">add: optional</span></td><td>skrub</td><td>Generic stage and the no-LLM dirty-data baseline</td></tr>
+        <tr><td><span class="chip k-new">add: benchmark</span></td><td>openml, autogluon.tabular, flaml, aideml, autogluon-assistant, tabpfn</td><td>Datasets and baselines (in separate environments, see below)</td></tr>
+        <tr><td><span class="chip k-new">add: dev</span></td><td>pytest, ruff</td><td>Tests and style checks</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warn">
+    <h4>Install heavy baselines in their own environments</h4>
+    <p>AutoGluon, AIDE, AutoGluon Assistant and TabPFN pin their own versions of numpy, pandas and scikit-learn, and they will clash with yours. Give each one its own virtual environment, and let the benchmark runner call each baseline as a separate process. Some of them are Linux-first, so run the benchmark in WSL2 or on a university server. Install them in week 2. Installation problems are the most common delay in this kind of project.</p>
+  </div>
+</section>
+
+<section class="block" id="layout">
+  <h2>Target layout</h2>
+  <p class="section-intro">Existing folder names stay. New folders are added next to them. Colours: <span class="chip k-keep">keep</span> <span class="chip k-change">change</span> <span class="chip k-new">new</span>.</p>
+  <pre class="tree"><code>I/
+├── main.py                <span class="kc">change</span>  <span class="c"># one CLI for demo and benchmark</span>
+├── orchestrator.py        <span class="kn">new</span>     <span class="c"># stages, budgets, fallbacks, checkpoints</span>
+├── paths.py               <span class="kk">keep</span>    <span class="c"># + runs_dir, benchmark_dir</span>
+├── schemas.py             <span class="kc">change</span>  <span class="c"># RunContext, TaskSpec, ColumnAudit, operations, Decision</span>
+├── agents/
+│   ├── framer.py          <span class="kc">change</span>  <span class="c"># was targetdetector.py</span>
+│   ├── auditor.py         <span class="kn">new</span>     <span class="c"># column meaning + leak suspicion</span>
+│   ├── cleaner.py         <span class="kc">change</span>  <span class="c"># was planner.py + processoragent.py</span>
+│   └── engineer.py        <span class="kn">new</span>     <span class="c"># semester 2: feature ideas</span>
+├── llms/
+│   └── client.py          <span class="kc">change</span>  <span class="c"># was codex.py + generation.py</span>
+├── operations/            <span class="kn">new</span>     <span class="c"># the typed toolbox</span>
+│   ├── registry.py                <span class="c"># catalog + parameter schemas (also fed to prompts)</span>
+│   ├── parsing.py                 <span class="c"># numbers, units, dates, booleans, missing tokens, ranges</span>
+│   ├── columns.py                 <span class="c"># drop, extract_pattern, date_difference</span>
+│   ├── categories.py              <span class="c"># map_categories</span>
+│   ├── text.py                    <span class="c"># text_features</span>
+│   ├── custom.py                  <span class="c"># sandboxed escape hatch</span>
+│   └── compiler.py                <span class="c"># plan → scikit-learn Pipeline (+ generic stage)</span>
+├── checks/                <span class="kn">new</span>
+│   ├── datachecks.py              <span class="c"># deterministic checks (replace the LLM judges)</span>
+│   └── leakage.py                 <span class="c"># statistical and structural leak tests</span>
+├── modelling/             <span class="kn">new</span>
+│   ├── engine.py                  <span class="c"># candidates + Optuna under a time budget</span>
+│   ├── backends.py                <span class="c"># optional AutoGluon / FLAML backend</span>
+│   └── evaluator.py               <span class="c"># locked test set, final scores</span>
+├── tools/
+│   ├── eda.py             <span class="kk">keep</span>    <span class="c"># + profile.json</span>
+│   ├── datareader.py      <span class="kk">keep</span>    <span class="c"># + header detection</span>
+│   ├── datasplitter.py    <span class="kc">change</span>
+│   ├── metrics.py         <span class="kc">change</span>
+│   ├── coderunner.py      <span class="kc">change</span>  <span class="c"># sandbox for custom operations</span>
+│   └── report.py          <span class="kn">new</span>     <span class="c"># report.md from the decision log</span>
+├── prompts/               <span class="c"># framer · auditor · cleaningplan · repair · customop · featureideas</span>
+├── configuration/         <span class="c"># settings.json · metrics.json · edaconfig.py</span>
+├── benchmark/             <span class="kn">new</span>
+│   ├── datasets.py                <span class="c"># dataset list and loaders (OpenML, local files)</span>
+│   ├── corruptor.py               <span class="c"># mess generator; saves the ground truth</span>
+│   ├── leaks.py                   <span class="c"># hand-designed leaky columns per dataset</span>
+│   ├── systems.py                 <span class="c"># adapters: v2, v1, dummy, lightgbm, skrub, autogluon, ...</span>
+│   ├── runner.py                  <span class="c"># system × dataset × level × seed → results.csv</span>
+│   └── analysis.py                <span class="c"># normalized scores, ranks, tests, figures</span>
+├── tests/                 <span class="kn">new</span>     <span class="c"># unit tests, torture files, replayed-LLM integration test</span>
+└── runs/                          <span class="c"># gitignored: one folder per run</span></code></pre>
+</section>
+
+<!-- ================================================================ -->
+<header class="part-head">
+  <div class="eyebrow">Part 4</div>
+  <h2>Proving it: evaluation</h2>
+  <p>This is the part that turns a tool into a thesis.</p>
+</header>
+
+<section class="block" id="benchmark">
+  <h2>Benchmark design</h2>
+  <p class="section-intro">You need a test where you know the truth. The trick: start from clean datasets, add realistic mess with a generator that remembers what it changed, and see which tools recover. Then add naturally messy datasets, so that nobody can say "it only works on synthetic mess".</p>
+  <div class="cards">
+    <div class="card"><div class="k">Group A</div><h3>Clean base datasets</h3><p>15 now, 30 later, from OpenML or TabArena. 1k–100k rows; binary, multi-class and regression. They need <b>readable column names</b>, because the LLM needs meaning. Skip datasets with names like <code>V1</code>, <code>V2</code>, except as "no harm" controls. Prefer less famous datasets, because an LLM may have memorised Titanic or Adult.</p></div>
+    <div class="card"><div class="k">Group B</div><h3>Controlled mess</h3><p>Group A plus the mess generator: 12 types × 4 levels (0 = clean, low, medium, high), with fixed seeds and saved ground truth. This gives your main figure: score versus mess level.</p></div>
+    <div class="card"><div class="k">Group C</div><h3>Naturally messy</h3><p>5–10 real datasets, for example laptop prices, used cars, Airbnb listings, skrub's employee salaries, and your own <code>ibmchurn</code> and <code>kinghousedata</code>. Check each license.</p></div>
+    <div class="card"><div class="k">Group D</div><h3>Leakage set</h3><p>About 10 datasets where you add 1–2 realistic leaky columns by hand (with names like <code>refund_issued</code>), documented in a table. At test time, set the leaky column to missing, because in real use that information does not exist yet.</p></div>
+  </div>
+  <div class="callout">
+    <h4>Protocol: the fairness rules</h4>
+    <ul>
+      <li>All systems get the same train/test files for each dataset and seed. No system sees the test labels; the harness scores the predictions.</li>
+      <li>Same time budget (10 minutes in semester 1, 30–60 minutes in semester 2), same machine, and the same LLM for every LLM system.</li>
+      <li>3 seeds in semester 1, 5 in semester 2. Report mean ± std.</li>
+      <li>The metric is fixed per task: ROC-AUC (binary), log-loss (multi-class), RMSE (regression).</li>
+      <li>If a system fails, it gets the dummy model's score for that run, and the failure is counted. The AMLB benchmark handles failures the same way.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="block" id="mess">
+  <h2>Types of messy data</h2>
+  <p class="section-intro">Each type must be realistic, reversible (so that you know the truth) and controllable by a level. The last row is a <b>control</b>: classical AutoML already handles plain missing values, so the agent should not gain anything there. Honest controls make your other results believable.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Type</th><th>Example</th><th>What AutoML does</th><th>What the agent should do</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Units and symbols in numbers</td><td>1250 → <code>"$1,250.00"</code></td><td>Category or text; the size is lost</td><td><code>parse_number</code></td></tr>
+        <tr><td>2</td><td>Mixed units in one column</td><td><code>"1.37kg"</code>, <code>"1370 g"</code></td><td>Text</td><td><code>parse_unit</code></td></tr>
+        <tr><td>3</td><td>Dates as text, mixed formats</td><td><code>"2014-10-13"</code>, <code>"13/10/2014"</code>, <code>"Oct 13 2014"</code></td><td>Category</td><td><code>parse_datetime</code></td></tr>
+        <tr><td>4</td><td>Category spellings</td><td><code>"New York"</code>, <code>"new york"</code>, <code>"NY"</code></td><td>One value becomes many</td><td><code>map_categories</code></td></tr>
+        <tr><td>5</td><td>Fake missing values</td><td>NaN → <code>-999</code>, <code>0</code>, <code>"?"</code>, <code>"unknown"</code></td><td>Treats them as real values</td><td><code>missing_tokens</code></td></tr>
+        <tr><td>6</td><td>Impossible values</td><td>age 45 → 450</td><td>Keeps them</td><td><code>valid_range</code></td></tr>
+        <tr><td>7</td><td>Boolean spellings</td><td>1/0 → <code>"Y"</code>, <code>"yes"</code>, <code>"TRUE"</code>, <code>"no"</code></td><td>Many categories</td><td><code>parse_boolean</code></td></tr>
+        <tr><td>8</td><td>Packed columns</td><td>beds 3, baths 2 → <code>"3 bd / 2 ba"</code></td><td>One useless category</td><td><code>extract_pattern</code></td></tr>
+        <tr><td>9</td><td>ID and index columns</td><td>Add <code>customer_id</code>, <code>Unnamed: 0</code></td><td>May fit noise</td><td><code>drop_column</code></td></tr>
+        <tr><td>10</td><td>Messy file layout</td><td>Title rows, notes at the bottom, <code>;</code> delimiter</td><td>Crash or wrong header</td><td>Robust reader (report separately: this tests reading, not ML)</td></tr>
+        <tr><td>11</td><td>Target leakage</td><td>Add <code>refund_issued</code></td><td>Uses it: great CV score, fails in real use</td><td>Leakage guard</td></tr>
+        <tr><td>12</td><td>Plain missing values <span class="tag">control</span></td><td>NaN in 20% of cells</td><td>Handles them well</td><td>Nothing extra (no harm)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">JENGA (Schelter et al., 2021) is an existing library for <em>generic</em> corruptions: noise, scaling, missing values. Your generator focuses on <em>semantic</em> mess that needs understanding. Cite JENGA and explain this difference in your related-work chapter.</p>
+</section>
+
+<section class="block" id="baselines">
+  <h2>Baselines</h2>
+  <p class="section-intro">A result is only as strong as the best baseline it beats. There are three tiers. The must-have tier is needed for semester 1.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tier</th><th>System</th><th>Type</th><th>Why it is here</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>Dummy</b></td><td>Constant prediction</td><td>Lower bound: did the model learn anything at all? (B6)</td></tr>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>LightGBM, default settings</b></td><td>Quick data scientist</td><td>What you get in 5 minutes with basic preprocessing</td></tr>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>skrub</b> (TableVectorizer + HistGradientBoosting)</td><td>Non-LLM dirty-data tool</td><td>The honest rival: it handles dirty categories and dates without an LLM. If you cannot beat it, the LLM adds nothing.</td></tr>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>AutoGluon</b></td><td>Classical AutoML</td><td>The strongest open AutoML system and your main rival</td></tr>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>FLAML</b></td><td>Classical AutoML</td><td>Fast and light, and common in papers</td></tr>
+        <tr><td><span class="chip k-keep">must</span></td><td><b>Your v1</b></td><td>Your DS Lab 1</td><td>Shows your progress from v1 to v2</td></tr>
+        <tr><td><span class="chip k-change">should</span></td><td><b>AIDE</b></td><td>Code-writing LLM agent</td><td>Open source; the standard agent in MLE-bench</td></tr>
+        <tr><td><span class="chip k-change">should</span></td><td><b>AutoGluon Assistant (MLZero)</b></td><td>LLM + AutoML</td><td>The closest "LLM on top of AutoML" system; open source</td></tr>
+        <tr><td><span class="chip k-new">could</span></td><td><b>TabPFN</b></td><td>Tabular foundation model</td><td>Very strong on small data. Check its license.</td></tr>
+        <tr><td><span class="chip k-new">could</span></td><td><b>CAAFE</b></td><td>LLM feature engineering</td><td>A related idea: the LLM adds features on top of a model</td></tr>
+        <tr><td><span class="chip k-new">could</span></td><td><b>AutoML-Agent, DS-Agent, Data Interpreter</b></td><td>LLM agents</td><td>Only if time allows</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Your own variants also count as rows in the results table: <b>v2 (own engine)</b> and <b>v2 + AutoGluon</b>, the plug-in experiment.</p>
+</section>
+
+<section class="block" id="metrics">
+  <h2>Metrics and statistics</h2>
+  <div class="two">
+    <div class="card">
+      <div class="k">What you measure</div>
+      <ol>
+        <li><b>Model quality</b>: the primary metric per task, then a normalized score.</li>
+        <li><b>Reliability</b>: success rate (valid predictions within the budget) and std across seeds.</li>
+        <li><b>Cost</b>: wall-clock minutes, LLM calls, tokens, $.</li>
+        <li><b>Decision quality</b>: framer accuracy, leak detection precision and recall, repair accuracy (did the agent restore the true values? You can check, because the generator saved them), and the share of LLM operations the gate accepted.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="k">How you compare, in simple words</div>
+      <ul>
+        <li><b>Normalized score</b> = (score − dummy) / (best − dummy) for each dataset. 0 means useless and 1 means the best result seen. This lets you average over datasets. For "lower is better" metrics such as log-loss and RMSE, flip the direction first.</li>
+        <li><b>Average rank</b>: rank the systems on each dataset (1 = best), then average.</li>
+        <li><b>Critical-difference diagram</b>: one picture that shows the average ranks and which systems are <em>not</em> significantly different (Friedman test + Nemenyi test). It is standard in AutoML papers.</li>
+        <li><b>Wilcoxon signed-rank test</b>: answers "is my system better than AutoGluon over many datasets?" and checks that the wins are not luck. p &lt; 0.05 is the usual line.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="ablations">
+  <h2>Ablations</h2>
+  <p class="section-intro">Turn off one part at a time and measure the change. This answers RQ5 and shows reviewers why your design works.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Variant</th><th>What changes</th><th>What it tells you</th></tr></thead>
+      <tbody>
+        <tr><td><b>Full system</b></td><td>—</td><td>Reference</td></tr>
+        <tr><td><b>No LLM</b></td><td>Generic stage only (≈ the skrub baseline)</td><td>The total value of the LLM</td></tr>
+        <tr><td><b>Free code instead of typed ops</b></td><td>The LLM writes the cleaning code itself (sandboxed)</td><td>The value of typed operations, in reliability and score. This is your key design claim.</td></tr>
+        <tr><td><b>No gate</b></td><td>All LLM operations are accepted</td><td>Does verification prevent harm?</td></tr>
+        <tr><td><b>No repair</b></td><td>A broken operation is dropped immediately</td><td>The value of the repair loop</td></tr>
+        <tr><td><b>No samples</b></td><td>The LLM sees only column names and dtypes</td><td>The value of looking at real values</td></tr>
+        <tr><td><b>No leakage guard</b></td><td>—</td><td>How much leaks cost in real use</td></tr>
+        <tr><td><b>Engine swap</b></td><td>Own engine ↔ AutoGluon</td><td>Is the gain independent of the engine? (the plug-in result)</td></tr>
+        <tr><td><b>LLM swap</b> (semester 2)</td><td>Large ↔ small ↔ open model</td><td>Does it need an expensive LLM?</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="showcase">
+  <h2>The showcase</h2>
+  <p class="section-intro">For presentations you need one example that people remember, plus one figure.</p>
+  <ol class="steps">
+    <li><b>Live demo.</b> Run on a messy table (laptop prices, or your <code>ibmchurn.csv</code>). Show three numbers side by side, all with the same time budget: AutoGluon on the raw file, your agent, and your agent + AutoGluon. Then open <code>report.md</code> and show the decisions: "Weight parsed from text to kg", "customerID dropped (ID)", "refund_issued dropped (leak: not known at prediction time)".</li>
+    <li><b>Figure 1: score versus mess level.</b> If your hypothesis is right, classical AutoML drops as the mess grows, and your agent stays almost flat.</li>
+    <li><b>Table 1: reliability and cost.</b> Success rate, minutes and $ per dataset for every system.</li>
+    <li><b>Figure 2: critical-difference diagram</b> on the messy benchmark.</li>
+  </ol>
+  <div class="callout warn">
+    <h4>Careful</h4>
+    <p>These are the results you <em>expect</em>, not results. Do not write them into your report until the experiments show them.</p>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<header class="part-head">
+  <div class="eyebrow">Part 5</div>
+  <h2>The plan</h2>
+  <p>Weeks start on Monday. I assumed the DS Lab 2 report is due around the end of January 2027. If your deadline is different, stretch or shrink the weeks.</p>
+</header>
+
+<section class="block" id="sem1">
+  <h2>Semester 1 (DS Lab 2), week by week</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Week</th><th>Dates</th><th>Focus</th><th>Done when…</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="nowrap">12–18 Oct</td><td><b>Read and decide.</b> Read the 6 must-read papers. Write a one-page proposal: problem, gap, RQs, hypotheses.</td><td>Your supervisor approves the proposal.</td></tr>
+        <tr><td>2</td><td class="nowrap">19–25 Oct</td><td><b>Baselines first.</b> Install AutoGluon, FLAML, skrub and LightGBM in separate environments (WSL2/Linux). Run them on your 4 datasets with a tiny runner.</td><td><code>results.csv</code> with 4 datasets × 4 baselines</td></tr>
+        <tr><td>3</td><td class="nowrap">26 Oct–1 Nov</td><td><b>Clean foundation.</b> Python 3.12, new pyproject. Delete ONNX and the LLM training and tuning code. Run folder, <code>RunContext</code>, LLM client with logging and cache.</td><td>A run creates <code>runs/&lt;id&gt;/</code> with logs.</td></tr>
+        <tr><td>4</td><td class="nowrap">2–8 Nov</td><td><b>Leak-free core.</b> Reader + quick look, split first, fixed metrics, generic stage, model engine (LightGBM/CatBoost + Optuna).</td><td>v2 <em>without any LLM</em> runs end to end on all 4 datasets. This is also your "no LLM" ablation.</td></tr>
+        <tr><td>5</td><td class="nowrap">9–15 Nov</td><td><b>Framer + profile.</b> Framer with candidates and confidence; EDA on training rows + <code>profile.json</code>. Test the framer on 50+ OpenML datasets.</td><td>A framer accuracy number</td></tr>
+        <tr><td>6</td><td class="nowrap">16–22 Nov</td><td><b>Toolbox.</b> The first 8 operations as tested transformers, plus registry, compiler and data checks.</td><td>Unit tests pass. A hand-written plan for the laptop table works.</td></tr>
+        <tr><td>7</td><td class="nowrap">23–29 Nov</td><td><b>Mess generator.</b> The first 6 mess types, with levels and saved ground truth. Choose the 15 base datasets.</td><td>One command generates all benchmark files reproducibly.</td></tr>
+        <tr><td>8</td><td class="nowrap">30 Nov–6 Dec</td><td><b>Auditor + cleaner.</b> Audit prompt, cleaning-plan prompt, repair loop.</td><td>The agent cleans the laptop table on its own.</td></tr>
+        <tr><td>9</td><td class="nowrap">7–13 Dec</td><td><b>Gate + leakage.</b> Validation gate with refine, leakage guard, 10 leak datasets.</td><td>The full v2 pipeline runs end to end.</td></tr>
+        <tr><td>10</td><td class="nowrap">14–20 Dec</td><td><b>First full run.</b> 15 datasets × 4 levels × 3 seeds × (v2 + must-have baselines).</td><td><code>results.csv</code> and a first figure</td></tr>
+        <tr><td>11–12</td><td class="nowrap">21 Dec–3 Jan</td><td><b>Buffer and holidays.</b> Fix what the first run broke. Torture tests. Optional: the AIDE baseline.</td><td>—</td></tr>
+        <tr><td>13</td><td class="nowrap">4–10 Jan</td><td><b>Analysis.</b> Normalized scores, ranks, Wilcoxon, CD diagram, cost table, 2–3 ablations (no LLM, no gate, free code).</td><td>All figures and tables exist.</td></tr>
+        <tr><td>14–15</td><td class="nowrap">11–24 Jan</td><td><b>Write</b> the paper-style report (structure below).</td><td>A full draft</td></tr>
+        <tr><td>16</td><td class="nowrap">25–31 Jan</td><td><b>Finish.</b> Proofread, README "how to reproduce", demo, presentation.</td><td>Submitted</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Report structure (8–12 pages)</h4>
+  <p>Abstract · 1 Introduction (problem, gap, contributions) · 2 Related work (the five families) · 3 Method (architecture, toolbox, gate, leakage guard) · 4 Benchmark (datasets, mess generator, protocol) · 5 Preliminary results (RQ1–RQ4) · 6 First ablations · 7 Limitations and plan for next semester · References</p>
+</section>
+
+<section class="block" id="sem2">
+  <h2>Semester 2 (thesis), month by month</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Month</th><th>Focus</th></tr></thead>
+      <tbody>
+        <tr><td class="nowrap">Feb 2027</td><td><b>Scale.</b> 30 base datasets, all 12 mess types, 5–10 naturally messy datasets, 5 seeds. Add the AIDE and AutoGluon Assistant baselines.</td></tr>
+        <tr><td class="nowrap">Mar 2027</td><td><b>Depth.</b> All ablations, the feature-ideas module (gated), the LLM swap including a small or open model (RQ6), the plug-in experiment with AutoGluon. Consider a workshop paper: check the deadlines of the AutoML Conference, the DEEM workshop at SIGMOD, and NeurIPS/ICLR workshops on tabular or data-centric ML.</td></tr>
+        <tr><td class="nowrap">Apr 2027</td><td><b>Freeze and release.</b> Freeze the code and results. Publish the benchmark and code (GitHub, README, licenses). Write the method and results chapters.</td></tr>
+        <tr><td class="nowrap">May 2027</td><td><b>Thesis.</b> Introduction, related work, discussion, limitations; supervisor feedback; defense slides. Hand in by the end of May.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout simple">
+    <h4>One rule for semester 2</h4>
+    <p>Freeze the experiments by mid-April. Every result you change after that costs you writing time.</p>
+  </div>
+</section>
+
+<section class="block" id="done">
+  <h2>Definition of done for DS Lab 2</h2>
+  <ul class="checklist">
+    <li>A one-page proposal with RQs and hypotheses, approved by your supervisor.</li>
+    <li>v2 finishes on 100% of benchmark files and torture tests (or stops with a clear message on unreadable files).</li>
+    <li>No LLM-written training or tuning code. The test set is touched once. All fitting happens inside the pipeline.</li>
+    <li>Every run has its own folder with decisions, LLM calls, cost and scores.</li>
+    <li>Benchmark v1: at least 15 datasets, 6 mess types, 4 levels, 3 seeds, plus 10 leak datasets.</li>
+    <li>All must-have baselines run on the full benchmark.</li>
+    <li>Results: normalized scores, ranks, a Wilcoxon test against AutoGluon, a success-rate and cost table, the score-versus-mess figure, and 2–3 ablations.</li>
+    <li>A paper-style report (8–12 pages) and a live demo.</li>
+    <li>A README that explains how to reproduce the results with one command.</li>
+  </ul>
+</section>
+
+<section class="block" id="risks">
+  <h2>Risks and what to do about them</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Risk</th><th>Likelihood</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>AutoGluon already handles some mess types well.</td><td>Medium</td><td>Report it. Focus your claim on the types where meaning is needed. "No harm", reliability and leakage are still contributions.</td></tr>
+        <tr><td>A new paper does the same thing.</td><td>Medium</td><td>Check arXiv every month (search for "LLM agent AutoML dirty data" and "data cleaning agent tabular"). Your benchmark and the typed-versus-free-code study stay new. Cite the paper and compare with it.</td></tr>
+        <tr><td>Strong code agents (AIDE) also clean well.</td><td>Medium</td><td>Then your claim shifts to reliability, leakage and cost at equal accuracy, which you measure anyway.</td></tr>
+        <tr><td>LLM costs grow.</td><td>Medium</td><td>Use the cache, a cheap model during development, a small grid first, and a budget guard per run.</td></tr>
+        <tr><td>The LLM has memorised famous datasets.</td><td>Medium</td><td>Prefer less famous datasets; the mess also changes the surface. Discuss it as a limitation (Ronval et al. 2025 study this for tabular data).</td></tr>
+        <tr><td>Synthetic mess looks artificial.</td><td>Medium</td><td>Add naturally messy datasets (group C) and report them separately.</td></tr>
+        <tr><td>Baselines are hard to install on Windows.</td><td>High</td><td>Install them in week 2, in separate environments, on WSL2 or a Linux server.</td></tr>
+        <tr><td>Scope creep.</td><td>High</td><td>Semester 1 = cleaning + leakage only. No feature engineering, no multi-LLM, no deployment, no UI work.</td></tr>
+        <tr><td>The gate overfits the CV folds.</td><td>Low</td><td>Few gate decisions and a small tolerance. The final score comes from the locked test set only.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="reading">
+  <h2>Reading list</h2>
+  <p class="section-intro">Read in this order. For each paper, write 5 lines: problem, method, benchmark, baselines, weakness. These notes become your related-work chapter.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Paper</th><th>Why you read it</th></tr></thead>
+      <tbody>
+        <tr class="sub"><td colspan="3">Must read: weeks 1–2</td></tr>
+        <tr><td>1</td><td>Gijsbers et al., <a href="https://arxiv.org/abs/2207.12560">AMLB: an AutoML Benchmark</a>, JMLR 2024</td><td>How to compare AutoML systems fairly: budgets, failures, ranks</td></tr>
+        <tr><td>2</td><td>Erickson et al., <a href="https://arxiv.org/abs/2003.06505">AutoGluon-Tabular</a>, 2020</td><td>Your main rival. Learn how it handles features.</td></tr>
+        <tr><td>3</td><td>Chan et al., <a href="https://arxiv.org/abs/2410.07095">MLE-bench</a>, ICLR 2025</td><td>How LLM agents are evaluated today</td></tr>
+        <tr><td>4</td><td>Trirat et al., <a href="https://arxiv.org/abs/2410.02958">AutoML-Agent</a>, ICML 2025</td><td>The closest full-pipeline LLM AutoML agent</td></tr>
+        <tr><td>5</td><td>Fang et al., <a href="https://assets.amazon.science/78/c9/c0a204f24927922458f00df35f5c/scipub-approval152129-37266059-auto2ml-a-multiagent-system-for-automated-endtoend-machine-learning-solutions.pdf">MLZero</a> (AutoGluon Assistant), NeurIPS 2025</td><td>LLM agents on top of AutoML</td></tr>
+        <tr><td>6</td><td>Bendinelli et al., <a href="https://arxiv.org/abs/2503.06664">Exploring LLM Agents for Cleaning Tabular ML Datasets</a>, ICLR 2025 workshop</td><td>Closest to your niche</td></tr>
+        <tr class="sub"><td colspan="3">Next: weeks 3–6</td></tr>
+        <tr><td>7</td><td>Hollmann et al., <a href="https://arxiv.org/abs/2305.03403">CAAFE</a>, NeurIPS 2023</td><td>LLM features that are kept only if validation improves, like your gate</td></tr>
+        <tr><td>8</td><td>Budach et al., <a href="https://arxiv.org/abs/2207.14529">The Effects of Data Quality on ML Performance</a>, 2022</td><td>Which data errors hurt which models</td></tr>
+        <tr><td>9</td><td>Kapoor &amp; Narayanan, <a href="https://arxiv.org/abs/2207.07048">Leakage and the Reproducibility Crisis in ML-based Science</a>, Patterns 2023</td><td>A clear taxonomy of leakage</td></tr>
+        <tr><td>10</td><td>Le et al., <a href="https://arxiv.org/abs/2602.13937">iML</a>, arXiv 2026</td><td>Verifiable, code-driven AutoML. Check how it differs from your design.</td></tr>
+        <tr><td>11</td><td>Zhang et al., <a href="https://arxiv.org/abs/2601.21410">Statsformer / Learning When to Trust LLM Priors</a>, arXiv 2026</td><td>LLM knowledge with validation guardrails: the same spirit as your gate</td></tr>
+        <tr><td>12</td><td>Erickson et al., <a href="https://arxiv.org/abs/2506.16791">TabArena</a>, NeurIPS 2025 (Datasets &amp; Benchmarks)</td><td>The current state of tabular ML and of evaluation practice</td></tr>
+        <tr class="sub"><td colspan="3">Background</td></tr>
+        <tr><td>13</td><td><a href="https://github.com/WecoAI/aideml">AIDE</a> (Weco AI)</td><td>Tree search over code; the standard agent baseline</td></tr>
+        <tr><td>14</td><td>Schelter et al., JENGA, EDBT 2021</td><td>Generic data corruptions. Compare it with your semantic mess generator.</td></tr>
+        <tr><td>15</td><td>Cerda &amp; Varoquaux, Encoding high-cardinality string categorical variables, 2020 · <a href="https://skrub-data.org">skrub</a></td><td>The ideas behind your skrub baseline</td></tr>
+        <tr><td>16</td><td>Du et al., <a href="https://arxiv.org/abs/2602.22442">Assessing AI Agent Decisions and Outcomes in AutoML Pipelines</a>, arXiv 2026</td><td>Evaluate decisions, not only final scores</td></tr>
+        <tr><td>17</td><td>Hollmann et al., TabPFN, Nature 2025</td><td>Tabular foundation models</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="sources">
+  <h2>Sources used for this plan</h2>
+  <p class="section-intro">Your notes (<code>overview.md</code>, <code>libraries.md</code>, <code>index.html</code>), the code at commit <code>483fcc9</code>, the files in <code>data/</code>, and these web sources, checked in October 2026:</p>
+  <ul>
+    <li><a href="https://arxiv.org/abs/2503.06664">Bendinelli et al., Exploring LLM Agents for Cleaning Tabular ML Datasets</a></li>
+    <li><a href="https://arxiv.org/abs/2602.13937">iML: Executable, Problem-Grounded, and Broadly Exploratory Code-Driven AutoML</a></li>
+    <li><a href="https://arxiv.org/abs/2602.22442">A Framework for Assessing AI Agent Decisions and Outcomes in AutoML Pipelines</a></li>
+    <li><a href="https://arxiv.org/abs/2507.13413">LightAutoDS-Tab: Multi-AutoML Agentic System for Tabular Data</a></li>
+    <li><a href="https://arxiv.org/abs/2605.12376">ProfiliTable: Profiling-Driven Tabular Data Processing via Agentic Workflows</a></li>
+    <li><a href="https://arxiv.org/abs/2412.06724">AutoDCWorkflow: LLM-based Data Cleaning Workflow Auto-Generation and Benchmark</a></li>
+    <li><a href="https://arxiv.org/abs/2404.18681">LLMClean: Context-Aware Tabular Data Cleaning via LLM-Generated OFDs</a></li>
+    <li><a href="https://arxiv.org/abs/2601.21410">Statsformer / Learning When to Trust LLM Priors</a></li>
+    <li><a href="https://arxiv.org/abs/2506.16791">TabArena: A Living Benchmark for Machine Learning on Tabular Data</a></li>
+    <li><a href="https://mindfulmodeler.substack.com/p/the-state-of-tabular-foundation-models">The state of Tabular Foundation Models (2026)</a></li>
+    <li><a href="https://arxiv.org/abs/2505.18220">Navigating Pitfalls: Evaluating LLMs in Machine Learning Programming Education</a></li>
+    <li><a href="https://arxiv.org/abs/2503.14723">LeakageDetector: An Open Source Data Leakage Analysis Tool in ML Pipelines</a></li>
+    <li><a href="https://arxiv.org/abs/2207.14529">Budach et al., The Effects of Data Quality on Machine Learning Performance</a></li>
+    <li><a href="https://arxiv.org/abs/2403.06644">Ronval et al., LLM contamination tests on tabular data</a></li>
+    <li><a href="https://arxiv.org/abs/2503.14434">LLM-FE: Automated Feature Engineering for Tabular Data with LLMs</a></li>
+    <li><a href="https://assets.amazon.science/78/c9/c0a204f24927922458f00df35f5c/scipub-approval152129-37266059-auto2ml-a-multiagent-system-for-automated-endtoend-machine-learning-solutions.pdf">MLZero: A Multi-Agent System for End-to-end ML Automation</a></li>
+  </ul>
+</section>
+
+<footer>
+  Written on 9 October 2026 for DS Lab 2 and the MSc thesis. Companion to <code>index.html</code> (v1 architecture), <code>overview.md</code> (issues) and <code>libraries.md</code> (libraries).
+</footer>
+
+</main>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  // theme
+  var savedTheme = load("arch-theme");
+  if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+  document.getElementById("toggle-theme").addEventListener("click", function () {
+    var current = root.getAttribute("data-theme") ||
+      (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    store("arch-theme", next);
+  });
+
+  // active nav link
+  var links = Array.prototype.slice.call(document.querySelectorAll("aside.nav a"));
+  var map = {};
+  links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+  var targets = Object.keys(map).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  if ("IntersectionObserver" in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove("active"); });
+          var a = map[e.target.id];
+          if (a) a.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-10% 0px -80% 0px" });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

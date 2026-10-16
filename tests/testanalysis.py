@@ -61,15 +61,17 @@ def test_leak_outcome(tmp_path):
     outcome = analysis.leak_outcome(tmp_path, {"leak": {"column": "refund"}})
     assert outcome == {"found": True, "false_drops": 1, "leak": "refund"}
 
-# the figures and tables are written from a results table (PDF, PNG, CSV, MD)
+# the figures and tables are written from a results table (PDF, PNG, one MD)
 def test_figures(tmp_path, monkeypatch):
     monkeypatch.setattr(figures, "figures_dir", tmp_path / "figures")
-    monkeypatch.setattr(figures, "tables_dir", tmp_path / "tables")
+    monkeypatch.setattr(figures, "tables_file", tmp_path / "tables.md")
+    monkeypatch.setattr(figures, "TABLES", {})
     frame = synthetic().replace({"system": {"good": "full", "weak": "generic"}})
     figures.score_vs_level(frame)
     result = figures.cd_diagram(pd.concat([frame, frame[frame["system"] == "generic"].assign(system="rules", score=lambda part: part["score"] * 1.001)]), 0)
     figures.cost_vs_score(frame)
     figures.ablations(frame, ["d0", "d1"])
+    figures.write_tables()
     names = {path.name for path in (tmp_path / "figures").iterdir()}
     assert {"score-vs-level.pdf", "score-vs-level.png", "cd-level0.png", "cost-vs-score.png", "ablations.png"} <= names
-    assert result["ranks"]["full"] == 1.0 and (tmp_path / "tables" / "cost-vs-score.md").exists()
+    assert result["ranks"]["full"] == 1.0 and "## cost-vs-score" in (tmp_path / "tables.md").read_text(encoding="utf-8")

@@ -145,6 +145,9 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P12.1 Checks · 2026-10-14 · dc3a41c · full suite incl. slow 216 passed (18.6 min); secret scan clean (files and history); reproduce --grid smoke works (40 finished cells skipped); style test passes; git status clean
 - [x] P12.2 Handover · 2026-10-14 · (this commit) · handover section below
 
+## P13. Cleanup
+- [x] P13 Workspace cleanup · 2026-10-16 · (this commit) · v1 copy, dev grids, duplicates and unused files removed; one results file (runs.csv), one tables file; plan, progress, study and design inputs moved to docs/; caches 7.6 GB -> 1.4 GB; 191 fast tests pass; regenerated docs have the same numbers (decisions.md)
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)

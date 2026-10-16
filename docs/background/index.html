@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Architecture</title>
+<meta name="description" content="Detailed stage-by-stage architecture of the agentic ML automation pipeline (DS Lab).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f4f4f3;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --text: #1c1917;
+  --text-2: #57534e;
+  --text-3: #a8a29e;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+
+  --llm: #7c3aed;      --llm-soft: #f5f3ff;
+  --det: #0f766e;      --det-soft: #f0fdfa;
+  --exec: #b45309;     --exec-soft: #fffbeb;
+  --remote: #0369a1;   --remote-soft: #f0f9ff;
+  --user: #15803d;     --user-soft: #f0fdf4;
+  --issue: #b91c1c;    --issue-soft: #fef2f2;  --issue-border: #fecaca;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(28,25,23,.04), 0 1px 3px rgba(28,25,23,.06);
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0c0e; --surface: #141417; --surface-2: #1b1b1f;
+    --border: #26262b; --border-strong: #34343a;
+    --text: #ececef; --text-2: #a1a1aa; --text-3: #63636b;
+    --accent: #818cf8; --accent-soft: #1e1b3a;
+    --llm: #a78bfa; --llm-soft: #221a36;
+    --det: #2dd4bf; --det-soft: #0f2522;
+    --exec: #fbbf24; --exec-soft: #2a2110;
+    --remote: #38bdf8; --remote-soft: #0e2230;
+    --user: #4ade80; --user-soft: #10261a;
+    --issue: #f87171; --issue-soft: #2a1414; --issue-border: #4c1d1d;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c0c0e; --surface: #141417; --surface-2: #1b1b1f;
+  --border: #26262b; --border-strong: #34343a;
+  --text: #ececef; --text-2: #a1a1aa; --text-3: #63636b;
+  --accent: #818cf8; --accent-soft: #1e1b3a;
+  --llm: #a78bfa; --llm-soft: #221a36;
+  --det: #2dd4bf; --det-soft: #0f2522;
+  --exec: #fbbf24; --exec-soft: #2a2110;
+  --remote: #38bdf8; --remote-soft: #0e2230;
+  --user: #4ade80; --user-soft: #10261a;
+  --issue: #f87171; --issue-soft: #2a1414; --issue-border: #4c1d1d;
+  --shadow: none;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.6 var(--sans); -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+code, pre, .mono { font-family: var(--mono); font-size: .86em; }
+code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 5px; word-break: break-word; }
+pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; line-height: 1.55; margin: 12px 0; }
+pre code { background: none; border: 0; padding: 0; font-size: 1em; }
+h1, h2, h3, h4 { line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+h3 { font-size: 17px; font-weight: 600; }
+h4 { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin: 18px 0 8px; }
+p { margin: 0 0 10px; }
+ul, ol { margin: 0; padding-left: 20px; }
+li { margin: 3px 0; }
+
+/* ---------- layout ---------- */
+.shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1320px; margin: 0 auto; }
+aside.nav {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 28px 18px 28px 24px; border-right: 1px solid var(--border);
+}
+aside.nav .brand { font-weight: 700; font-size: 14px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+aside.nav .brand i { width: 9px; height: 9px; border-radius: 3px; background: var(--accent); display: inline-block; }
+aside.nav .group { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin: 18px 0 6px; }
+aside.nav a {
+  display: block; text-decoration: none; color: var(--text-2); font-size: 13px;
+  padding: 4px 10px; border-radius: 6px; border-left: 2px solid transparent;
+}
+aside.nav a:hover { color: var(--text); background: var(--surface-2); }
+aside.nav a.active { color: var(--accent); background: var(--accent-soft); }
+aside.nav a .n { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-right: 6px; }
+main { padding: 40px 48px 120px; min-width: 0; }
+section.block { margin: 0 0 64px; }
+.section-intro { color: var(--text-2); max-width: 760px; margin-bottom: 20px; }
+
+.mobile-toc { display: none; }
+@media (max-width: 960px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  aside.nav { display: none; }
+  main { padding: 24px 16px 80px; }
+  .mobile-toc { display: block; margin: 0 0 28px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .mobile-toc summary { padding: 12px 14px; cursor: pointer; font-weight: 600; font-size: 14px; }
+  .mobile-toc nav { padding: 0 14px 12px; columns: 2; column-gap: 16px; }
+  .mobile-toc a { display: block; font-size: 13px; color: var(--text-2); text-decoration: none; padding: 3px 0; break-inside: avoid; }
+}
+
+/* ---------- hero ---------- */
+.hero { margin-bottom: 44px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.hero h1 { font-size: 34px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 12px; }
+.hero p { color: var(--text-2); max-width: 760px; font-size: 16px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 22px; }
+.btn {
+  font: 500 13px var(--sans); color: var(--text); background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn:hover { background: var(--surface-2); }
+.btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--issue); }
+.btn[aria-pressed="false"] .dot { background: var(--text-3); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 28px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.stat span { font-size: 12.5px; color: var(--text-2); }
+
+/* ---------- chips / legend ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500;
+  padding: 2px 9px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap;
+}
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.k-llm { color: var(--llm); background: var(--llm-soft); }
+.k-det { color: var(--det); background: var(--det-soft); }
+.k-exec { color: var(--exec); background: var(--exec-soft); }
+.k-remote { color: var(--remote); background: var(--remote-soft); }
+.k-user { color: var(--user); background: var(--user-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+
+/* ---------- flow diagram ---------- */
+.flow {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 28px 20px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center;
+}
+.node {
+  width: 100%; max-width: 440px; text-decoration: none; display: grid;
+  grid-template-columns: 34px 1fr; column-gap: 10px; align-items: start;
+  background: var(--surface); border: 1px solid var(--border-strong); border-left-width: 3px;
+  border-radius: 9px; padding: 10px 14px; transition: transform .12s, box-shadow .12s;
+}
+.node:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+.node .n { font-family: var(--mono); font-size: 12px; color: var(--text-3); padding-top: 1px; }
+.node .t { font-weight: 600; font-size: 14px; }
+.node .d { grid-column: 2; font-size: 12px; color: var(--text-2); font-family: var(--mono); }
+.node.k-llm { border-left-color: var(--llm); background: var(--surface); color: var(--text); }
+.node.k-det { border-left-color: var(--det); background: var(--surface); color: var(--text); }
+.node.k-exec { border-left-color: var(--exec); background: var(--surface); color: var(--text); }
+.node.k-remote { border-left-color: var(--remote); background: var(--surface); color: var(--text); }
+.node.k-user { border-left-color: var(--user); background: var(--surface); color: var(--text); }
+.node.k-llm .t::after, .node.k-exec .t::after, .node.k-remote .t::after, .node.k-user .t::after, .node.k-det .t::after {
+  content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 8px; vertical-align: middle;
+}
+.node.k-llm .t::after { background: var(--llm); }
+.node.k-det .t::after { background: var(--det); }
+.node.k-exec .t::after { background: var(--exec); }
+.node.k-remote .t::after { background: var(--remote); }
+.node.k-user .t::after { background: var(--user); }
+.arrow { width: 2px; height: 22px; background: var(--border-strong); position: relative; flex: none; }
+.arrow::after {
+  content: ""; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top: 6px solid var(--border-strong); border-bottom: 0;
+}
+.arrow.label { height: 34px; }
+.arrow.label span {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  font-size: 11px; color: var(--text-3); font-family: var(--mono);
+}
+.gate {
+  font-family: var(--mono); font-size: 12px; color: var(--text-2);
+  border: 1.5px dashed var(--border-strong); border-radius: 999px; padding: 5px 14px; background: var(--bg);
+}
+.phase {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-3); margin: 6px 0 10px;
+}
+.branch { width: 100%; max-width: 920px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; padding-top: 22px; }
+.branch::before { content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 2px; background: var(--border-strong); }
+.branch::after { content: ""; position: absolute; bottom: 0; left: 25%; right: 25%; height: 2px; background: var(--border-strong); }
+.lane { display: flex; flex-direction: column; align-items: center; position: relative; padding-bottom: 22px; }
+.lane::before { content: ""; position: absolute; top: -22px; left: 50%; width: 2px; height: 22px; background: var(--border-strong); transform: translateX(-50%); }
+.lane::after { content: ""; position: absolute; bottom: 0; left: 50%; width: 2px; height: 22px; background: var(--border-strong); transform: translateX(-50%); }
+.lane-label { font-size: 12px; font-weight: 600; color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; margin-bottom: 10px; }
+.lane .spacer { flex: 1; width: 2px; background: var(--border-strong); min-height: 22px; }
+@media (max-width: 720px) {
+  .branch { grid-template-columns: 1fr; gap: 12px; padding-top: 0; }
+  .branch::before, .branch::after, .lane::before, .lane::after { display: none; }
+  .lane { border: 1px dashed var(--border-strong); border-radius: 12px; padding: 12px; }
+  .lane .spacer { display: none; }
+}
+.skip-note { font-size: 11.5px; color: var(--text-3); font-family: var(--mono); margin-top: 4px; }
+
+/* ---------- stage cards ---------- */
+.stage {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px 26px; margin: 0 0 18px; box-shadow: var(--shadow);
+}
+.stage > header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.stage .num {
+  font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text-3);
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; flex: none;
+}
+.stage .meta { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 6px; }
+.stage .meta code { font-size: 12px; }
+.stage .lead { color: var(--text-2); }
+.io { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+.io > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 10px 14px; }
+.io h4 { margin: 0 0 6px; }
+.io ul { padding-left: 16px; font-size: 13.5px; }
+.io .none { font-size: 13px; color: var(--text-3); }
+ol.steps { counter-reset: s; list-style: none; padding: 0; }
+ol.steps > li { counter-increment: s; position: relative; padding-left: 30px; margin: 7px 0; }
+ol.steps > li::before {
+  content: counter(s); position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface-2); border: 1px solid var(--border); font-size: 11px; font-weight: 600;
+  display: grid; place-items: center; color: var(--text-2);
+}
+ol.steps ul { margin-top: 4px; }
+.llm-box {
+  margin-top: 16px; border: 1px solid var(--border); border-left: 3px solid var(--llm);
+  border-radius: 9px; padding: 12px 16px; background: var(--llm-soft);
+}
+.llm-box h4 { margin: 0 0 6px; color: var(--llm); }
+.llm-box dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; margin: 0; font-size: 13.5px; }
+.llm-box dt { color: var(--text-2); }
+.llm-box dd { margin: 0; }
+.note { font-size: 13.5px; color: var(--text-2); border-left: 2px solid var(--border-strong); padding: 2px 0 2px 12px; margin: 14px 0 0; }
+.issues {
+  margin-top: 16px; border: 1px solid var(--issue-border); background: var(--issue-soft);
+  border-radius: 9px; padding: 12px 16px;
+}
+.issues h4 { margin: 0 0 6px; color: var(--issue); }
+.issues ul { font-size: 13.5px; }
+.issues b { font-family: var(--mono); font-size: 11.5px; color: var(--issue); margin-right: 6px; }
+body.hide-issues .issues { display: none; }
+
+/* ---------- tables ---------- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td code { font-size: 12px; }
+td.nowrap { white-space: nowrap; }
+
+/* ---------- misc panels ---------- */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
+.card h3 { font-size: 15px; margin-bottom: 8px; }
+.card p, .card li { font-size: 13.5px; color: var(--text-2); }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 13.5px; }
+.kv span:nth-child(odd) { color: var(--text-2); }
+
+.diagram-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.diagram-wrap svg { display: block; min-width: 680px; width: 100%; height: auto; }
+svg .box { fill: var(--surface-2); stroke: var(--border-strong); stroke-width: 1.2; }
+svg .box-llm { fill: var(--llm-soft); stroke: var(--llm); stroke-width: 1.2; }
+svg .box-exec { fill: var(--exec-soft); stroke: var(--exec); stroke-width: 1.2; }
+svg .box-det { fill: var(--det-soft); stroke: var(--det); stroke-width: 1.2; }
+svg .box-remote { fill: var(--remote-soft); stroke: var(--remote); stroke-width: 1.2; }
+svg .box-issue { fill: var(--issue-soft); stroke: var(--issue); stroke-width: 1.2; }
+svg text { fill: var(--text); font-family: var(--sans); font-size: 13px; }
+svg text.sub { fill: var(--text-2); font-family: var(--mono); font-size: 10.5px; }
+svg text.lbl { fill: var(--text-3); font-family: var(--mono); font-size: 10.5px; }
+svg .ln { stroke: var(--text-3); stroke-width: 1.4; fill: none; }
+svg .ln-dash { stroke: var(--text-3); stroke-width: 1.4; fill: none; stroke-dasharray: 4 4; }
+svg .head { fill: var(--text-3); }
+
+.topo { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; }
+.topo .t-node { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+.topo .t-node b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.topo .t-node span { color: var(--text-2); font-family: var(--mono); font-size: 11.5px; }
+.topo .t-arrow { flex: 0 0 34px; display: grid; place-items: center; color: var(--text-3); font-size: 16px; }
+@media (max-width: 720px) {
+  .topo { flex-direction: column; }
+  .topo .t-arrow { flex-basis: 26px; transform: rotate(90deg); }
+}
+footer { color: var(--text-3); font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="nav" aria-label="Contents">
+  <div class="brand"><i></i>Pipeline Architecture</div>
+  <div class="group">Overview</div>
+  <a href="#overview">At a glance</a>
+  <a href="#flow">Pipeline flow</a>
+  <a href="#agent-loop">Agent loop pattern</a>
+  <div class="group">Stages</div>
+  <a href="#s1"><span class="n">01</span>Startup</a>
+  <a href="#s2"><span class="n">02</span>Mode selection</a>
+  <a href="#s3"><span class="n">03</span>Consultation dialogue</a>
+  <a href="#s4"><span class="n">04</span>Consultation extraction</a>
+  <a href="#s5"><span class="n">05</span>Target detection</a>
+  <a href="#s6"><span class="n">06</span>Task-type inference</a>
+  <a href="#s7"><span class="n">07</span>EDA</a>
+  <a href="#s8"><span class="n">08</span>Configuration fill</a>
+  <a href="#s9"><span class="n">09</span>Preprocessing plan</a>
+  <a href="#s10"><span class="n">10</span>Preprocessing agent</a>
+  <a href="#s11"><span class="n">11</span>Data split</a>
+  <a href="#s12"><span class="n">12</span>Training plan</a>
+  <a href="#s13"><span class="n">13</span>Training agent</a>
+  <a href="#s14"><span class="n">14</span>Evaluation &amp; tuning</a>
+  <a href="#s15"><span class="n">15</span>Feature decider</a>
+  <a href="#s16"><span class="n">16</span>Deployment</a>
+  <a href="#s17"><span class="n">17</span>Report writing</a>
+  <div class="group">Reference</div>
+  <a href="#config">Configuration keys</a>
+  <a href="#artifacts">Artifacts &amp; files</a>
+  <a href="#llm">LLM call inventory</a>
+  <a href="#eda-internals">EDA internals</a>
+  <a href="#serving">Serving &amp; API</a>
+  <a href="#settings">Settings &amp; constants</a>
+  <a href="#layout">Directory layout</a>
+</aside>
+
+<main>
+
+<details class="mobile-toc">
+  <summary>Contents</summary>
+  <nav>
+    <a href="#overview">At a glance</a><a href="#flow">Pipeline flow</a><a href="#agent-loop">Agent loop</a>
+    <a href="#s1">01 Startup</a><a href="#s2">02 Mode</a><a href="#s3">03 Consultation</a><a href="#s4">04 Extraction</a>
+    <a href="#s5">05 Target</a><a href="#s6">06 Task type</a><a href="#s7">07 EDA</a><a href="#s8">08 Config fill</a>
+    <a href="#s9">09 Prep plan</a><a href="#s10">10 Prep agent</a><a href="#s11">11 Split</a><a href="#s12">12 Train plan</a>
+    <a href="#s13">13 Train agent</a><a href="#s14">14 Tuning</a><a href="#s15">15 Features</a><a href="#s16">16 Deploy</a>
+    <a href="#s17">17 Report</a><a href="#config">Config keys</a><a href="#artifacts">Artifacts</a><a href="#llm">LLM calls</a>
+    <a href="#eda-internals">EDA internals</a><a href="#serving">Serving</a><a href="#settings">Settings</a><a href="#layout">Layout</a>
+  </nav>
+</details>
+
+<!-- ================================================================= HERO -->
+<section class="hero block" id="overview">
+  <div class="eyebrow">DS Lab · Agentic ML Automation</div>
+  <h1>Pipeline Architecture</h1>
+  <p>Every stage of the current program, from the dataset path prompt to the deployed prediction API. For each stage you get what it reads, what it writes, which LLM prompt it calls, how it fails, and the known problems to fix when you rebuild. The issue codes (<b>A1</b>, <b>B2</b> …) point to <code>overview.md</code>.</p>
+
+  <div class="legend">
+    <span class="chip k-user">User I/O</span>
+    <span class="chip k-llm">LLM call</span>
+    <span class="chip k-det">Deterministic Python</span>
+    <span class="chip k-exec">Runs LLM-generated code</span>
+    <span class="chip k-remote">Remote / SSH</span>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn" id="toggle-issues" aria-pressed="true"><span class="dot"></span>Known issues: shown</button>
+    <button class="btn" id="toggle-theme">Toggle theme</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>17</b><span>pipeline stages</span></div>
+    <div class="stat"><b>2</b><span>entry modes (interactive / auto)</span></div>
+    <div class="stat"><b>14</b><span>distinct LLM call sites</span></div>
+    <div class="stat"><b>13</b><span>prompt files in <code>prompts/</code></span></div>
+    <div class="stat"><b>1</b><span>shared state file (<code>configuration.json</code>)</span></div>
+    <div class="stat"><b>3</b><span>scripts generated &amp; executed</span></div>
+  </div>
+</section>
+
+<!-- ================================================================= FLOW -->
+<section class="block" id="flow">
+  <h2>Pipeline flow</h2>
+  <p class="section-intro">Control flow of <code>main.py</code>. Click any node to jump to its stage. The two modes differ only until the configuration is complete. From stage 09 on, both run the same pipeline. Stages communicate only through files on disk, mostly <code>configuration/configuration.json</code>.</p>
+
+  <div class="flow">
+    <div class="phase">Setup</div>
+    <a class="node k-user" href="#s1"><span class="n">01</span><span class="t">Startup &amp; dataset path</span><span class="d">ensureConfiguration() · questionary.path</span></a>
+    <div class="arrow"></div>
+    <a class="node k-user" href="#s2"><span class="n">02</span><span class="t">Mode selection</span><span class="d">"A. Sure" / "B. Leave it to you"</span></a>
+
+    <div class="branch">
+      <div class="lane">
+        <div class="lane-label">A · Interactive</div>
+        <a class="node k-llm" href="#s3"><span class="n">03</span><span class="t">Consultation dialogue</span><span class="d">consultant.md · loop until [DONE]</span></a>
+        <div class="arrow"></div>
+        <a class="node k-llm" href="#s4"><span class="n">04</span><span class="t">Consultation extraction</span><span class="d">consultantassistant.md → ConsultationReport</span></a>
+        <div class="arrow"></div>
+        <a class="node k-llm" href="#s5"><span class="n">05</span><span class="t">Target detection</span><span class="d">targetdetector.md · save=True</span></a>
+        <div class="spacer"></div>
+      </div>
+      <div class="lane">
+        <div class="lane-label">B · Auto</div>
+        <a class="node k-llm" href="#s5"><span class="n">05</span><span class="t">Target detection</span><span class="d">targetdetector.md · save=False</span></a>
+        <div class="arrow"></div>
+        <a class="node k-det" href="#s6"><span class="n">06</span><span class="t">Task-type inference</span><span class="d">heuristic · no target → clustering</span></a>
+        <div class="spacer"></div>
+      </div>
+    </div>
+
+    <div class="phase" style="margin-top:14px">Understanding the data</div>
+    <a class="node k-det" href="#s7"><span class="n">07</span><span class="t">Exploratory data analysis</span><span class="d">tools/eda.py → sandbox/&lt;stem&gt;eda.md</span></a>
+    <div class="arrow"></div>
+    <a class="node k-llm" href="#s8"><span class="n">08</span><span class="t">Configuration fill</span><span class="d">configfiller.md → configuration.json</span></a>
+    <div class="arrow"></div>
+
+    <div class="phase">Preprocessing</div>
+    <a class="node k-llm" href="#s9"><span class="n">09</span><span class="t">Preprocessing plan</span><span class="d">processingplanprompt.md → processingplan.md</span></a>
+    <div class="arrow"></div>
+    <a class="node k-exec" href="#s10"><span class="n">10</span><span class="t">Preprocessing agent loop</span><span class="d">generate → run → reason → fix (≤10)</span></a>
+    <div class="arrow"></div>
+    <a class="node k-det" href="#s11"><span class="n">11</span><span class="t">Train / test split</span><span class="d">datasplitter.py · 80/20 · seed 42</span></a>
+    <div class="arrow"></div>
+
+    <div class="phase">Modelling</div>
+    <a class="node k-llm" href="#s12"><span class="n">12</span><span class="t">Training plan</span><span class="d">trainplanprompt.md → trainingplan.md</span></a>
+    <div class="arrow"></div>
+    <a class="node k-exec" href="#s13"><span class="n">13</span><span class="t">Training agent loop</span><span class="d">generate → run → reason → fix (≤10)</span></a>
+    <div class="arrow"></div>
+    <a class="node k-exec" href="#s14"><span class="n">14</span><span class="t">Evaluation &amp; tuning loop</span><span class="d">ONNX score → LLM params → rewrite train.py (×3)</span></a>
+    <div class="arrow"></div>
+    <a class="node k-llm" href="#s15"><span class="n">15</span><span class="t">Feature decider</span><span class="d">featurecolumns.md → columnNames</span></a>
+    <div class="arrow"></div>
+
+    <div class="phase">Delivery (optional)</div>
+    <div class="gate">deployment == true ?</div>
+    <div class="arrow label"><span>yes</span></div>
+    <a class="node k-remote" href="#s16"><span class="n">16</span><span class="t">Deployment</span><span class="d">copy → SFTP → venv → uvicorn → ngrok</span></a>
+    <div class="skip-note">no → skip</div>
+    <div class="arrow"></div>
+    <div class="gate">writeReport == true ?</div>
+    <div class="arrow label"><span>yes</span></div>
+    <a class="node k-llm" href="#s17"><span class="n">17</span><span class="t">Report writing</span><span class="d">reportprompt.md ×3 → documentation.md</span></a>
+    <div class="skip-note">no → skip</div>
+    <div class="arrow"></div>
+    <div class="gate">"All done!" · elapsed seconds</div>
+  </div>
+</section>
+
+<!-- ================================================================= AGENT LOOP -->
+<section class="block" id="agent-loop">
+  <h2>Agent loop pattern</h2>
+  <p class="section-intro">Stages 10 and 13 share the same generate–execute–critique–repair loop, built from <code>CodexModel</code> (LLM) and <code>CodeRunner</code> (subprocess). Stage 14 reuses the runner for its parameter edits. If you understand this loop, you understand the core of the system.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 900 300" role="img" aria-label="Agent loop: plan to generate code, write file, run subprocess, reason, pass exits, fail goes to fix code and back to write file">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path class="head" d="M0,0 L10,5 L0,10 z"/>
+        </marker>
+      </defs>
+      <!-- plan -->
+      <rect class="box" x="10" y="40" width="130" height="64" rx="9"/>
+      <text x="75" y="67" text-anchor="middle">Plan (.md)</text>
+      <text class="sub" x="75" y="86" text-anchor="middle">+ path header</text>
+      <!-- generate -->
+      <rect class="box-llm" x="180" y="40" width="140" height="64" rx="9"/>
+      <text x="250" y="67" text-anchor="middle">coder.code()</text>
+      <text class="sub" x="250" y="86" text-anchor="middle">codexcodeprompt.md</text>
+      <!-- write -->
+      <rect class="box-det" x="360" y="40" width="150" height="64" rx="9"/>
+      <text x="435" y="67" text-anchor="middle">runner.add()</text>
+      <text class="sub" x="435" y="86" text-anchor="middle">header + script → .py</text>
+      <!-- run -->
+      <rect class="box-exec" x="550" y="40" width="150" height="64" rx="9"/>
+      <text x="625" y="67" text-anchor="middle">runner.getOutput()</text>
+      <text class="sub" x="625" y="86" text-anchor="middle">subprocess · 1800 s</text>
+      <!-- reason -->
+      <rect class="box-llm" x="740" y="40" width="150" height="64" rx="9"/>
+      <text x="815" y="67" text-anchor="middle">coder.reason()</text>
+      <text class="sub" x="815" y="86" text-anchor="middle">→ ReasoningResult</text>
+      <!-- pass -->
+      <rect class="box-det" x="740" y="200" width="150" height="56" rx="9"/>
+      <text x="815" y="224" text-anchor="middle">pass → return</text>
+      <text class="sub" x="815" y="242" text-anchor="middle">update config</text>
+      <!-- fix -->
+      <rect class="box-llm" x="360" y="200" width="150" height="56" rx="9"/>
+      <text x="435" y="224" text-anchor="middle">coder.fixCode()</text>
+      <text class="sub" x="435" y="242" text-anchor="middle">codexfixprompt.md</text>
+      <!-- give up -->
+      <rect class="box-issue" x="100" y="200" width="170" height="56" rx="9"/>
+      <text x="185" y="224" text-anchor="middle">RuntimeError</text>
+      <text class="sub" x="185" y="242" text-anchor="middle">after maxAttempts = 10</text>
+      <!-- arrows -->
+      <path class="ln" d="M140 72 H176" marker-end="url(#ah)"/>
+      <path class="ln" d="M320 72 H356" marker-end="url(#ah)"/>
+      <path class="ln" d="M510 72 H546" marker-end="url(#ah)"/>
+      <path class="ln" d="M700 72 H736" marker-end="url(#ah)"/>
+      <path class="ln" d="M815 104 V196" marker-end="url(#ah)"/>
+      <text class="lbl" x="823" y="156">condition == "pass"</text>
+      <path class="ln" d="M780 104 C 780 170, 600 228, 514 228" marker-end="url(#ah)"/>
+      <text class="lbl" x="590" y="170">"fail" + prompt</text>
+      <path class="ln" d="M435 200 V108" marker-end="url(#ah)"/>
+      <text class="lbl" x="443" y="160">rewrite file, re-run</text>
+      <path class="ln-dash" d="M360 228 H274" marker-end="url(#ah)"/>
+      <text class="lbl" x="282" y="218">budget spent</text>
+    </svg>
+  </div>
+
+  <div class="cards" style="margin-top:14px">
+    <div class="card">
+      <h3>Generated file layout</h3>
+      <p><code>CodeRunner.add()</code> prepends a fixed header. <code>EvaluationAgent</code> later splits the file on the marker line to recover the LLM part.</p>
+<pre><code># initialize paths
+from paths import dataDir
+from paths import sandboxDir
+from paths import modelsDir
+
+# Generated code starts here
+&lt;LLM code&gt;</code></pre>
+    </div>
+    <div class="card">
+      <h3>Execution environment</h3>
+      <div class="kv">
+        <span>Interpreter</span><span><code>sys.executable</code> (same venv)</span>
+        <span>cwd</span><span>project root</span>
+        <span>PYTHONPATH</span><span>project root prepended</span>
+        <span>MPLBACKEND</span><span><code>Agg</code></span>
+        <span>stdin</span><span><code>DEVNULL</code></span>
+        <span>Timeout</span><span>1800 s → error dict</span>
+        <span>Return</span><span><code>{"operation": "success"|"error", "output": str}</code></span>
+      </div>
+      <p style="margin-top:8px">A non-zero exit returns <b>stderr</b>. Success returns stdout, or <code>"No output"</code>.</p>
+    </div>
+    <div class="card">
+      <h3>State held by the agent</h3>
+      <ul>
+        <li><code>lastGeneratedCode</code>: fed to <code>fixCode()</code></li>
+        <li><code>lastReasoning</code>: the "fix prompt" from <code>reason()</code></li>
+        <li>No history of earlier attempts. Each fix sees only the latest code and the latest diagnosis.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="issues">
+    <h4>Known issues</h4>
+    <ul>
+      <li><b>C1</b>An LLM decides pass/fail, even for checks that are pure code (dtypes, nulls, exit code, file exists).</li>
+      <li><b>D2</b>Generated code runs with full user permissions and network access. <code>sandbox/</code> is only a folder.</li>
+      <li><b>C3</b>No temperature or seed, no log of prompts, tokens or cost, no retry on API errors.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================================================= STAGES -->
+<section class="block" id="stages">
+  <h2>Stages</h2>
+  <p class="section-intro">In execution order. "Config reads / writes" refers to keys in <code>configuration/configuration.json</code>.</p>
+
+  <!-- 01 -->
+  <article class="stage" id="s1">
+    <header><span class="num">01</span><div><h3>Startup &amp; dataset path</h3>
+      <div class="meta"><span class="chip k-user">User I/O</span><code>main.py · main()</code></div></div></header>
+    <p class="lead">A Click command. Starts a timer, makes sure the shared config file exists, prints the banner, and asks for the dataset path.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>Dataset path typed by the user</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>configuration/configuration.json</code> = <code>{}</code> (only if missing)</li></ul></div>
+      <div><h4>Config reads</h4><span class="none">—</span></div>
+      <div><h4>Config writes</h4><span class="none">file created, no keys</span></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li><code>sys.dont_write_bytecode = True</code> is set before the other imports.</li>
+      <li><code>ensureConfiguration()</code> creates <code>configuration/</code> and an empty JSON file if absent. An existing file from a <b>previous run is not cleared</b>.</li>
+      <li>httpx/openai loggers are silenced to WARNING.</li>
+      <li><code>questionary.path()</code> loops until the path exists. Ctrl-C/None prints "Cancelled." and exits.</li>
+    </ol>
+    <p class="note">Alternative entry points with the same flow: <code>main2.py</code> (plain <code>input()</code> plus DEBUG logging to <code>sandbox/debug.log</code>, with a <code>step()</code> wrapper that times each stage and diffs the config) and <code>app.py</code> (plain <code>input()</code>, INFO logging).</p>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>E1</b>Three near-identical entry points, and <code>main.py</code> duplicates the full pipeline for each mode.</li>
+      <li><b>E2</b>Leftover <code>configuration.json</code> from a previous run leaks into the new one (keys like <code>endPoint</code>, <code>columnNames</code>).</li>
+    </ul></div>
+  </article>
+
+  <!-- 02 -->
+  <article class="stage" id="s2">
+    <header><span class="num">02</span><div><h3>Mode selection</h3>
+      <div class="meta"><span class="chip k-user">User I/O</span><code>main.py</code></div></div></header>
+    <p class="lead">A single choice decides whether requirements come from a conversation (A) or are inferred entirely from the data (B).</p>
+    <div class="io">
+      <div><h4>A · Interactive</h4><ul><li>Stages 03 → 04 → 05 (save) → 07 → 08 (with consultation)</li></ul></div>
+      <div><h4>B · Auto</h4><ul><li>Stages 05 (no save) → 06 → 07 → 08 (<code>includeConsultation=False</code>)</li></ul></div>
+    </div>
+    <p class="note">Both branches end with a complete configuration. From stage 09 onward the code is identical.</p>
+  </article>
+
+  <!-- 03 -->
+  <article class="stage" id="s3">
+    <header><span class="num">03</span><div><h3>Consultation dialogue</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><span class="chip k-user">User I/O</span><span class="tag">Interactive only</span><code>agents/consultant.py · Consultant.nextQuestion()</code></div></div></header>
+    <p class="lead">A chat loop that asks one question at a time until six requirements are answered.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>First turn: <code>"Dataset Path: &lt;path&gt;"</code></li><li>Later turns: user's free-text answer</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>Consultant.history</code>: list of <code>{user, assistant}</code></li></ul></div>
+      <div><h4>Config reads</h4><span class="none">—</span></div>
+      <div><h4>Config writes</h4><span class="none">—</span></div>
+    </div>
+    <h4>The six requirements</h4>
+    <ol class="steps">
+      <li>Task type</li><li>Explainable model?</li><li>Evaluation metric</li><li>Minimum score</li><li>Written report?</li><li>Deploy the model?</li>
+    </ol>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li>Calls the LLM with the system prompt, the full history as alternating user/assistant messages, and the new input.</li>
+      <li>If the reply is <code>[OFFTOPIC]</code>, the turn is <b>not</b> added to history, and the last real question is repeated with a canned prefix. The fallback is "Should the model be explainable?".</li>
+      <li>If the reply is <code>[DONE]</code>, the turn is stored and <code>None</code> is returned, which ends the loop.</li>
+      <li>Otherwise the question is stored and printed as "🤖 Bot:".</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/consultant.md</code></dd>
+      <dt>Output</dt><dd>plain text: one question, <code>[OFFTOPIC]</code> or <code>[DONE]</code></dd>
+      <dt>Model</dt><dd><code>gpt-4.1-mini</code> via <code>GenerationModel</code></dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>—</b>No turn limit. Termination depends entirely on the LLM saying <code>[DONE]</code>.</li>
+    </ul></div>
+  </article>
+
+  <!-- 04 -->
+  <article class="stage" id="s4">
+    <header><span class="num">04</span><div><h3>Consultation extraction</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><span class="tag">Interactive only</span><code>Consultant.saveReport()</code></div></div></header>
+    <p class="lead">Turns the conversation transcript into a typed <code>ConsultationReport</code> and merges it into the config.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>History rendered as <code>User: … / Assistant: …</code></li><li>Allowed metrics from <code>metrics.json</code> (flattened, de-duplicated)</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>ConsultationReport</code> object (returned)</li></ul></div>
+      <div><h4>Config reads</h4><ul><li>existing file (merged)</li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>dataFile</code>, <code>taskType</code>, <code>targetCol</code> (null), <code>desiredMetric</code>, <code>minScoreRequirement</code>, <code>explainableModel</code>, <code>writeReport</code>, <code>deployment</code></li></ul></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li>Structured-output call (<code>chat.completions.parse</code>) with <code>response_format=ConsultationReport</code>.</li>
+      <li><code>normalizeMetric()</code> maps the metric case-insensitively onto the exact names in <code>metrics.json</code>. Unknown names become <code>None</code>.</li>
+      <li><code>configuration.update(report.model_dump())</code>, then the file is written.</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/consultantassistant.md</code></dd>
+      <dt>Schema</dt><dd><code>schemas.ConsultationReport</code> (all fields optional)</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>C4</b>The metric list is hardcoded in the prompt <em>and</em> injected from <code>metrics.json</code>, so the two can drift apart.</li>
+      <li><b>—</b>If <code>taskType</code> comes back null, stage 07 is skipped and stage 08 crashes on the missing EDA file.</li>
+    </ul></div>
+  </article>
+
+  <!-- 05 -->
+  <article class="stage" id="s5">
+    <header><span class="num">05</span><div><h3>Target detection</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><span class="tag">Both modes</span><code>Consultant.detectTarget(path, report, save)</code></div></div></header>
+    <p class="lead">Asks the LLM which column is the label, based on column names and two sample values each.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>Dataset (<code>pd.read_csv</code>)</li><li><code>taskType</code>, <code>desiredMetric</code> from the report (null in auto mode)</li></ul></div>
+      <div><h4>Outputs</h4><ul><li>Returns <code>targetCol</code> (str or None)</li></ul></div>
+      <div><h4>Config reads</h4><ul><li>existing file (merged)</li></ul></div>
+      <div><h4>Config writes</h4><ul><li>Interactive (<code>save=True</code>): full report incl. <code>targetCol</code>, <code>dataFile</code></li><li>Auto (<code>save=False</code>): nothing</li></ul></div>
+    </div>
+    <h4>Query sent</h4>
+<pre><code>{"taskType": …, "desiredMetric": …,
+ "columns": {"&lt;col&gt;": [sample1, sample2], …}}</code></pre>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/targetdetector.md</code></dd>
+      <dt>Schema</dt><dd><code>schemas.TargetDetectionResult</code> → <code>{targetCol}</code></dd>
+      <dt>Rules</dt><dd>name hints (target, label, churn, price…), task-type fit, else last column. Returns null for clustering / anomaly detection.</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B8</b>Only two sample values per column. No dtype, cardinality or distribution information.</li>
+      <li><b>—</b>Uses <code>pd.read_csv</code> directly, although <code>datareader.loadData</code> supports TSV/Excel/Parquet.</li>
+    </ul></div>
+  </article>
+
+  <!-- 06 -->
+  <article class="stage" id="s6">
+    <header><span class="num">06</span><div><h3>Task-type inference</h3>
+      <div class="meta"><span class="chip k-det">Deterministic</span><span class="tag">Auto only</span><code>main.py · inferTaskTypeFromTarget()</code></div></div></header>
+    <p class="lead">A rule-based heuristic on the target column. If stage 05 returned no target, the task becomes <code>clustering</code>.</p>
+    <h4>Decision rules (in order)</h4>
+    <div class="table-wrap"><table>
+      <tr><th>Condition</th><th>Result</th></tr>
+      <tr><td>target is None</td><td><code>clustering</code></td></tr>
+      <tr><td>unique values == 2</td><td><code>binary-classification</code></td></tr>
+      <tr><td>numeric ratio &gt; 0.95 <b>and</b> unique &gt; 20 <b>and</b> unique ratio &gt; 0.05</td><td><code>regression</code></td></tr>
+      <tr><td>otherwise</td><td><code>multi-class-classification</code></td></tr>
+    </table></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>A2</b>Never returns <code>time-series</code> or <code>anomaly-detection</code>, although the README claims support for them.</li>
+      <li><b>B8</b>An ordinal 0–10 score becomes 11-class classification. On large datasets, a regression target with low cardinality becomes classification.</li>
+      <li><b>E1</b>The function is copied in <code>main.py</code>, <code>main2.py</code> and <code>app.py</code>.</li>
+    </ul></div>
+  </article>
+
+  <!-- 07 -->
+  <article class="stage" id="s7">
+    <header><span class="num">07</span><div><h3>Exploratory data analysis</h3>
+      <div class="meta"><span class="chip k-det">Deterministic</span><code>tools/eda.py · EDA.run()</code><code>main.py · runEDA()</code></div></div></header>
+    <p class="lead">The only large deterministic component (~1,100 lines). It produces a Markdown report, and every downstream LLM uses that report as its "eyes" on the data. See <a href="#eda-internals">EDA internals</a> for the rules.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>Dataset path, <code>targetCol</code>, <code>taskType</code></li><li><code>configuration/edaconfig.py</code> (readers, allowed task types)</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/&lt;stem&gt;eda.md</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li>Interactive: <code>targetCol</code>, <code>taskType</code> (from file)</li></ul></div>
+      <div><h4>Config writes</h4><span class="none">—</span></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li>Skipped entirely if <code>taskType</code> is falsy.</li>
+      <li>The constructor validates <code>taskType</code> against <code>allowedTaskTypes</code> and raises <code>ValueError</code> otherwise.</li>
+      <li><code>loadData()</code>: CSV/TSV with delimiter sniffing and a UTF-8 → latin-1 fallback. Other formats go through <code>edaconfig.readers</code>. It rejects empty data, all-NaN data, or a missing target.</li>
+      <li><code>inferTypes()</code> labels every column (id_like, boolean, datetime, text, categorical, numeric_discrete, numeric_continuous). String columns that are &gt;90% numeric get converted in place.</li>
+      <li>Seven sections are built, and warnings are collected along the way. The result is written with <code>tabulate</code> tables.</li>
+    </ol>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>—</b>Only the Markdown report is persisted. No machine-readable profile (JSON) exists for code to use, so downstream consumers re-parse free text.</li>
+    </ul></div>
+  </article>
+
+  <!-- 08 -->
+  <article class="stage" id="s8">
+    <header><span class="num">08</span><div><h3>Configuration fill</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><code>agents/configfiller.py · ConfigFiller.fill()</code></div></div></header>
+    <p class="lead">Completes every null field of the configuration using the EDA report. Values the user gave always win.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>Current config (or empty <code>ConsultationReport</code>)</li><li>EDA report text</li><li>Allowed metrics list</li></ul></div>
+      <div><h4>Outputs</h4><ul><li>Full configuration dict (returned &amp; saved)</li></ul></div>
+      <div><h4>Config reads</h4><ul><li>whole file</li></ul></div>
+      <div><h4>Config writes</h4><ul><li>all 8 <code>ConsultationReport</code> keys</li></ul></div>
+    </div>
+    <h4>Merge precedence</h4>
+    <ol class="steps">
+      <li>The LLM returns a full <code>ConsultationReport</code>. In interactive mode the query starts with the consultation JSON.</li>
+      <li>Any non-null value from the existing consultation overwrites the LLM value.</li>
+      <li><code>writeReport</code> / <code>deployment</code> default to <code>False</code> if the user never set them.</li>
+      <li>An explicit <code>targetCol</code> argument (auto mode) overrides.</li>
+      <li><code>desiredMetric</code> is normalised to exact naming (unknown → <code>None</code>).</li>
+      <li><code>dataFile</code> = dataset filename (not the path).</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/configfiller.md</code></dd>
+      <dt>Schema</dt><dd><code>schemas.ConsultationReport</code></dd>
+      <dt>Defaults</dt><dd><code>explainableModel</code> → true; error-metric thresholds ≈ 0.2–0.3 × target std</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B7</b><code>minScoreRequirement</code> is invented by the LLM, and it later decides when tuning stops.</li>
+      <li><b>E5</b>A <code>desiredMetric</code> of <code>None</code> passes silently and crashes in stage 14 (<code>.upper()</code>).</li>
+    </ul></div>
+  </article>
+
+  <!-- 09 -->
+  <article class="stage" id="s9">
+    <header><span class="num">09</span><div><h3>Preprocessing plan</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><code>agents/planner.py · Planner.createPreProcessingPlan()</code></div></div></header>
+    <p class="lead">An LLM writes a plain-English plan. A second LLM (stage 10) turns it into code.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>dataFile</code>, <code>taskType</code>, <code>targetCol</code></li><li>EDA report</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/processingplan.md</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>dataFile</code>, <code>taskType</code>, <code>targetCol</code></li></ul></div>
+      <div><h4>Config writes</h4><span class="none">—</span></div>
+    </div>
+    <h4>Contract the plan must describe</h4>
+    <ol class="steps">
+      <li>Sections: Imports → Load Data → Custom Transformers → Pipeline → Fit and Save.</li>
+      <li>Load <code>dataDir / dataFile</code>. Save to <code>dataDir / "&lt;stem&gt;_processed&lt;ext&gt;"</code> with <code>index=False</code>.</li>
+      <li>One scikit-learn <code>Pipeline</code>. <b>Every</b> step is a custom <code>BaseEstimator + TransformerMixin</code>, and the pipeline takes raw rows.</li>
+      <li>The target is split off before fitting. Text labels are mapped to integers <em>outside</em> the pipeline, and the target is re-attached in the output file.</li>
+      <li>Robustness: <code>X.copy()</code>, <code>errors='ignore'</code> on drops, <code>errors='coerce'</code> on casts, missing-column injection.</li>
+      <li>The fitted pipeline is saved with cloudpickle to <code>modelsDir / "preprocessor.pkl"</code>.</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/processingplanprompt.md</code></dd>
+      <dt>Output</dt><dd>Markdown text, no code blocks</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B1</b>The pipeline is fitted on the <b>full</b> dataset before the split, which leaks test data.</li>
+      <li><b>C5</b>The target label mapping is never persisted, so the API cannot return original labels.</li>
+      <li><b>C4</b>"Do not use comments" conflicts with <code>codexcodeprompt.md</code> ("add section comments").</li>
+    </ul></div>
+  </article>
+
+  <!-- 10 -->
+  <article class="stage" id="s10">
+    <header><span class="num">10</span><div><h3>Preprocessing agent loop</h3>
+      <div class="meta"><span class="chip k-exec">Runs generated code</span><span class="chip k-llm">LLM ×3 roles</span><code>agents/processoragent.py · ProcessorAgent.preprocess(maxAttempts=10)</code></div></div></header>
+    <p class="lead">Generates <code>sandbox/processing.py</code> from the plan, runs it, and repairs it until an LLM critic accepts the processed data. Follows the <a href="#agent-loop">agent loop pattern</a>.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>sandbox/processingplan.md</code></li><li>Raw dataset in <code>data/</code></li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/processing.py</code></li><li><code>data/&lt;stem&gt;_processed.csv</code></li><li><code>models/preprocessor.pkl</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>dataFile</code>, <code>taskType</code>, <code>targetCol</code></li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>processedDataFile</code></li><li><code>preprocessorFile</code> (default <code>preprocessor.pkl</code>)</li></ul></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li><b>act()</b>: <code>coder.code("Dataset Path: &lt;dataFile&gt;\n\n" + plan)</code>, then write the file and run it.</li>
+      <li><b>reason()</b> on <em>success</em>: <code>getDataInfo()</code> reads the processed CSV, writes <code>processedDataFile</code>/<code>preprocessorFile</code> to the config, and sends
+        <code>{taskType, targetCol, processedColumns: {rowCount, columns: {col: {non_null_count, dtype}}}}</code> to the critic.</li>
+      <li><b>reason()</b> on <em>error</em>: the critic receives the raw stderr.</li>
+      <li>Critic rules: supervised data must contain the target, all columns must be numeric, and there may be no nulls. Unsupervised: all numeric, no nulls, no target needed.</li>
+      <li><code>fail</code> leads to <code>fixCode(lastGeneratedCode, lastReasoning)</code> and another run. The loop gives up with <code>RuntimeError</code> after 10 attempts.</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Generate</dt><dd><code>codexcodeprompt.md</code> → raw Python</dd>
+      <dt>Critic</dt><dd><code>processorreasoningprompt.md</code> → <code>ReasoningResult{condition, prompt}</code></dd>
+      <dt>Repair</dt><dd><code>codexfixprompt.md</code> → full fixed file</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>C1</b>"All numeric, no nulls, target present" is a deterministic check, but an LLM judges it.</li>
+      <li><b>D2</b>Unsandboxed execution.</li>
+      <li><b>—</b>The processed-file name is derived from <code>dataFile</code>, but the file is never checked for existence before reading. A wrong name crashes instead of feeding the fix loop.</li>
+    </ul></div>
+  </article>
+
+  <!-- 11 -->
+  <article class="stage" id="s11">
+    <header><span class="num">11</span><div><h3>Train / test split</h3>
+      <div class="meta"><span class="chip k-det">Deterministic</span><code>tools/datasplitter.py · split()</code></div></div></header>
+    <p class="lead">Splits the <em>already processed</em> data with <code>sklearn.train_test_split</code>.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>data/&lt;processedDataFile&gt;</code></li><li><code>constants.json</code>: <code>trainSplit 0.8</code>, <code>testSplit 0.2</code>, <code>seed 42</code></li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>data/train.csv</code>, <code>data/test.csv</code></li><li><code>data/val.csv</code> only if val share &gt; 0</li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>processedDataFile</code></li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>trainFile</code>, <code>testFile</code>, (<code>valFile</code>)</li></ul></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li><code>validationSplit = 1 − train − test</code>. With the current constants this is ≤ 0, so <b>no validation set</b> is created.</li>
+      <li>Test split first. If validation &gt; 0, it is carved from the remainder with <code>val / (1 − test)</code>.</li>
+      <li>Shuffled, not stratified, same seed for both splits.</li>
+    </ol>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B1</b>The split happens after preprocessing was fitted on everything.</li>
+      <li><b>B2</b>No validation set, so tuning later uses the test set.</li>
+      <li><b>B3</b>No stratification for imbalanced classes. Time series are shuffled.</li>
+    </ul></div>
+  </article>
+
+  <!-- 12 -->
+  <article class="stage" id="s12">
+    <header><span class="num">12</span><div><h3>Training plan</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><code>Planner.createTrainingPlan()</code></div></div></header>
+    <p class="lead">The LLM picks exactly one model from a fixed shortlist and describes how to train it and export it to ONNX.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>trainFile</code>, <code>valFile</code> (or "No Validation Data")</li><li><code>taskType</code>, <code>targetCol</code>, <code>explainableModel</code></li><li><code>configuration/modeloptions.md</code></li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/trainingplan.md</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li>as inputs</li></ul></div>
+      <div><h4>Config writes</h4><span class="none">—</span></div>
+    </div>
+    <h4>Model shortlist (<code>modeloptions.md</code>)</h4>
+    <div class="table-wrap"><table>
+      <tr><th>Task</th><th>Options</th></tr>
+      <tr><td>Classification</td><td>Logistic Regression · Random Forest · CatBoost</td></tr>
+      <tr><td>Regression</td><td>Linear Regression · Random Forest · CatBoost</td></tr>
+      <tr><td>Time series</td><td>ARIMA / SARIMA · Prophet · LSTM</td></tr>
+      <tr><td>Anomaly detection</td><td>Isolation Forest · One-Class SVM · Autoencoder</td></tr>
+      <tr><td>Clustering</td><td>K-Means · Hierarchical · DBSCAN</td></tr>
+    </table></div>
+    <h4>Contract</h4>
+    <ol class="steps">
+      <li>Sections: Imports → Load → Feature/Target separation → Model setup → Fit → Save.</li>
+      <li>Save to <code>modelsDir / "model.onnx"</code>. No evaluation, metrics or reporting in this script.</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/trainplanprompt.md</code></dd>
+      <dt>Output</dt><dd>Markdown plan</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B6</b>A single model, no candidate comparison, no dummy baseline.</li>
+      <li><b>A2</b>ARIMA/Prophet cannot be exported to ONNX. Prophet and torch are not installed.</li>
+    </ul></div>
+  </article>
+
+  <!-- 13 -->
+  <article class="stage" id="s13">
+    <header><span class="num">13</span><div><h3>Training agent loop</h3>
+      <div class="meta"><span class="chip k-exec">Runs generated code</span><span class="chip k-llm">LLM ×3 roles</span><code>agents/trainagent.py · TrainAgent.train(maxAttempts=10)</code></div></div></header>
+    <p class="lead">Same loop as stage 10, producing <code>sandbox/train.py</code> and <code>models/model.onnx</code>.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>sandbox/trainingplan.md</code></li><li><code>data/train.csv</code> (+ <code>val.csv</code>)</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/train.py</code></li><li><code>models/model.onnx</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>trainFile</code>, <code>valFile</code></li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>modelFile</code> (on pass)</li></ul></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li>The header <code>"Train Data Path: …\nValidation Data Path: …"</code> is prepended to the plan, then generate → write → run.</li>
+      <li>The critic sees <b>only</b> stdout/stderr, never the code or the model file. <code>pass</code> = "no errors".</li>
+      <li>On pass, <code>saveModelPath()</code> writes <code>modelFile</code> as the basename of its existing value, defaulting to <code>model.pkl</code>.</li>
+    </ol>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Generate</dt><dd><code>codexcodeprompt.md</code></dd>
+      <dt>Critic</dt><dd><code>trainreasoningprompt.md</code> → <code>ReasoningResult</code></dd>
+      <dt>Repair</dt><dd><code>codexfixprompt.md</code></dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>C1</b>Success is judged by an LLM from console text. Nobody checks that <code>model.onnx</code> exists and loads.</li>
+      <li><b>—</b><code>modelFile</code> defaults to <code>model.pkl</code> while the model is saved as <code>model.onnx</code>. Stage 14 hardcodes <code>model.onnx</code>, which hides the mismatch.</li>
+    </ul></div>
+  </article>
+
+  <!-- 14 -->
+  <article class="stage" id="s14">
+    <header><span class="num">14</span><div><h3>Evaluation &amp; tuning loop</h3>
+      <div class="meta"><span class="chip k-exec">Runs generated code</span><span class="chip k-llm">LLM ×2 roles</span><code>agents/evaluationagent.py · EvaluationAgent.tune()</code></div></div></header>
+    <p class="lead">Scores the ONNX model on train and test. If the threshold isn't met, it asks the LLM for parameter changes, has another LLM rewrite <code>train.py</code>, and retrains.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li><code>models/model.onnx</code></li><li><code>data/train.csv</code>, <code>data/test.csv</code></li><li><code>sandbox/train.py</code> (after the marker)</li></ul></div>
+      <div><h4>Outputs</h4><ul><li><code>sandbox/tuning.json</code></li><li>possibly retrained <code>model.onnx</code> / rewritten <code>train.py</code></li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>desiredMetric</code>, <code>targetCol</code>, <code>minScoreRequirement</code>, <code>trainFile</code>, <code>testFile</code>, <code>modelFile</code></li></ul></div>
+      <div><h4>Config writes</h4><span class="none">—</span></div>
+    </div>
+    <h4>How it works (for i in range(tuningIterations = 3))</h4>
+    <ol class="steps">
+      <li>Load the ONNX session. Predict with the features as float32. A single-input model gets the whole matrix; a multi-input model gets one column per input name. Only <code>outputs[0]</code> is used.</li>
+      <li><code>computeScore()</code> on train and test, rounded to 2 decimals. Lower-is-better metrics: MAE, MSE, RMSE, MAPE, SMAPE, Log-Loss, Davies-Bouldin.</li>
+      <li>If <b>both</b> scores meet <code>minScoreRequirement</code>, append <code>{finalScores}</code> and stop.</li>
+      <li>Annotate the previous history entry with <code>scoreBefore</code>, <code>scoreAfter</code> and <code>helped</code> (both scores improved).</li>
+      <li>Query: iteration 0 sends train code + scores + target. Later iterations send the full history + scores + target.</li>
+      <li><code>suggestParameters()</code> (JSON mode) → <code>{"param": {"current": x, "new": y}}</code>.</li>
+      <li><code>act()</code>: <code>tuneParameters()</code> rewrites the code ("only change parameter values"), then <code>train.py</code> is overwritten and run.</li>
+      <li>After the loop, the history is dumped to <code>tuning.json</code>.</li>
+    </ol>
+<pre><code>[{"iteration": 1, "parameterChanges": {...},
+  "scoreBefore": {"train": .., "test": ..}, "scoreAfter": {...}, "helped": true},
+ …,
+ {"finalScores": {"train": .., "test": ..}}]   // only if threshold met</code></pre>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Suggest</dt><dd><code>evaluationprompt.md</code> → JSON object (no schema)</dd>
+      <dt>Rewrite</dt><dd><code>codexcodeprompt.md</code> + 4 inline constraints → full Python</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B2</b>The test set drives tuning, so there is no unbiased final score.</li>
+      <li><b>B4</b><code>outputs[0]</code> holds labels, so ROC-AUC, Log-Loss and AP are computed from hard labels. Weighted averaging everywhere. MAPE divides by zero. Anomaly and clustering metrics receive features as <code>true</code>.</li>
+      <li><b>B5</b>The result of <code>act()</code> is ignored, so a crashed retrain goes unnoticed. The last iteration's model is never scored but still gets deployed.</li>
+      <li><b>E5</b><code>None</code> metric or threshold → <code>AttributeError</code> / <code>TypeError</code>.</li>
+    </ul></div>
+  </article>
+
+  <!-- 15 -->
+  <article class="stage" id="s15">
+    <header><span class="num">15</span><div><h3>Feature decider</h3>
+      <div class="meta"><span class="chip k-llm">LLM call</span><code>tools/featuredecider.py</code> (via <code>runpy</code>)</div></div></header>
+    <p class="lead">Decides which <em>raw</em> columns the prediction API must ask for, by having the LLM read the preprocessing code.</p>
+    <div class="io">
+      <div><h4>Inputs</h4><ul><li>Raw dataset columns</li><li><code>targetCol</code></li><li><code>sandbox/processing.py</code></li></ul></div>
+      <div><h4>Outputs</h4><ul><li>Ordered column list</li></ul></div>
+      <div><h4>Config reads</h4><ul><li><code>targetCol</code>, <code>dataFile</code></li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>columnNames</code></li></ul></div>
+    </div>
+    <div class="llm-box"><h4>LLM</h4><dl>
+      <dt>Prompt</dt><dd><code>prompts/featurecolumns.md</code></dd>
+      <dt>Output</dt><dd>comma-separated text, split and stripped</dd>
+    </dl></div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>C2</b>The fitted pipeline already knows its inputs (<code>feature_names_in_</code>). An LLM guess can drift from reality.</li>
+      <li><b>E3</b>The module does its work at import time and is run through <code>runpy</code>.</li>
+    </ul></div>
+  </article>
+
+  <!-- 16 -->
+  <article class="stage" id="s16">
+    <header><span class="num">16</span><div><h3>Deployment</h3>
+      <div class="meta"><span class="chip k-remote">Remote / SSH</span><span class="tag">if deployment == true</span><code>main.py · checkAndDeploy()</code><code>tools/transfer.py</code><code>tools/deployer.py</code></div></div></header>
+    <p class="lead">Packs the model into <code>vm/</code>, uploads it over SFTP, starts a FastAPI server on the VM, and exposes it through ngrok.</p>
+    <div class="topo" style="margin:14px 0 4px">
+      <div class="t-node"><b>Local · vm/</b><span>models/* + configuration.json copied in</span></div>
+      <div class="t-arrow">→</div>
+      <div class="t-node"><b>SFTP (paramiko)</b><span>root@VM_IP:22 · password</span></div>
+      <div class="t-arrow">→</div>
+      <div class="t-node"><b>/root/vm</b><span>venv dslab1 · pip install</span></div>
+      <div class="t-arrow">→</div>
+      <div class="t-node"><b>uvicorn api:app</b><span>0.0.0.0:5000</span></div>
+      <div class="t-arrow">→</div>
+      <div class="t-node"><b>ngrok http 5000</b><span>public https URL</span></div>
+    </div>
+    <h4>How it works</h4>
+    <ol class="steps">
+      <li><b>copyArtifactsToVm()</b>: every file and folder in <code>models/</code> plus <code>configuration.json</code> is copied into <code>vm/</code>.</li>
+      <li><b>transfer.py</b>: SSH as root with a password (<code>AutoAddPolicy</code>), <code>mkdir /root/vm</code>, upload <code>vm/**</code> recursively.</li>
+      <li><b>deployer.py</b>:
+        <ul>
+          <li>If ngrok is missing, add the apt repo (buster), <code>apt install ngrok</code>, and set the auth token.</li>
+          <li>Check that <code>ls vm</code> contains api, configuration, model, prediction, preprocessor, requirements.txt (substring match). If not, <code>exit(1)</code>.</li>
+          <li>Create venv <code>dslab1</code> if absent. <code>pip install -r requirements.txt</code> (timeout 300 s).</li>
+          <li>Kill whatever holds port 5000, start uvicorn in the background (log <code>/tmp/api.log</code>), wait 3 s.</li>
+          <li>Start ngrok in the background (log <code>/tmp/ngrok.log</code>), wait 5 s.</li>
+          <li>Poll <code>localhost:4040/api/tunnels</code> up to 10× (2 s apart) for the https tunnel, then write it to config as <code>endPoint</code>.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="io">
+      <div><h4>Config reads</h4><ul><li><code>deployment</code></li></ul></div>
+      <div><h4>Config writes</h4><ul><li><code>endPoint</code></li></ul></div>
+      <div><h4>Env</h4><ul><li><code>VM_IP</code>, <code>VM_PASSWORD</code>, <code>NGROK_AUTH_TOKEN</code></li></ul></div>
+    </div>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>D1</b><code>vm/.env</code> (all secrets, including the OpenAI key) is uploaded with the rest of <code>vm/</code>.</li>
+      <li><b>D3</b>Root + password, no host-key check, an unauthenticated public endpoint, <code>kill -9</code> on port 5000, and a cleanup path with Windows backslashes.</li>
+      <li><b>E3</b><code>exit(1)</code> inside <code>runpy</code> silently terminates the whole pipeline.</li>
+    </ul></div>
+  </article>
+
+  <!-- 17 -->
+  <article class="stage" id="s17">
+    <header><span class="num">17</span><div><h3>Report writing</h3>
+      <div class="meta"><span class="chip k-llm">LLM ×3</span><span class="tag">if writeReport == true</span><code>agents/reporter.py · ReportWriter.writeReport()</code></div></div></header>
+    <p class="lead">Builds <code>sandbox/documentation.md</code>: a fixed skeleton with each section written by the LLM.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Section</th><th>LLM input</th></tr>
+      <tr><td><code>## Data &amp; Preprocessing</code></td><td>EDA report + <code>processing.py</code></td></tr>
+      <tr><td><code>## Training</code></td><td><code>train.py</code></td></tr>
+      <tr><td><code>## Evaluation</code></td><td><code>tuning.json</code></td></tr>
+      <tr><td><code>## Deployment</code></td><td>no LLM. Filled with <code>endPoint</code> if deployed</td></tr>
+    </table></div>
+    <p class="note">Title: <code># Documentation - &lt;Task Type&gt; for &lt;dataset stem&gt;</code>. Prompt: <code>prompts/reportprompt.md</code> (no headings, no summary, simple language). Config reads: <code>taskType</code>, <code>dataFile</code>, <code>deployment</code>, <code>endPoint</code>.</p>
+    <div class="issues"><h4>Known issues</h4><ul>
+      <li><b>B2</b>The report states the test scores from tuning, which are biased because tuning used the test set.</li>
+    </ul></div>
+  </article>
+</section>
+
+<!-- ================================================================= CONFIG -->
+<section class="block" id="config">
+  <h2>Configuration keys</h2>
+  <p class="section-intro">All state flows through <code>configuration/configuration.json</code>. This table is the contract between stages. When you rebuild, turn it into one typed run-context object.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Key</th><th>Type</th><th>Written by</th><th>Read by</th></tr>
+    <tr><td><code>dataFile</code></td><td>str (filename)</td><td>04, 05, 08</td><td>09, 10, 15, 17</td></tr>
+    <tr><td><code>taskType</code></td><td>enum (6)</td><td>04, 08</td><td>07, 09, 10, 12, 17, VM</td></tr>
+    <tr><td><code>targetCol</code></td><td>str | null</td><td>05, 08</td><td>07, 09, 10, 12, 14, 15</td></tr>
+    <tr><td><code>desiredMetric</code></td><td>str (metrics.json)</td><td>04, 08</td><td>14</td></tr>
+    <tr><td><code>minScoreRequirement</code></td><td>float</td><td>04, 08</td><td>14</td></tr>
+    <tr><td><code>explainableModel</code></td><td>bool</td><td>04, 08</td><td>12</td></tr>
+    <tr><td><code>writeReport</code></td><td>bool</td><td>04, 08</td><td>main → 17</td></tr>
+    <tr><td><code>deployment</code></td><td>bool</td><td>04, 08</td><td>main → 16, 17</td></tr>
+    <tr><td><code>processedDataFile</code></td><td>str</td><td>10</td><td>11</td></tr>
+    <tr><td><code>preprocessorFile</code></td><td>str</td><td>10</td><td><em>unused</em> (VM hardcodes <code>preprocessor.pkl</code>)</td></tr>
+    <tr><td><code>trainFile</code> / <code>testFile</code> / <code>valFile</code></td><td>str</td><td>11</td><td>12, 13, 14</td></tr>
+    <tr><td><code>modelFile</code></td><td>str</td><td>13</td><td>14 (path built but unused)</td></tr>
+    <tr><td><code>columnNames</code></td><td>list[str]</td><td>15</td><td>VM <code>api.py</code>, <code>prediction.py</code></td></tr>
+    <tr><td><code>endPoint</code></td><td>str (URL)</td><td>16</td><td>main, 17</td></tr>
+  </table></div>
+</section>
+
+<!-- ================================================================= ARTIFACTS -->
+<section class="block" id="artifacts">
+  <h2>Artifacts &amp; files</h2>
+  <p class="section-intro">Everything a run produces. All paths are fixed, so a new run overwrites the previous one.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Path</th><th>Produced by</th><th>Consumed by</th><th>Format</th></tr>
+    <tr><td><code>configuration/configuration.json</code></td><td>01, 04, 05, 08, 10, 11, 13, 15, 16</td><td>almost every stage</td><td>JSON</td></tr>
+    <tr><td><code>sandbox/&lt;stem&gt;eda.md</code></td><td>07</td><td>08, 09, 17</td><td>Markdown</td></tr>
+    <tr><td><code>sandbox/processingplan.md</code></td><td>09</td><td>10</td><td>Markdown</td></tr>
+    <tr><td><code>sandbox/processing.py</code></td><td>10</td><td>15, 17</td><td>Python</td></tr>
+    <tr><td><code>data/&lt;stem&gt;_processed.csv</code></td><td>10 (generated code)</td><td>11</td><td>CSV</td></tr>
+    <tr><td><code>models/preprocessor.pkl</code></td><td>10 (generated code)</td><td>16 → VM</td><td>cloudpickle</td></tr>
+    <tr><td><code>data/train.csv</code>, <code>test.csv</code>, <code>val.csv</code></td><td>11</td><td>13, 14</td><td>CSV</td></tr>
+    <tr><td><code>sandbox/trainingplan.md</code></td><td>12</td><td>13</td><td>Markdown</td></tr>
+    <tr><td><code>sandbox/train.py</code></td><td>13, rewritten by 14</td><td>14, 17</td><td>Python</td></tr>
+    <tr><td><code>models/model.onnx</code></td><td>13, 14 (generated code)</td><td>14, 16 → VM</td><td>ONNX</td></tr>
+    <tr><td><code>sandbox/tuning.json</code></td><td>14</td><td>17</td><td>JSON</td></tr>
+    <tr><td><code>vm/model.onnx</code>, <code>vm/preprocessor.pkl</code>, <code>vm/configuration.json</code></td><td>16 (copy)</td><td>transfer → VM</td><td>—</td></tr>
+    <tr><td><code>sandbox/documentation.md</code></td><td>17</td><td>user</td><td>Markdown</td></tr>
+    <tr><td><code>sandbox/debug.log</code></td><td><code>main2.py</code> only</td><td>user</td><td>text</td></tr>
+  </table></div>
+  <p class="note"><code>clean.py</code> resets a run. It empties <code>sandbox/</code> and <code>models/</code>, deletes files in <code>data/</code> whose names contain train/test/val/processed (<b>D4</b>: this can hit real datasets), and removes the config plus the VM copies.</p>
+</section>
+
+<!-- ================================================================= LLM -->
+<section class="block" id="llm">
+  <h2>LLM call inventory</h2>
+  <p class="section-intro">Every call goes to OpenAI <code>gpt-4.1-mini</code> through one of two thin wrappers. <code>GenerationModel</code> (system prompt from file, optional history, optional Pydantic schema) and <code>CodexModel</code> (code, fix, reason, tune). No temperature, seed, retries, or logging.</p>
+  <div class="table-wrap"><table>
+    <tr><th>#</th><th>Stage</th><th>Caller</th><th>Prompt</th><th>Output</th></tr>
+    <tr><td>1</td><td>03</td><td><code>Consultant.questionAgent</code></td><td><code>consultant.md</code></td><td>text / <code>[DONE]</code> / <code>[OFFTOPIC]</code></td></tr>
+    <tr><td>2</td><td>04</td><td><code>Consultant.reportAgent</code></td><td><code>consultantassistant.md</code></td><td><code>ConsultationReport</code></td></tr>
+    <tr><td>3</td><td>05</td><td><code>Consultant.targetAgent</code></td><td><code>targetdetector.md</code></td><td><code>TargetDetectionResult</code></td></tr>
+    <tr><td>4</td><td>08</td><td><code>ConfigFiller.model</code></td><td><code>configfiller.md</code></td><td><code>ConsultationReport</code></td></tr>
+    <tr><td>5</td><td>09</td><td><code>Planner.processingModel</code></td><td><code>processingplanprompt.md</code></td><td>Markdown plan</td></tr>
+    <tr><td>6</td><td>12</td><td><code>Planner.trainingModel</code></td><td><code>trainplanprompt.md</code></td><td>Markdown plan</td></tr>
+    <tr><td>7</td><td>10, 13</td><td><code>CodexModel.code</code></td><td><code>codexcodeprompt.md</code></td><td>Python source</td></tr>
+    <tr><td>8</td><td>10, 13</td><td><code>CodexModel.fixCode</code></td><td><code>codexfixprompt.md</code></td><td>Python source</td></tr>
+    <tr><td>9</td><td>10</td><td><code>CodexModel.reason</code></td><td><code>processorreasoningprompt.md</code></td><td><code>ReasoningResult</code></td></tr>
+    <tr><td>10</td><td>13</td><td><code>CodexModel.reason</code></td><td><code>trainreasoningprompt.md</code></td><td><code>ReasoningResult</code></td></tr>
+    <tr><td>11</td><td>14</td><td><code>CodexModel.suggestParameters</code></td><td><code>evaluationprompt.md</code></td><td>JSON object</td></tr>
+    <tr><td>12</td><td>14</td><td><code>CodexModel.tuneParameters</code></td><td><code>codexcodeprompt.md</code> + inline</td><td>Python source</td></tr>
+    <tr><td>13</td><td>15</td><td><code>featuredecider.llm</code></td><td><code>featurecolumns.md</code></td><td>comma list</td></tr>
+    <tr><td>14</td><td>17</td><td><code>ReportWriter.model</code> (×3)</td><td><code>reportprompt.md</code></td><td>Markdown</td></tr>
+  </table></div>
+  <div class="cards" style="margin-top:14px">
+    <div class="card">
+      <h3>Pydantic schemas · <code>schemas.py</code></h3>
+<pre><code>ConsultationReport:
+  dataFile, taskType, targetCol, desiredMetric: str|None
+  minScoreRequirement: float|None
+  explainableModel, writeReport, deployment: bool|None
+TargetDetectionResult: targetCol: str|None
+ReasoningResult: condition: "fail"|"pass"; prompt: str|None
+ParameterChange: current, new: float|int|str|None
+TuningResult: dict[str, ParameterChange]   # defined, unused</code></pre>
+    </div>
+    <div class="card">
+      <h3>Calls per run (rough)</h3>
+      <div class="kv">
+        <span>Consultation</span><span>~7–10 (one per turn) + 2</span>
+        <span>Config &amp; plans</span><span>3</span>
+        <span>Preprocessing</span><span>2 + 2 per fix attempt</span>
+        <span>Training</span><span>2 + 2 per fix attempt</span>
+        <span>Tuning</span><span>2 per iteration (≤ 6)</span>
+        <span>Features + report</span><span>1 + 3</span>
+        <span>Worst case</span><span>≈ 60+ calls</span>
+      </div>
+      <p style="margin-top:8px"><code>CodexModel.enhance()</code> exists but is never called.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= EDA -->
+<section class="block" id="eda-internals">
+  <h2>EDA internals</h2>
+  <p class="section-intro">The rules in <code>tools/eda.py</code>. Everything the LLMs "know" about the data comes from this report, so these thresholds shape every downstream decision.</p>
+
+  <h4>Column type inference (first match wins)</h4>
+  <div class="table-wrap"><table>
+    <tr><th>#</th><th>Rule</th><th>Type</th></tr>
+    <tr><td>1</td><td>100% missing</td><td><code>categorical</code></td></tr>
+    <tr><td>2</td><td>n ≥ 200: unique ratio ≥ 0.98 · n &lt; 200: all unique and ≥ 10 values</td><td><code>id_like</code></td></tr>
+    <tr><td>3</td><td>object column &gt; 90% parseable as number → converted in place (warning), then continue</td><td>—</td></tr>
+    <tr><td>4</td><td>bool dtype, or all values in truthy/falsy token sets</td><td><code>boolean</code></td></tr>
+    <tr><td>5</td><td>datetime dtype, or object &gt; 80% parseable as dates</td><td><code>datetime</code></td></tr>
+    <tr><td>6</td><td>object with avg words &gt; 3 and (n ≥ 200: unique ratio ≥ 0.40 · n &lt; 200: unique ≥ 20)</td><td><code>text</code></td></tr>
+    <tr><td>7</td><td>other object / string (mixed Python types → warning)</td><td><code>categorical</code></td></tr>
+    <tr><td>8</td><td>numeric with (n ≥ 200: unique ratio ≤ 0.05 · n &lt; 200: unique ≤ 15)</td><td><code>numeric_discrete</code></td></tr>
+    <tr><td>9</td><td>other numeric</td><td><code>numeric_continuous</code></td></tr>
+  </table></div>
+
+  <h4>Report sections</h4>
+  <div class="cards">
+    <div class="card"><h3>1 · Overview</h3><p>File size, rows/cols, memory, missing %, duplicate rows (+ first 3 indices), type breakdown, per-column summary table.</p></div>
+    <div class="card"><h3>2 · Target</h3><p>Classification-like: class table, imbalance ratio &amp; level. Regression/time series: mean, median, std, min, max, skew, kurtosis, 5/25/75/95th percentiles, IQR outliers.</p></div>
+    <div class="card"><h3>3 · Per-column</h3><p>Type-specific: numeric (IQR &amp; z&gt;3 outliers, percentiles, negatives), categorical (top values), boolean, datetime (range, gaps, monotonic), text (lengths), id-like (samples).</p></div>
+    <div class="card"><h3>4 · Missing values</h3><p>Per-column counts, co-missing row patterns.</p></div>
+    <div class="card"><h3>5 · Correlations</h3><p>Pearson |r| &gt; 0.5 between numerics. Cramér's V &gt; 0.3 between categoricals (≤ 50 levels). Target association: Pearson / Cramér's V / point-biserial &gt; 0.1.</p></div>
+    <div class="card"><h3>6 · Outliers · 7 · Warnings</h3><p>Outlier summary per numeric column. All collected warnings grouped by missing, outlier, correlation, cardinality, skew, imbalance.</p></div>
+  </div>
+
+  <h4>Warning thresholds</h4>
+  <div class="table-wrap"><table>
+    <tr><th>Signal</th><th>Threshold</th></tr>
+    <tr><td>Skew</td><td>|skew| &gt; 1 high · &gt; 2 severe</td></tr>
+    <tr><td>Outliers (IQR 1.5×)</td><td>&gt; 5% of values</td></tr>
+    <tr><td>High cardinality</td><td>&gt; 50 unique categories</td></tr>
+    <tr><td>Missingness</td><td>&gt; 50% high · 100% fully missing</td></tr>
+    <tr><td>Multicollinearity</td><td>|Pearson r| &gt; 0.9</td></tr>
+    <tr><td>Class imbalance (max/min)</td><td>≤1.5 none · ≤2 weak · ≤3 moderate · ≤6 strong · &gt;6 very strong (warn from moderate)</td></tr>
+    <tr><td>Correlation strength labels</td><td>&lt;0.2 very weak · &lt;0.4 weak · &lt;0.6 moderate · &lt;0.8 strong · else very strong</td></tr>
+  </table></div>
+</section>
+
+<!-- ================================================================= SERVING -->
+<section class="block" id="serving">
+  <h2>Serving &amp; API</h2>
+  <p class="section-intro">What runs on the VM after stage 16: <code>vm/api.py</code> + <code>vm/prediction.py</code>, with dependencies from <code>vm/requirements.txt</code>.</p>
+  <div class="cards">
+    <div class="card">
+      <h3>Endpoints</h3>
+      <div class="table-wrap" style="box-shadow:none"><table>
+        <tr><th>Method</th><th>Path</th><th>Returns</th></tr>
+        <tr><td>GET</td><td><code>/</code></td><td><code>{"status": "API is running"}</code></td></tr>
+        <tr><td>POST</td><td><code>/predict</code></td><td><code>{"prediction": [...]}</code></td></tr>
+      </table></div>
+      <p style="margin-top:10px">The request body is a <b>list</b> of objects. The schema is created at startup with <code>pydantic.create_model</code>: every name in <code>columnNames</code> is a required field of type <code>Any</code>.</p>
+    </div>
+    <div class="card">
+      <h3>Prediction path</h3>
+      <ol class="steps">
+        <li>At import: <code>joblib.load(preprocessor.pkl)</code>, ONNX session, first input name, config.</li>
+        <li><code>pd.DataFrame(rows)[columnNames]</code></li>
+        <li><code>preprocessor.transform()</code> → dense → <code>float32</code></li>
+        <li>time series: reshape to <code>(1, n, f)</code></li>
+        <li><code>session.run()</code> → <code>outputs[0].tolist()</code></li>
+      </ol>
+    </div>
+  </div>
+<pre><code>POST /predict
+[ { "feature_1": 1.5, "feature_2": "value", ... } ]
+→ { "prediction": [0] }</code></pre>
+  <div class="issues"><h4>Known issues</h4><ul>
+    <li><b>C5</b>Returns encoded labels (e.g. 0/1) with no inverse mapping.</li>
+    <li><b>D3</b>No auth, no typed validation, public via ngrok.</li>
+  </ul></div>
+</section>
+
+<!-- ================================================================= SETTINGS -->
+<section class="block" id="settings">
+  <h2>Settings &amp; constants</h2>
+  <div class="cards">
+    <div class="card">
+      <h3><code>configuration/constants.json</code></h3>
+      <div class="kv">
+        <span>trainSplit</span><span>0.8</span>
+        <span>testSplit</span><span>0.2</span>
+        <span>seed</span><span>42</span>
+        <span>tuningIterations</span><span>3</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Hardcoded in code</h3>
+      <div class="kv">
+        <span>LLM model</span><span><code>gpt-4.1-mini</code> (2 places)</span>
+        <span>Fix attempts</span><span>10 (per agent)</span>
+        <span>Script timeout</span><span>1800 s</span>
+        <span>Score rounding</span><span>2 decimals</span>
+        <span>API port</span><span>5000</span>
+        <span>ngrok inspector</span><span>localhost:4040</span>
+        <span>Remote dir / venv</span><span><code>/root/vm</code> / <code>dslab1</code></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Environment · <code>vm/.env</code></h3>
+      <div class="kv">
+        <span><code>OPENAI_API_KEY</code></span><span>all LLM calls</span>
+        <span><code>VM_IP</code></span><span>transfer, deployer</span>
+        <span><code>VM_PASSWORD</code></span><span>root SSH password</span>
+        <span><code>NGROK_AUTH_TOKEN</code></span><span>ngrok setup</span>
+      </div>
+      <p style="margin-top:8px">Loaded by <code>load_dotenv(paths.envPath)</code> in every LLM wrapper and SSH script.</p>
+    </div>
+    <div class="card">
+      <h3><code>configuration/metrics.json</code></h3>
+      <div class="kv">
+        <span>classification</span><span>Accuracy, F1, Precision, Recall, ROC-AUC, Log-Loss, Matthews-Corrcoef</span>
+        <span>regression</span><span>R2, MAE, MSE, RMSE, MAPE, Explained-Variance</span>
+        <span>time series</span><span>MAE, RMSE, MAPE, SMAPE</span>
+        <span>anomaly</span><span>ROC-AUC, Precision, Recall, F1, Average-Precision</span>
+        <span>clustering</span><span>Silhouette, Davies-Bouldin, Calinski-Harabasz</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= LAYOUT -->
+<section class="block" id="layout">
+  <h2>Directory layout</h2>
+<pre><code>DS LAB II/
+├── main.py                 # entry point (rich/questionary UI)
+├── main2.py                # debug runner: step timing, config diffs, sandbox/debug.log
+├── app.py                  # plain-input runner with INFO logging
+├── clean.py                # wipe run outputs
+├── paths.py                # all directory constants + envPath (vm/.env)
+├── schemas.py              # Pydantic output schemas for LLM calls
+├── agents/
+│   ├── consultant.py       # 03, 04, 05
+│   ├── configfiller.py     # 08
+│   ├── planner.py          # 09, 12
+│   ├── processoragent.py   # 10
+│   ├── trainagent.py       # 13
+│   ├── evaluationagent.py  # 14
+│   └── reporter.py         # 17
+├── llms/
+│   ├── generation.py       # GenerationModel (chat + structured output)
+│   └── codex.py            # CodexModel (code / fix / reason / tune / suggest)
+├── tools/
+│   ├── eda.py              # 07
+│   ├── datareader.py       # loadData, delimiter sniffing
+│   ├── datasplitter.py     # 11
+│   ├── coderunner.py       # subprocess executor for generated code
+│   ├── metrics.py          # computeScore()
+│   ├── featuredecider.py   # 15 (module-level script)
+│   ├── transfer.py         # 16 SFTP (module-level script)
+│   └── deployer.py         # 16 remote setup (module-level script)
+├── prompts/                # 13 system prompts (*.md)
+├── configuration/
+│   ├── constants.json · metrics.json · modeloptions.md · edaconfig.py
+│   └── configuration.json  # runtime state (generated)
+├── data/                   # raw datasets + processed/train/test (gitignored)
+├── sandbox/                # EDA report, plans, generated scripts, tuning.json, docs
+├── models/                 # preprocessor.pkl, model.onnx
+└── vm/                     # api.py, prediction.py, requirements.txt, .env, copied artifacts</code></pre>
+</section>
+
+<footer>
+  Generated from the DS Lab 1 codebase. Issue codes refer to <code>overview.md</code> in the project root.
+</footer>
+
+</main>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var body = document.body;
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  // theme
+  var savedTheme = load("arch-theme");
+  if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+  document.getElementById("toggle-theme").addEventListener("click", function () {
+    var current = root.getAttribute("data-theme") ||
+      (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    store("arch-theme", next);
+  });
+
+  // issues toggle
+  var btn = document.getElementById("toggle-issues");
+  function setIssues(show) {
+    body.classList.toggle("hide-issues", !show);
+    btn.setAttribute("aria-pressed", show ? "true" : "false");
+    btn.lastChild.textContent = "Known issues: " + (show ? "shown" : "hidden");
+    store("arch-issues", show ? "1" : "0");
+  }
+  setIssues(load("arch-issues") !== "0");
+  btn.addEventListener("click", function () { setIssues(body.classList.contains("hide-issues")); });
+
+  // active nav link
+  var links = Array.prototype.slice.call(document.querySelectorAll("aside.nav a"));
+  var map = {};
+  links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+  var targets = Object.keys(map).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  if ("IntersectionObserver" in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove("active"); });
+          var a = map[e.target.id];
+          if (a) a.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-10% 0px -80% 0px" });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>
