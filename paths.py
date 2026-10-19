@@ -36,5 +36,3 @@ results_dir = benchmark_dir / "results"
 figures_dir = results_dir / "figures"
 tables_file = results_dir / "tables.md"
 spend_file = results_dir / "spend.json"
-
-tests_dir = root_dir / "tests"

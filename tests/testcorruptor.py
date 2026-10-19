@@ -2,9 +2,8 @@ import json
 import numpy as np
 import pandas as pd
 from decimal import Decimal
-from tools.reader import read_table
 from benchmark import splits, materialize
-from benchmark.corruptor import ALL_TYPES, as_decimal, corrupt, restore, write_layout
+from benchmark.corruptor import as_decimal, corrupt, restore
 
 # a clean raw table with every kind of column the corruptor uses
 def clean_table(rows=300, seed=0):
@@ -80,19 +79,6 @@ def test_single_types():
         back = restore(messy, truth, cells)
         assert set(back.columns) == set(clean.columns), kind
         assert all(same(a, b) for column in clean.columns for a, b in zip(clean[column], back[column])), kind
-    assert "layout" in ALL_TYPES and "leak" in ALL_TYPES
-
-# a messy file layout (BOM, title rows, footer, ";", decimal commas, cp1252)...
-# still loads to the same table with the robust loader
-def test_layout_files(tmp_path):
-    clean = clean_table(50)
-    for level in [1, 2, 3]:
-        path = tmp_path / f"layout{level}.csv"
-        write_layout(clean, path, level)
-        loaded, _ = read_table(path)
-        assert list(loaded.columns) == list(clean.columns) and len(loaded) == 50, level
-        if level == 3:
-            assert loaded["price"].iloc[0] == clean["price"].iloc[0].replace(".", ",")
 
 # materialize writes the files, the truth with row positions and the cells
 def test_materialize_mess(tmp_path, monkeypatch):
@@ -106,5 +92,3 @@ def test_materialize_mess(tmp_path, monkeypatch):
     truth = json.loads((folder / "truth.json").read_text(encoding="utf-8"))
     assert folder.name == "seed0" and folder.parent.name == "level2"
     assert truth["mess"] and len(truth["positions"]["test"]) == 60 and (folder / "cells.parquet").exists()
-    single = materialize.materialize("toy", 3, 0, mess="units")
-    assert single.parent.name == "level3-units"

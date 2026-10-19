@@ -19,11 +19,6 @@ OPERATIONS = {operation.name: operation for operation in COLUMN_OPERATIONS + ROW
 OPERATIONS[FreeCodeOperation.name] = FreeCodeOperation
 HIDDEN = {FreeCodeOperation.name}
 
-# registers more operations
-def register(*operations):
-    for operation in operations:
-        OPERATIONS[operation.name] = operation
-
 # the class of an operation by name, or a KeyError with the known names
 def operation_class(name):
     if name not in OPERATIONS:

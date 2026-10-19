@@ -9,7 +9,6 @@
   "llm": {
     "provider": "openai",
     "model": "gpt-4.1-nano",
-    "pilot_model": "gpt-4.1-mini",
     "temperature": 0,
     "seed": 0,
     "timeout_seconds": 60,

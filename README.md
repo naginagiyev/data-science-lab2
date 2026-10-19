@@ -142,7 +142,7 @@ prompts/                   the LLM prompts
 benchmark/                 datasets, corruptor, leaks, runner, systems, grids, analysis, results
 tests/                     fast suite (uv run pytest -q) and slow tests (-m slow)
 docs/                      build plan, progress log, decisions, deviations, data cards, protocol,
-                           results, architecture, study.html, background/
+                           results, architecture, showcase, background/
 cache/                     git-ignored: LLM answer cache, OpenML downloads, benchmark files and
                            run folders of every benchmark run
 ```

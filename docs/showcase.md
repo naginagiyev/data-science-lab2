@@ -1,5 +1,9 @@
 # Showcase
 
+> **Out of date (2026-10-19).** The run below used the code before the P14 restructuring. Run
+> `uv run python -m benchmark.showcase` again after the pilot re-run (the new prompts are not in the
+> LLM cache yet, so the first run makes a few real calls).
+
 One messy file, three systems, the same budget. Command (the LLM answers come from the pilot's cache,
 so the demo costs almost nothing):
 

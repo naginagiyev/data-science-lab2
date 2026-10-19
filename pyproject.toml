@@ -19,17 +19,15 @@ dependencies = [
     "joblib",
     "pyarrow",
     "openpyxl",
-    "rich",
     "questionary",
     "tabulate",
     "skrub",
     "matplotlib",
-    "autorank",
     "openml",
 ]
 
 [dependency-groups]
-dev = ["pytest", "ruff", "psutil"]
+dev = ["pytest", "ruff"]
 
 [tool.uv]
 package = false

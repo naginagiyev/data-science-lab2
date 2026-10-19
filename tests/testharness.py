@@ -76,7 +76,7 @@ def test_failure_gets_dummy(tmp_path):
 # file correctly; a second run skips the finished cell
 def test_runner_scores_handmade_file(tmp_path, monkeypatch):
     files = tmp_path / "files"
-    monkeypatch.setattr(runner, "cell_dir", lambda group, name, level, seed, mess="mixed": files)
+    monkeypatch.setattr(runner, "cell_dir", lambda group, name, level, seed: files)
     monkeypatch.setattr(runner, "benchmark_outputs_dir", tmp_path / "outputs")
     monkeypatch.setattr(runner, "workdirs_dir", tmp_path / "w")
     monkeypatch.setattr(runner, "logs_dir", tmp_path / "logs")
@@ -126,11 +126,12 @@ def test_materialize_writes_files(tmp_path, monkeypatch):
     assert truth["rows"] == {"train": 40, "test": 10}
     assert set(truth["files"]) == {"train.csv", "test_features.csv", "test_labels.csv"}
 
-# grids expand over mess types; every grid has the planned size
+# grids expand into systems x datasets x levels x seeds; every grid has the...
+# planned size
 def test_grid_expansion():
-    grid = {"systems": ["a", "b"], "datasets": ["d"], "levels": [2, 3], "seeds": [0], "budget": 60, "mess": ["units", "packed"]}
+    grid = {"systems": ["a", "b"], "datasets": ["d"], "levels": [2, 3], "seeds": [0, 1], "budget": 60}
     cells = runner.expand_cells(grid)
-    assert len(cells) == 8 and {cell["mess"] for cell in cells} == {"units", "packed"} and {cell["budget"] for cell in cells} == {60}
+    assert len(cells) == 8 and {cell["budget"] for cell in cells} == {60}
     names = ["smoke", "pilot-main", "pilot-leaks", "pilot-ablations", "pilot-natural", "main", "leaks", "ablations"]
     sizes = {name: len(runner.expand_cells(runner.load_grid(name))) for name in names}
     assert sizes == {"smoke": 36, "pilot-main": 216, "pilot-leaks": 20, "pilot-ablations": 8, "pilot-natural": 12, "main": 1440, "leaks": 180, "ablations": 160}

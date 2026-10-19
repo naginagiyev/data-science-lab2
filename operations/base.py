@@ -85,9 +85,6 @@ class Operation(BaseEstimator, TransformerMixin):
         self.stats_ = stats
         return result
 
-    def describe(self):
-        return {"op": self.name, "params": self.config.model_dump()}
-
 # returns a float column with NaN where the parse failed, and the parse stats
 def numeric_result(inputs, outputs):
     outputs = pd.Series(np.asarray(outputs, dtype=float), index=inputs.index)

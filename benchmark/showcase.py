@@ -30,7 +30,7 @@ def showcase(dataset=DATASET, budget=120):
     results_file.unlink(missing_ok=True)
     rows = {}
     for system in SYSTEMS:
-        cell = {"system": system, "dataset": dataset, "group": "A", "level": 3, "seed": 0, "budget": budget, "mess": "mixed"}
+        cell = {"system": system, "dataset": dataset, "group": "A", "level": 3, "seed": 0, "budget": budget}
         rows[system] = runner.run_cell(cell, grid, registry, results_file, threading.Lock(), workdirs_dir / "showcase-logs")
     metric = rows["full"]["metric"]
     print(f"\n{dataset}, mess level 3, {budget} s per system, metric {metric} (dummy {rows['full']['dummy_score']:.4f}):")

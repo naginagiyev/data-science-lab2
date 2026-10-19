@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 from paths import benchmark_outputs_dir, grids_dir, logs_dir, results_dir, root_dir, systems_registry_file, workdirs_dir
 
 COLUMNS = [
-    "grid", "system", "variant", "dataset", "group", "level", "mess_types", "seed", "budget_s", "status", "error",
+    "grid", "system", "variant", "dataset", "group", "level", "seed", "budget_s", "status", "error",
     "metric", "score", "dummy_score", "secondary", "seconds", "llm_calls", "input_tokens", "output_tokens",
     "cost_usd", "run_dir", "git_hash", "settings_hash", "started_at",
 ]
@@ -36,20 +36,17 @@ def load_grid(name):
 def load_registry(path=None):
     return json.loads((path or systems_registry_file).read_text(encoding="utf-8"))
 
-# expands a grid into its cells: systems x datasets x levels x seeds (x mess...
-# types when "mess" is a list)
+# expands a grid into its cells: systems x datasets x levels x seeds
 def expand_cells(grid):
     cells = []
-    messes = grid.get("mess", "mixed")
-    messes = messes if isinstance(messes, list) else [messes]
-    for system, dataset, level, seed, mess in itertools.product(grid["systems"], grid["datasets"], grid["levels"], grid["seeds"], messes):
+    for system, dataset, level, seed in itertools.product(grid["systems"], grid["datasets"], grid["levels"], grid["seeds"]):
         name, group = (dataset, grid.get("group", "dev")) if isinstance(dataset, str) else (dataset["name"], dataset["group"])
-        cells.append({"system": system, "dataset": name, "group": group, "level": level, "seed": seed, "budget": grid["budget"], "mess": mess})
+        cells.append({"system": system, "dataset": name, "group": group, "level": level, "seed": seed, "budget": grid["budget"]})
     return cells
 
 # the key that says if a cell already has a result
 def cell_key(row):
-    return (str(row["system"]), str(row["dataset"]), str(row["group"]), str(row["level"]), str(row["mess_types"] if "mess_types" in row else row["mess"]), str(row["seed"]), str(float(row["budget_s"] if "budget_s" in row else row["budget"])))
+    return (str(row["system"]), str(row["dataset"]), str(row["group"]), str(row["level"]), str(row["seed"]), str(float(row["budget_s"] if "budget_s" in row else row["budget"])))
 
 # returns the keys of the cells of one grid that are already in the results file
 def done_keys(results_file, grid_name):
@@ -110,16 +107,15 @@ def cell_command(entry, cell, files, truth, workdir, out, extra_arguments):
 # predictions, appends the result row and deletes the workdir
 def run_cell(cell, grid, registry, results_file, lock, log_dir):
     entry = registry[cell["system"]]
-    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"])
+    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"])
     truth = json.loads((files / "truth.json").read_text(encoding="utf-8"))
-    mess = "" if cell["mess"] == "mixed" else f"-{cell['mess']}"
-    cell_id = f"{cell['system']}-{cell['dataset']}-l{cell['level']}{mess}-s{cell['seed']}-b{int(cell['budget'])}".replace("+", "plus")
+    cell_id = f"{cell['system']}-{cell['dataset']}-l{cell['level']}-s{cell['seed']}-b{int(cell['budget'])}".replace("+", "plus")
     workdir = workdirs_dir / secrets.token_hex(4)
     out = benchmark_outputs_dir / grid["name"] / cell_id
     shutil.rmtree(out, ignore_errors=True)
     row = {
         "grid": grid["name"], "system": cell["system"], "variant": entry.get("variant", ""), "dataset": cell["dataset"],
-        "group": cell["group"], "level": cell["level"], "mess_types": cell["mess"], "seed": cell["seed"],
+        "group": cell["group"], "level": cell["level"], "seed": cell["seed"],
         "budget_s": float(cell["budget"]), "git_hash": git_hash(), "started_at": now_text(),
     }
     settings = load_settings(assignments=grid.get("settings", []))
@@ -192,12 +188,12 @@ def check_grid(name, seconds=20, registry_path=None):
     registry = load_registry(registry_path)
     cells = expand_cells(grid)
     problems = [f"unknown system {system}" for system in sorted({cell["system"] for cell in cells} - set(registry))]
-    missing = [cell for cell in cells if not (cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"]) / "truth.json").exists()]
-    problems += [f"{len(missing)} of {len(cells)} cells have no files (first: {missing[0]['dataset']} level {missing[0]['level']} {missing[0]['mess']})"] if missing else []
+    missing = [cell for cell in cells if not (cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"]) / "truth.json").exists()]
+    problems += [f"{len(missing)} of {len(cells)} cells have no files (first: {missing[0]['dataset']} level {missing[0]['level']})"] if missing else []
     if problems:
         return problems
     cell = cells[0]
-    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"], cell["mess"])
+    files = cell_dir(cell["group"], cell["dataset"], cell["level"], cell["seed"])
     truth = json.loads((files / "truth.json").read_text(encoding="utf-8"))
     workdir = workdirs_dir / secrets.token_hex(4)
     out = workdirs_dir / f"check-{secrets.token_hex(4)}"

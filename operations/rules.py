@@ -8,7 +8,6 @@ token_pattern = re.compile(
     r"\s*(?:(?P<number>\d+\.?\d*(?:[eE][-+]?\d+)?)|(?P<string>'[^']*'|\"[^\"]*\")|(?P<column>`[^`]+`)"
     r"|(?P<operator><=|>=|==|!=|<|>|\+|-|\*|/|\(|\)|,)|(?P<word>[A-Za-z_][A-Za-z0-9_]*))"
 )
-keywords = {"and", "or", "not", "missing", "true", "false"}
 
 # splits a rule into tokens; unknown text raises an error
 def tokenize(expression):

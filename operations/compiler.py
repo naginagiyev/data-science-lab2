@@ -79,14 +79,6 @@ class AgentSteps(BaseEstimator, TransformerMixin):
             current = operation.transform(current)
         return current
 
-    def snapshots(self, frame):
-        current = frame
-        result = []
-        for position, (step, operation) in enumerate(zip(self.steps or [], self.operations_)):
-            current = operation.transform(current)
-            result.append((step_name(position, step), current))
-        return result
-
 # the target operations of a plan: label spellings for classification and a...
 # log transform for regression (applied by the engine, scored on the original...
 # scale)

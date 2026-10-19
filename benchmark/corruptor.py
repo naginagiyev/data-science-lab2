@@ -6,8 +6,7 @@ from decimal import Decimal, InvalidOperation
 
 LEVELS = {0: (0.0, 0.0), 1: (0.25, 0.05), 2: (0.50, 0.15), 3: (0.75, 0.30)}
 MIXED_TYPES = ["ids", "packed", "dates", "booleans", "spellings", "mixed_units", "units", "impossible", "fake_missing", "plain_missing"]
-ALL_TYPES = MIXED_TYPES + ["layout", "leak"]
-TYPE_NUMBERS = {"units": 1, "mixed_units": 2, "dates": 3, "spellings": 4, "fake_missing": 5, "impossible": 6, "booleans": 7, "packed": 8, "ids": 9, "layout": 10, "leak": 11, "plain_missing": 12}
+TYPE_NUMBERS = {"units": 1, "mixed_units": 2, "dates": 3, "spellings": 4, "fake_missing": 5, "impossible": 6, "booleans": 7, "packed": 8, "ids": 9, "plain_missing": 12}
 EXPECTED_OPS = {
     "units": "parse_number", "mixed_units": "parse_units", "dates": "parse_datetime", "spellings": "map_categories", "fake_missing": "replace_values",
     "impossible": "set_missing_where", "booleans": "parse_boolean", "packed": "extract_pattern", "ids": "drop_columns", "plain_missing": None,
@@ -438,25 +437,3 @@ def restore(raw, truth, cells):
             for row, original in zip(part["row"], part["original"]):
                 restored.at[row, item["columns"][0]] = original
     return restored
-
-# writes a table with a messy file layout (type 10, reading test E6b): level 1...
-# adds a UTF-8 BOM; level 2 also two title rows and a footer note; level 3...
-# also uses ";" with decimal commas and the cp1252 encoding
-def write_layout(frame, path, level):
-    if level <= 0:
-        frame.to_csv(path, index=False, encoding="utf-8", lineterminator="\n")
-        return
-    delimiter = ";" if level >= 3 else ","
-    table = frame.copy()
-    if level >= 3:
-        for column in table.columns:
-            numbers = table[column].map(as_decimal)
-            if numbers.notna().all() and table[column].str.contains(".", regex=False).any():
-                table[column] = table[column].str.replace(".", ",", regex=False)
-    body = table.to_csv(index=False, sep=delimiter, lineterminator="\n")
-    if level >= 2:
-        body = "Export of the customer table\nCreated by the reporting system\n\n" + body + "\nNote: values are preliminary\n"
-    if level >= 3:
-        path.write_bytes(body.encode("cp1252", errors="replace"))
-    else:
-        path.write_bytes(b"\xef\xbb\xbf" + body.encode("utf-8"))

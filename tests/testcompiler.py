@@ -4,7 +4,7 @@ import pandas as pd
 from schemas import Plan, Step
 from settings import load_settings
 from checks.datachecks import check_steps
-from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
+from operations.compiler import feature_pipeline, row_filter, target_steps, validate_plan
 
 COLUMNS = ["Weight", "City", "Price", "y"]
 
@@ -41,8 +41,6 @@ def test_compiled_pipeline():
     assert pickle.loads(pickle.dumps(pipeline)).transform(frame.head(3)).shape[0] == 3
     assert row_filter(plan).mask(frame, np.zeros(40)).sum() == 4
     assert target_steps(plan).labels(["yes ", "No"]).tolist() == ["Yes", "No"]
-    snapshots = AgentSteps(plan.steps).fit(frame).snapshots(frame)
-    assert snapshots[0][0] == "step 1: parse_units Weight"
 
 # a plan with a wrong unit map fails the data checks with a structured error...
 # that names the operation, the column, the failure share and examples

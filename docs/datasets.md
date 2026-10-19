@@ -414,15 +414,6 @@ Level 3, one type at a time, seed 0; three changed cells per type (before → af
   added columns ['customer_id', 'Unnamed: 0'], e.g. `C0000587`
 - **12. plain_missing** (credit-g, expected `None`):
   `other_installment_plans`: `bank` → ``; `other_installment_plans`: `none` → ``; `other_installment_plans`: `none` → ``
-- **10. layout** (credit-g, level 3: title rows, `;`, decimal commas, cp1252, footer; reader test E6b): first lines:
-
-```
-Export of the customer table
-Created by the reporting system
-
-checking_status;duration_months;credit_history;credit_purpose;credit_amount;savings_status;employment_since;in
-<0 DM;18;existing credits paid duly till now;radio/television;3190;< 100 DM;1 <= ... < 4 years;2;female: divor
-```
 
 ## Leak columns (Group D)
 
@@ -446,11 +437,11 @@ One leak column per Group D dataset (`benchmark/leaks.py`). In `test_features.cs
 
 Checked on the downloaded versions (deterministic audit of the first 10,000 rows).
 
-- **HR_Analytics_Job_Change_of_Data_Scientists** (pilot); audit findings: B03 x3, B05 x3, C01 x1, C02 x7, C04 x3, D05 x1
+- **HR_Analytics_Job_Change_of_Data_Scientists** (pilot); audit findings: B05 x3, C02 x7, C04 x3, D05 x1
   - `experience`: `>20` (3286), `5` (1430), `4` (1403), `3` (1354), `6` (1216)
   - `company_size`: `nan` (5938), `50-99` (3083), `100-500` (2571), `10000+` (2019), `10/49` (1471)
   - `last_new_job`: `1` (8040), `>4` (3290), `2` (2900), `never` (2452), `4` (1029)
-- **in_vehicle_coupon_recommendation** (pilot); audit findings: B03 x8, B05 x1, B07 x1, C02 x6, C04 x1, C06 x1
+- **in_vehicle_coupon_recommendation** (pilot); audit findings: B05 x1, B07 x1, C02 x6, C04 x1, C06 x1
   - `income`: `$25000 - $37499` (2013), `$12500 - $24999` (1831), `$37500 - $49999` (1805), `$100000 or More` (1736), `$50000 - $62499` (1659)
   - `age`: `21` (2653), `26` (2559), `31` (2039), `50plus` (1788), `36` (1319)
   - `expiration`: `1d` (7091), `2h` (5593)
@@ -462,10 +453,10 @@ Checked on the downloaded versions (deterministic audit of the first 10,000 rows
   - `contact`: `cellular` (29285), `unknown` (13020), `telephone` (2906)
   - `poutcome`: `unknown` (36959), `failure` (4901), `other` (1840), `success` (1511)
   - `pdays`: `-1` (36954), `182` (167), `92` (147), `91` (126), `183` (126)
-- **employee_salaries** (Group C); audit findings: B02 x1, B03 x1, B05 x1, C01 x4, C04 x4, D01 x1, D02 x1, D05 x5
+- **employee_salaries** (Group C); audit findings: B02 x1, B05 x1, C04 x4, D01 x1, D02 x1, D05 x5
   - `date_first_hired`: `12/12/2016` (87), `01/14/2013` (83), `02/24/2014` (72), `03/10/2014` (70), `08/12/2013` (60)
   - `underfilled_job_title`: `` (8135), `Firefighter/Rescuer II` (219), `Police Officer II` (171), `Police Officer I` (92), `Firefighter/Rescuer I (Recruit)` (87)
-- **Food_Delivery_Time** (replaced by employee_salaries (the TabArena version is cleaned)); audit findings: B03 x1, D01 x2, D02 x1, D05 x1
+- **Food_Delivery_Time** (replaced by employee_salaries (the TabArena version is cleaned)); audit findings: D01 x2, D02 x1, D05 x1
   - `Type_of_order`: `Snack ` (11497), `Meal ` (11422), `Drinks ` (11282), `Buffet ` (11250)
   - `Type_of_vehicle`: `motorcycle ` (26366), `scooter ` (15215), `electric_scooter ` (3802), `bicycle ` (68)
   - `Delivery_person_Ratings`: `4.6` (8810), `4.8` (7129), `4.7` (7126), `4.9` (7024), `5.0` (3985)

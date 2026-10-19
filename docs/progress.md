@@ -160,7 +160,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P14.7 Variants (11 to 6) · 2026-10-19 · 74b3b9e · generic, rules, full, full-nogate, freecode, full+ag; constant options removed; 187 passed
 - [x] P14.8 Benchmark at MSc core · 2026-10-19 · 8c2eaa5 · E1-E5 and E10 kept; projection, held-out cells, E6-E9 removed; runs.csv archived for the re-run; 184 passed
 - [x] P14.9 Documentation · 2026-10-19 · a0ffca5 · README, docs/architecture.md, docs/protocol.md (replaces the pre-registration), deviations, buildplan note and P14 section, re-run section below; study/ rebuilt (19 pages, in sync)
-- [x] P14.10 Final checks · 2026-10-19 · (this commit) · fast + slow suite 208 passed (12.5 min); ruff F, style test, secret scan clean; generic and rules runs on ibmchurn and kinghousedata, fake-provider full runs on both; all 8 grids pass --check
+- [x] P14.10 Final checks · 2026-10-19 · 729f3b0 · fast + slow suite 208 passed (12.5 min); ruff F, style test, secret scan clean; generic and rules runs on ibmchurn and kinghousedata, fake-provider full runs on both; all 8 grids pass --check
+- [x] P14.11 Dead code and files · 2026-10-19 · (this commit) · unused functions, constants, setting and packages removed; single-mess-type and file-layout paths of the removed E6/E6b removed; .claude/ untracked, docs/study.html deleted; manifest and data cards regenerated; 874 MB of obsolete cache deleted; 183 passed
 
 P14 line counts (Python lines in git; JSON config: `edatool/config/` and `configuration/`):
 

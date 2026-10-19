@@ -5,7 +5,6 @@ import pandas as pd
 from typing import Literal
 from operations.base import Operation, Params, failures, is_missing, numeric_result
 
-PARTS = ["year", "month", "day", "weekday", "hour", "epoch_days"]
 NUMBER = re.compile(r"^\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*(.*?)\s*$")
 
 # one suffix and its multiplication factor ("k" -> 1000)

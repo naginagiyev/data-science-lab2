@@ -6,7 +6,7 @@ from pathlib import Path
 from paths import results_dir
 
 LOWER_IS_BETTER = {"rmse", "log_loss"}
-CELL = ["dataset", "level", "seed", "mess_types", "budget_s"]
+CELL = ["dataset", "level", "seed", "budget_s"]
 NEMENYI_Q = {2: 1.960, 3: 2.343, 4: 2.569, 5: 2.728, 6: 2.850, 7: 2.949, 8: 3.031, 9: 3.102, 10: 3.164}
 
 # reads the results of one or more grids from runs.csv; a missing file or grid...

@@ -27,7 +27,6 @@ class BudgetSettings(Section):
 class LlmSettings(Section):
     provider: str
     model: str
-    pilot_model: str
     temperature: float
     seed: int
     timeout_seconds: float

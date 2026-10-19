@@ -1239,3 +1239,34 @@ Findings from the decision logs of the worst cells:
   grids that is a `full` run, so it made 5 real `gpt-4.1-nano` calls ($0.0017, the leak review and the
   cleaner). These were the first real calls of the new leak-review prompt; they returned answers.
 - Python lines fell from 17,892 to 11,311 (table in `docs/progress.md`).
+
+## 2026-10-19 · P14.11 · Dead code and files
+
+- Asked by the user: no useless code, file or folder. A scan of every function, class and constant
+  against all uses, the settings fields, the record fields and the imports found:
+  - unused code: `Operation.describe`, `PARTS` (parsing), `register` (registry), `keywords` (rules),
+    `tests_dir` (paths), `PILOT_A`, `PILOT_C`, `PILOT_D` (datasets), and `AgentSteps.snapshots`, which
+    only served the removed edatool verify (its test lines went too);
+  - an unused setting: `llm.pilot_model`;
+  - unused packages: `rich`, `autorank` and `psutil` (with `statsmodels` and `wrapt`, which only
+    they needed); `tabulate` and `openpyxl` stay, because pandas needs them for `to_markdown` and
+    `read_excel`;
+  - code that only the removed experiments E6 and E6b used: single mess types in the runner and in
+    `materialize` (`--mess`, the `mess_types` column of `runs.csv`, `mess_kind` in `truth.json`),
+    the file-layout writer `write_layout` with its data-card example and test, and the layout
+    fallbacks of `benchmark/scoring.py`.
+- False hits, kept: the `corrupt_*` and `invert_*` functions (called through `globals()`), CatBoost's
+  `after_iteration` and scikit-learn's `get_feature_names_out` (called by the libraries),
+  `FakeProvider` and `restore` (used by the tests; `restore` proves the ground truth is exact), and
+  the entry-point modules that nothing imports by design.
+- Files: `.claude/scheduled_tasks.lock` (a Claude Code file that the P14.0 baseline commit took in)
+  is untracked and `.claude/` is ignored; `docs/study.html` (an old one-page overview that described
+  edatool; `study/` replaces it) is deleted; `docs/showcase.md` keeps its pre-P14 run with an
+  out-of-date note. `docs/background/` stays: it holds the design inputs of v2.
+- Generated files: `benchmark/results/files.json` lists the 225 cells the grids use (was 390 with the
+  single types); `docs/datasets.md` was regenerated (no layout example; the natural-mess findings
+  lost only the removed codes B03 and C01, every kept code has the same count as before).
+- Git-ignored data deleted: the 165 single-type cell folders (191 MB), the `dev` cell files of the
+  deleted p7 grids (683 MB) and the logs of edatool, edabench and removed environments. Kept:
+  `cache/benchmark/outputs/`, the run folders behind `runs-before-p14.csv`.
+- Check: fast suite 183 passed (the layout test is gone), `ruff check --select F` clean.

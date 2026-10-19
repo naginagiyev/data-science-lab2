@@ -150,7 +150,7 @@ def cost_vs_score(frame):
 
 # the truth.json of a result row's cell
 def cell_truth(row):
-    path = cell_dir(row["group"], row["dataset"], int(row["level"]), int(row["seed"]), row["mess_types"]) / "truth.json"
+    path = cell_dir(row["group"], row["dataset"], int(row["level"]), int(row["seed"])) / "truth.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 # regenerates every pilot figure and table from the results files

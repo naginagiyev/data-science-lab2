@@ -14,7 +14,7 @@ def synthetic():
             for system, score in scores.items():
                 failed = system == "weak" and index == 0 and level == 3
                 rows.append({
-                    "system": system, "dataset": f"d{index}", "level": level, "seed": 0, "mess_types": "mixed", "budget_s": 120.0,
+                    "system": system, "dataset": f"d{index}", "level": level, "seed": 0, "budget_s": 120.0,
                     "status": "failed" if failed else "ok", "metric": metric, "score": np.nan if failed else score, "dummy_score": dummy,
                     "seconds": 10.0 + index, "input_tokens": 100 if system == "good" else 0, "output_tokens": 10 if system == "good" else 0,
                     "cost_usd": 0.01 if system == "good" else 0.0, "run_dir": "",

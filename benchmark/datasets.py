@@ -59,13 +59,10 @@ OPENML_DATASETS = {
 DEV_POOL = list(LOCAL_DATASETS) + [name for name, spec in OPENML_DATASETS.items() if spec["pool"] == "dev"]
 GROUP_A = [name for name, spec in OPENML_DATASETS.items() if spec["pool"] == "A"]
 GROUP_C = [name for name, spec in OPENML_DATASETS.items() if spec["pool"] == "C"]
-PILOT_A = [name for name in GROUP_A if OPENML_DATASETS[name].get("pilot")]
-PILOT_C = [name for name in GROUP_C if OPENML_DATASETS[name].get("pilot")]
 GROUP_D = [
     "credit-g", "Fitness_Club", "Marketing_Campaign", "Bank_Customer_Churn", "E-CommereShippingData", "maternal_health_risk",
     "concrete_compressive_strength", "healthcare_insurance_expenses", "Another-Dataset-on-used-Fiat-500", "diamonds",
 ]
-PILOT_D = ["credit-g", "Bank_Customer_Churn", "maternal_health_risk", "concrete_compressive_strength", "healthcare_insurance_expenses"]
 
 # reads a CSV file as a raw text view: every value a string, empty cells ""
 def read_raw_csv(path):

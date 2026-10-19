@@ -1,9 +1,9 @@
 import sys
 import json
+from paths import docs_dir
 from audit.core import run_audit
 from benchmark.leaks import leak_table
-from paths import docs_dir, results_dir
-from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt, write_layout
+from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt
 from benchmark.datasets import GROUP_A, GROUP_C, LOCAL_DATASETS, MANIFEST, OPENML_DATASETS, dataset_spec, load_dataset
 
 CARDS_FILE = docs_dir / "datasets.md"
@@ -99,7 +99,7 @@ def write_cards():
 # first Group A dataset where the type applies
 def mess_examples():
     lines = ["Level 3, one type at a time, seed 0; three changed cells per type (before → after).", ""]
-    for kind in [kind for kind in TYPE_NUMBERS if kind not in {"layout", "leak"}]:
+    for kind in TYPE_NUMBERS:
         for name in GROUP_A:
             spec = dataset_spec(name)
             clean = load_dataset(name).head(3000)
@@ -115,13 +115,6 @@ def mess_examples():
                 pairs = "; ".join(f"`{row.column}`: `{row.original}` → `{row.corrupted}`" for row in sample.itertuples())
                 lines.append(f"  {pairs}")
             break
-    name = "credit-g"
-    spec = dataset_spec(name)
-    sample_path = results_dir / "layout-example.csv"
-    write_layout(load_dataset(name).head(3), sample_path, 3)
-    head = sample_path.read_bytes().decode("cp1252").splitlines()[:5]
-    sample_path.unlink()
-    lines += ["- **10. layout** (credit-g, level 3: title rows, `;`, decimal commas, cp1252, footer; reader test E6b): first lines:", "", "```", *[line[:110] for line in head], "```"]
     return "\n".join(lines)
 
 # the columns that show the natural mess of each Group C dataset
