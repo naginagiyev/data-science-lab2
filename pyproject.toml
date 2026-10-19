@@ -22,7 +22,6 @@ dependencies = [
     "rich",
     "questionary",
     "tabulate",
-    "smolagents[openai]==1.26.0",
     "skrub",
     "matplotlib",
     "autorank",

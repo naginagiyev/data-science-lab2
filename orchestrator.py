@@ -14,6 +14,7 @@ from checks.leakage import leak_guard
 from modelling.cv import encode_target
 from agents.summarizer import summarize
 from modelling.evaluator import evaluate
+from agents.leakreview import review_leaks
 from agents.freecoder import free_code_plan
 from modelling.backends import train_backend
 from tools.glance import glance, glance_text
@@ -30,19 +31,19 @@ from agents.cleaner import clean_plan, gate_with_refine, prepare_custom_steps, p
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
-BASE = {"audit": True, "review": True, "operations": True, "cleaner": True, "gate": True, "repair": True, "samples": True, "leakguard": True, "freecode": False, "engine": "own"}
+BASE = {"audit": True, "leakreview": True, "operations": True, "cleaner": True, "gate": True, "repair": True, "samples": True, "leakguard": True, "freecode": False, "engine": "own"}
 VARIANT_OPTIONS = {
-    "generic": dict(BASE, audit=False, review=False, operations=False, cleaner=False, gate=False, leakguard=False),
-    "rules": dict(BASE, review=False, cleaner=False),
+    "generic": dict(BASE, audit=False, leakreview=False, operations=False, cleaner=False, gate=False, leakguard=False),
+    "rules": dict(BASE, leakreview=False, cleaner=False),
     "full": dict(BASE),
-    "full-noreview": dict(BASE, review=False),
+    "full-noreview": dict(BASE, leakreview=False),
     "full-nogate": dict(BASE, gate=False),
     "full-norepair": dict(BASE, repair=False),
     "full-nosamples": dict(BASE, samples=False),
     "full-noleakguard": dict(BASE, leakguard=False),
     "freecode": dict(BASE, freecode=True, cleaner=False),
     "full+ag": dict(BASE, engine="autogluon"),
-    "rules+ag": dict(BASE, review=False, cleaner=False, engine="autogluon"),
+    "rules+ag": dict(BASE, leakreview=False, cleaner=False, engine="autogluon"),
 }
 VARIANTS = list(VARIANT_OPTIONS)
 FINISH_SHARE = 0.04
@@ -160,7 +161,7 @@ def clean_rows(state, task):
 # stage 03: target, task, metric and id columns (flags win; rules, and the...
 # LLM in the LLM variants when a flag is missing or the rule task is ambiguous)
 def stage_frame(state):
-    uses_llm = state.options["cleaner"] or state.options["review"] or state.options["freecode"]
+    uses_llm = state.options["cleaner"] or state.options["leakreview"] or state.options["freecode"]
     client = state.client if uses_llm else None
     profile = glance_text(state.objects["glance"], examples=state.options["samples"]) if uses_llm and state.objects["glance"]["columns"] else ""
     ask = state.objects["options"].get("ask", False)
@@ -224,15 +225,19 @@ def fallback_audit(state):
     keep_report(state, AuditReport())
     return "empty report"
 
-# stage 06: the leak guard decides ids, saved index columns and leaks from...
-# the audit evidence and the framer; drops are protected plan steps
+# stage 06: the LLM variants first ask which columns are known only after the...
+# event (leak review); the leak guard then decides ids, saved index columns and...
+# leaks from the audit, the framer and the review; drops are protected plan steps
 def stage_leakguard(state):
     task = state.context.task
     split = state.context.split
     ids = list(task.id_columns)
     if split.strategy == "group" and split.key and any(entry["name"] == split.key and entry.get("type") == "id" for entry in state.objects["glance"]["columns"]):
         ids.append(split.key)
-    decisions, steps = leak_guard(state.objects["report"], task.target, ids, drop_semantic_only=state.settings.leakage.drop_semantic_only, enabled=state.options["leakguard"])
+    after_event = review_leaks(state.client, state.context, state.objects["glance"], state.objects["report"], task) if state.options["leakreview"] else []
+    for column, reason in after_event:
+        decide(state, "leakguard", "review", column, True, f"known only after the event: {reason}", "llm")
+    decisions, steps = leak_guard(state.objects["report"], task.target, ids, after_event, state.settings.leakage.drop_semantic_only, state.options["leakguard"])
     state.context.leaks = decisions
     state.objects["leak_steps"] = steps
     state.folder.write_json("leaks.json", decisions)
@@ -486,7 +491,7 @@ def stage_report(state):
     state.folder.write_json("scores.json", scores)
     extras = {"read": state.objects.get("read", {}), "row_notes": state.objects["row_notes"], "top_issues": top_issues(state)}
     report_text = write_report(state.folder, state.context, extras)
-    uses_llm = state.options["cleaner"] or state.options["review"] or state.options["freecode"]
+    uses_llm = state.options["cleaner"] or state.options["leakreview"] or state.options["freecode"]
     if not (uses_llm and state.settings.report.llm_summary):
         return "report.md written"
     extras["summary"] = summarize(state.client, state.context, report_text)

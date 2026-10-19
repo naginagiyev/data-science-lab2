@@ -1097,3 +1097,27 @@ Findings from the decision logs of the worst cells:
   `testcompiler`, `testleaks`, `testcorruptor`, `testfaults` follow the new contract.
 - Check: fast suite 188 passed; `main.py run data/ibmchurn.csv --variant rules --budget 120` ends with
   all 12 stages ok (audit 3.7 s, 5 issues; test roc_auc 0.8532).
+
+## 2026-10-19 · P14.3 · Leak review as a normal agent
+
+- edatool's review agent (smolagents `ToolCallingAgent`, up to 8 parallel sessions with 10 read
+  tools, action tools and a done gate) is replaced by `agents/leakreview.py`: one `LlmClient.ask`
+  call with a pydantic answer, like the framer and the summary. It sees every column with its type
+  and three example values, plus the G01 evidence of the audit, and returns only the columns that
+  are known after the target event, each with a reason. Code checks the answer (known columns, never
+  the target, a reason for each) and sends problems back; a failed call gives no semantic evidence.
+- Why: the pipeline used only one output of the agent, the semantic leak judgement (G03 from the
+  name review, or a confirmed G01). Its other work (confirming, dismissing and linking issues,
+  setting types and roles) either duplicated the LLM cleaner, which reads the same issues, or was
+  never read. The leak review keeps the part that found 5 of 5 leaks in the pilot; the prompt keeps
+  the wording of edatool's name review (`semantic.md`).
+- The variant option `review` is now `leakreview`. Its decisions are logged as stage `leakguard`,
+  kind `review`, source `llm`. The decision table of the leak guard is unchanged.
+- Deleted: `llms/agentmodel.py` (the smolagents bridge, which had its own copy of the budget
+  checks), `tests/testagentmodel.py` (the test that made real calls) and `tests/testauditpolicy.py`
+  (edatool agent internals). `smolagents` (and the packages only it needed) left `pyproject.toml`.
+- New tests in `tests/testleakreview.py` (fake provider only): the planted after-event column is
+  returned, wrong answers are sent back, a failure gives nothing, and in a `full` run the review turns
+  a G01 warning into a drop.
+- Check: a `full` run on ibmchurn with a fake provider (every call except the review fails) ends with
+  all 12 stages ok; the cleaner falls back to the translator plan and the report has no summary.
