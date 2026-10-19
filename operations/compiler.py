@@ -8,7 +8,7 @@ from operations.target import LogTarget, MapTargetLabels
 from sklearn.base import BaseEstimator, TransformerMixin
 from operations.registry import OPERATIONS, build, operation_class
 
-# a readable name of a plan step for logs, checks and edatool verify
+# a readable name of a plan step for logs and checks
 def step_name(position, step):
     column = step.params.get("column") or ", ".join(step.params.get("columns", [])[:2]) or step.params.get("name", "")
     return f"step {position + 1}: {step.op}" + (f" {column}" if column else "")

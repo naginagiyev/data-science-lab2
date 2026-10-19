@@ -1,6 +1,6 @@
 import sys
 import json
-from edatool import audit
+from audit.core import run_audit
 from benchmark.leaks import leak_table
 from paths import docs_dir, results_dir
 from benchmark.corruptor import EXPECTED_OPS, TYPE_NUMBERS, corrupt, write_layout
@@ -142,7 +142,7 @@ def natural_mess():
     for name in GROUP_C + ["Food_Delivery_Time"]:
         spec = dataset_spec(name)
         raw = load_dataset(name)
-        report = audit(raw.head(10000), spec["target"], spec["task"], use_agent=False)
+        report = run_audit(raw.head(10000), spec["target"], spec["task"])
         codes = {}
         for issue in report.issues:
             if issue.code[0] in "BCD":

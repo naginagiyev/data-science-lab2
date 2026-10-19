@@ -4,8 +4,8 @@ import json
 import openml
 import hashlib
 import argparse
+import numpy as np
 import pandas as pd
-from edabench.datasets import column_as_text
 from paths import data_dir, openml_cache_dir, results_dir
 
 ANONYMIZED = re.compile(r"^(V|X|f|col|feature|attr|var)_?\d+$", re.IGNORECASE)
@@ -100,6 +100,15 @@ def openml_meta(name):
         "did": OPENML_DATASETS[name]["did"], "openml_name": dataset.name, "version": dataset.version, "licence": dataset.licence,
         "target": dataset.default_target_attribute.split(",")[0], "url": f"https://www.openml.org/d/{OPENML_DATASETS[name]['did']}",
     }
+
+# turns one OpenML column into text, the way a CSV file would store it
+def column_as_text(values):
+    if pd.api.types.is_numeric_dtype(values) and not pd.api.types.is_bool_dtype(values):
+        numbers = values.astype(float)
+        whole = numbers.dropna()
+        text = numbers.astype("Int64").astype(str) if len(whole) and (whole == np.floor(whole)).all() else numbers.astype(str)
+        return text.where(numbers.notna(), "")
+    return values.astype(object).where(values.notna(), "").astype(str)
 
 # loads a dataset as raw text (the way a CSV file stores it), before sampling
 def load_dataset(name):

@@ -154,8 +154,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P14.1 Shared foundations · 2026-10-19 · e185a69 · tools/columntypes.py, reader absorbs the loader, splitter absorbs the split advice; types identical on the 4 local datasets
 - [x] P14.2 The audit package · 2026-10-19 · d65fd89 · audit/ (29 codes, code only), configuration/audit.json, same issues as edatool on 13 files; verify removed; rules run on ibmchurn ok
 - [x] P14.3 Leak review as a normal agent · 2026-10-19 · 11a2196 · agents/leakreview.py (one structured call) replaces the smolagents review; smolagents removed; fake-provider full run on ibmchurn ok
-- [x] P14.4 Slim the cleaning checks · 2026-10-19 · (this commit) · custom operation and its prompt removed; freecode in operations/freecode.py; verify already removed in P14.2
-- [ ] P14.5 Delete edatool and edabench
+- [x] P14.4 Slim the cleaning checks · 2026-10-19 · b851c42 · custom operation and its prompt removed; freecode in operations/freecode.py; verify already removed in P14.2
+- [x] P14.5 Delete edatool and edabench · 2026-10-19 · (this commit) · both packages, the edabench env and E8 removed; no code reference left; 184 passed, ruff F clean
 - [ ] P14.6 Small additions to modelling and evaluation
 - [ ] P14.7 Variants (11 to 6)
 - [ ] P14.8 Benchmark at MSc core

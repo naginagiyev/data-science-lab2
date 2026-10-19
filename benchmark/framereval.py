@@ -7,9 +7,8 @@ from llms.client import LlmClient
 from settings import load_settings
 from agents.framer import frame_task
 from tools.glance import glance, glance_text
-from edabench.datasets import column_as_text
 from paths import openml_cache_dir, results_dir
-from benchmark.datasets import BINARY, MULTI, OPENML_DATASETS
+from benchmark.datasets import BINARY, MULTI, OPENML_DATASETS, column_as_text
 
 MAX_ROWS = 100000
 CC18 = {"diabetes": 37, "vehicle": 54, "ilpd": 1480, "qsar-biodeg": 1494, "wdbc": 1510, "balance-scale": 11, "breast-w": 15, "dresses-sales": 23381, "kc1": 1067}

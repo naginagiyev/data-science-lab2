@@ -43,6 +43,3 @@ markers = [
     "slow: big files or the full pipeline on dev data (not in the fast suite)",
     "llm: calls the real LLM API and costs cents (opt-in)",
 ]
-
-[tool.ruff]
-extend-exclude = ["benchmark/legacy", "edabench/legacy"]

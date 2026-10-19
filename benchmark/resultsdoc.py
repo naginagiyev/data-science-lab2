@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from benchmark import analysis, figures
-from paths import docs_dir, edabench_results_dir, results_dir
+from paths import docs_dir, results_dir
 
 BASELINES = ["autogluon", "skrub", "lightgbm", "flaml", "generic"]
 
@@ -80,7 +80,7 @@ def types_section(types):
         lines += ["E6b reading robustness (file layout: BOM, title rows, footer, `;`, decimal commas, cp1252):", "", markdown(table), ""]
     return lines
 
-# the E7, E8 and E10 sections
+# the E7 and E10 sections
 def other_sections(natural):
     lines = ["## E7: framer accuracy (40 OpenML datasets)", ""]
     framer_file = results_dir / "framer.csv"
@@ -88,12 +88,6 @@ def other_sections(natural):
         framer = pd.read_csv(framer_file)
         counts = framer[["rules_target_ok", "rules_task_ok", "llm_target_ok", "llm_task_ok"]].sum().to_frame(f"correct of {len(framer)}")
         lines += [markdown(counts), ""]
-    lines += ["## E8: audit quality (edabench, deterministic)", ""]
-    for name in ["benchmark-final.md", "baselines.md"]:
-        path = edabench_results_dir / name
-        if path.exists():
-            text = path.read_text(encoding="utf-8").splitlines()
-            lines += [line for line in text if line.startswith("Runs:")][:1] + [f"(full table: `edabench/results/{name}`)", ""]
     lines += ["## E10: natural mess (`pilot-natural`, Group C)", ""]
     if natural.empty:
         return lines + ["(no results)", ""]

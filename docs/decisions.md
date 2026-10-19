@@ -1131,3 +1131,16 @@ Findings from the decision logs of the worst cells:
 - Kept: the LLM cleaner, repair (at most 3 per step), refine (at most 2 rounds), the data checks and
   the gate. These are the plan, check and feedback loop the thesis studies.
 - `tests/testsandbox.py`: the custom-step tests became one test of the `freecode` operation.
+
+## 2026-10-19 · P14.5 · edatool and edabench deleted
+
+- `edatool/` (the vendored auditor) and `edabench/` (its own benchmark: injector, labels, baselines
+  ydata-profiling and cleanlab, the 1,091-line legacy `eda.py`) are deleted, with the edabench uv
+  environment (`benchmark/envs/edabench`, 686 MB), `cache/edatool` and `docs/edatool-baseline.md`.
+  Experiment E8 (audit quality) goes with them; its last numbers (recall 0.987, precision 0.855)
+  stay in the git history and in the P9.12 line of `docs/progress.md`.
+- `column_as_text` (OpenML column to CSV text) moved into `benchmark/datasets.py`;
+  `benchmark/datacards.py` uses `run_audit`; `benchmark/resultsdoc.py` has no E8 section; the
+  edatool and edabench paths, the ruff exclude and the frozen `edabench/legacy/` prefix are gone.
+- Check: no Python, TOML, JSON or text file outside the docs names edatool, edabench or smolagents;
+  fast suite 184 passed; `ruff check --select F` clean.

@@ -6,7 +6,7 @@ from benchmark.systems.common import label_key
 from tools.metrics import align_probabilities, compute_scores
 
 # reads one column of a CSV file as raw text (files with a messy layout, such...
-# as title rows or ";" separators, fall back to the edatool loader)
+# as title rows or ";" separators, fall back to the project reader)
 def read_column(path, column):
     try:
         return pd.read_csv(path, dtype=str, keep_default_na=False, usecols=[column])[column]
