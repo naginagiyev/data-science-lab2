@@ -1224,3 +1224,18 @@ Findings from the decision logs of the worst cells:
 - The study (`study/`, git-ignored) was rebuilt for the new code with the code-study skill: 19 pages,
   every source file covered, the check reports it in sync. The old edatool pages were removed, and
   new pages explain the audit package, the orchestrator and CLI, and the benchmark.
+
+## 2026-10-19 · P14.10 · Final checks
+
+- Fast and slow tests together: 208 passed (12.5 min, the real-LLM test left out). `ruff check
+  --select F`, the style test and a secret scan are clean.
+- Offline runs, 120 s each: `generic` and `rules` on ibmchurn (test roc_auc 0.8525 and 0.8532) and
+  kinghousedata (test rmse 104,520 and 104,746); `full` with a fake provider on both ends with all 12
+  stages ok. The kinghousedata `full` demo run took 129 s for a 120 s budget: the gate (51 s) and the
+  model stage leave little for the test stage, and the importance step has a 5 s minimum. Benchmark
+  mode has no test stage, so benchmark runs are not affected; the older weakness (stage limits are
+  not enforced from outside) stays open.
+- All 8 grids pass `runner --check`. The check starts the first cell of each grid for 20 s; in four
+  grids that is a `full` run, so it made 5 real `gpt-4.1-nano` calls ($0.0017, the leak review and the
+  cleaner). These were the first real calls of the new leak-review prompt; they returned answers.
+- Python lines fell from 17,892 to 11,311 (table in `docs/progress.md`).

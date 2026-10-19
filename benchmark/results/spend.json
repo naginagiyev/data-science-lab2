@@ -1,6 +1,6 @@
 {
   "totals": {
-    "dev": 0.39667320000000017,
+    "dev": 0.3984175000000002,
     "experiments": 1.6218758999999978
   },
   "calls": [
@@ -11802,6 +11802,51 @@
       "input_tokens": 1236,
       "output_tokens": 142,
       "cost_usd": 0.0001804
+    },
+    {
+      "time": "2026-10-19T15:57:34+00:00",
+      "category": "dev",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 822,
+      "output_tokens": 50,
+      "cost_usd": 0.0001022
+    },
+    {
+      "time": "2026-10-19T15:57:37+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4223,
+      "output_tokens": 504,
+      "cost_usd": 0.0006239
+    },
+    {
+      "time": "2026-10-19T15:57:59+00:00",
+      "category": "dev",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 545,
+      "output_tokens": 5,
+      "cost_usd": 5.65e-05
+    },
+    {
+      "time": "2026-10-19T15:58:23+00:00",
+      "category": "dev",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 558,
+      "output_tokens": 5,
+      "cost_usd": 5.78e-05
+    },
+    {
+      "time": "2026-10-19T15:58:30+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 4767,
+      "output_tokens": 1068,
+      "cost_usd": 0.0009039000000000001
     }
   ]
 }

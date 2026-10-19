@@ -5,9 +5,9 @@ Legend: [ ] to do · [~] in progress · [x] done · [!] blocked · [-] skipped (
 Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## Spend
-- development: $0.39 of $1.50
+- development: $0.40 of $1.50
 - pilot: $1.62 of $2.75
-- total: $2.01 (target about $4, hard maximum $5; final, 2026-10-14)
+- total: $2.02 (target about $4, hard maximum $5; 2026-10-19, after P14)
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
@@ -159,8 +159,30 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P14.6 Small additions to modelling and evaluation · 2026-10-19 · 6c4d7aa · agents/modeller.py (families and time shares, CV decides), permutation importance in the report (demo mode); 187 passed
 - [x] P14.7 Variants (11 to 6) · 2026-10-19 · 74b3b9e · generic, rules, full, full-nogate, freecode, full+ag; constant options removed; 187 passed
 - [x] P14.8 Benchmark at MSc core · 2026-10-19 · 8c2eaa5 · E1-E5 and E10 kept; projection, held-out cells, E6-E9 removed; runs.csv archived for the re-run; 184 passed
-- [x] P14.9 Documentation · 2026-10-19 · (this commit) · README, docs/architecture.md, docs/protocol.md (replaces the pre-registration), deviations, buildplan note and P14 section, re-run section below; study/ rebuilt (19 pages, in sync)
-- [ ] P14.10 Final checks
+- [x] P14.9 Documentation · 2026-10-19 · a0ffca5 · README, docs/architecture.md, docs/protocol.md (replaces the pre-registration), deviations, buildplan note and P14 section, re-run section below; study/ rebuilt (19 pages, in sync)
+- [x] P14.10 Final checks · 2026-10-19 · (this commit) · fast + slow suite 208 passed (12.5 min); ruff F, style test, secret scan clean; generic and rules runs on ibmchurn and kinghousedata, fake-provider full runs on both; all 8 grids pass --check
+
+P14 line counts (Python lines in git; JSON config: `edatool/config/` and `configuration/`):
+
+| Part | Before P14 | After P14 |
+|---|---|---|
+| edatool + edabench | 6,913 | 0 |
+| audit/ | 0 | 660 |
+| tools/ | 746 | 1,202 |
+| operations/ | 1,491 | 1,603 |
+| checks/ | 346 | 308 |
+| modelling/ | 637 | 667 |
+| agents/ | 567 | 601 |
+| llms/ | 332 | 247 |
+| main, orchestrator, settings, schemas, paths | 1,030 | 979 |
+| benchmark/ | 2,872 | 2,260 |
+| tests/ | 2,958 | 2,784 |
+| **All Python** | **17,892** | **11,311** |
+| JSON config | 1,293 | 120 |
+
+Every pipeline package is now between about 250 and 1,600 lines, and the audit (660) is smaller than
+the operations it feeds (1,603).
+
 
 ### Re-run of the pilot with the P14 code (for the user, not run yet)
 
@@ -187,6 +209,26 @@ until step 4.
 > $2. If you want the whole pilot inside the caps, raise `spend.experiments_cap_usd` in
 > `configuration/settings.json` (for example to 3.6, which keeps the total under the $4
 > optional-stop level and the $5 hard cap) before step 3.
+
+P14 summary (2026-10-19). Created: `audit/` (`context.py`, `structure.py`, `formats.py`,
+`values.py`, `target.py`, `core.py`), `tools/columntypes.py`, `operations/rules.py`,
+`operations/freecode.py`, `agents/leakreview.py`, `agents/modeller.py`, `prompts/leakreview.md`,
+`prompts/modeller.md`, `configuration/audit.json`, `configuration/tokens.json`, `docs/protocol.md`,
+tests (`testaudit`, `testleakreview`, `testmodeller`). Edited: `orchestrator.py`, `schemas.py`,
+`settings.py`, `configuration/settings.json`, `paths.py`, `pyproject.toml`, `uv.lock`,
+`tools/reader.py`, `tools/glance.py`, `tools/splitter.py`, `operations/translator.py`,
+`operations/rows.py`, `operations/registry.py`, `operations/compiler.py`, `checks/leakage.py`,
+`checks/datachecks.py`, `agents/cleaner.py`, `agents/framer.py`, `agents/freecoder.py`,
+`modelling/engine.py`, `modelling/evaluator.py`, `tools/report.py`, `benchmark/` (runner, reproduce,
+figures, resultsdoc, datasets, datacards, scoring, systems registry, grids), many tests, `README.md`,
+`docs/architecture.md`, `docs/buildplan.md`, `docs/deviations.md`, `docs/results.md` (notice),
+`docs/decisions.md`, this file. Deleted: `edatool/`, `edabench/`, `llms/agentmodel.py`,
+`operations/custom.py`, `prompts/customop.md`, `benchmark/projection.py`, `framereval.py`,
+`performance.py`, `repairs.py`, 6 grids, 4 result files, `docs/projection.md`,
+`docs/preregistration.md`, `docs/edatool-baseline.md`, tests (`testdetectors`, `testloader`,
+`testagentmodel`, `testauditpolicy`, `testedatooloutput`, `testprojection`, `testrepairs`); renamed
+`benchmark/results/runs.csv` to `runs-before-p14.csv`. LLM spend in P14: $0.0021 (two real summary
+calls of an old test, five calls of the grid checks). Not done: the pilot re-run (the user runs it).
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
