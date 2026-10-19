@@ -40,6 +40,8 @@ def test_generic_run(tmp_path):
     assert all(stage.ok for stage in context.stages)
     scores = json.loads((folder / "scores.json").read_text(encoding="utf-8"))
     assert scores["test"]["test"] > scores["test"]["dummy_test"] + 0.1
+    ranking = scores["test"]["importance"]
+    assert ranking["complete"] and ranking["columns"][0][1] > 0 and "Permutation importance" in (folder / "report.md").read_text(encoding="utf-8")
     model = FittedModel.load(folder / "model.joblib")
     raw = pd.read_csv(path, dtype=str, keep_default_na=False).head(5)
     labels = model.predict(raw.drop(columns="Churn"))

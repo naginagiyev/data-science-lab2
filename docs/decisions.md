@@ -1144,3 +1144,27 @@ Findings from the decision logs of the worst cells:
   edatool and edabench paths, the ruff exclude and the frozen `edabench/legacy/` prefix are gone.
 - Check: no Python, TOML, JSON or text file outside the docs names edatool, edabench or smolagents;
   fast suite 184 passed; `ruff check --select F` clean.
+
+## 2026-10-19 · P14.6 · Small additions to modelling and evaluation
+
+- Modelling had no LLM role at all. `agents/modeller.py` (one call, `prompts/modeller.md`) now
+  chooses which of `linear`, `lightgbm` and `catboost` the engine searches and how the search time
+  is split. It sees only facts code computed (task, metric, rows, column types, categorical columns
+  with more than 50 levels, classes and the smallest class share, the fixed run budget). Code checks
+  the answer (at least one boosting family, each family once, positive shares), keeps it only inside
+  the configured candidates and their order, and normalizes the shares. Cross-validation still
+  chooses the final model, so the LLM proposes and code verifies, as in the cleaning stages. The
+  total budget stays the one from settings (design rule 5). Only the LLM variants use it; the
+  others keep the engine defaults (`SHARES` in `modelling/engine.py`).
+- The prompt gets the run budget from settings, not the time left: a fixed prompt can be cached, so a
+  run with the same seed and a warm cache still repeats exactly (`tests/testreproducible.py`).
+- Left out on purpose: class weights for imbalanced classes (they distort the probabilities that
+  log-loss scores, and the engine has no check for them), feature engineering, stacking, SHAP and
+  calibration.
+- Evaluation was one test score. `modelling/evaluator.py` adds a permutation importance of the raw
+  columns on the locked test set (demo mode only): at most 2,000 rows, two shuffles per column,
+  stopped by the time left in the run (5 to 30 s). `report.md` shows the top 10 columns. Benchmark
+  mode has no test set, so benchmark runs do not change.
+- Check: a `full` run on ibmchurn with a fake provider (modeller answer lightgbm 2 : linear 1) searched
+  dummy, lightgbm and linear, chose lightgbm + linear (CV 0.8478, test 0.8545); the importance ranks
+  tenure, Contract and InternetService first (15 s for 20 columns). Fast suite 187 passed.

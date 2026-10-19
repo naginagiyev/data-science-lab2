@@ -82,6 +82,11 @@ def score_section(context):
         lines += ["", f"Test metrics: {secondary}."]
         for name, note in test.get("notes", {}).items():
             lines.append(f"- {name} undefined: {note}")
+        ranking = test.get("importance", {})
+        if ranking.get("columns"):
+            cut = "" if ranking["complete"] else "; stopped early, not every column was checked"
+            lines += ["", f"Permutation importance on {ranking['rows']} test rows (how much the test {metric} gets worse when the column is shuffled{cut}):", ""]
+            lines += [f"- `{name}`: {show(value, 5)}" for name, value in ranking["columns"]]
     families = cv.get("families", {})
     if families:
         lines += ["", "CV per model family: " + ", ".join(f"{name} {show(value)}" for name, value in families.items()) + "."]

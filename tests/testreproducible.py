@@ -8,6 +8,16 @@ from llms.providers import FakeProvider
 SETTINGS = ["budget.total_seconds=60", "budget.min_model_seconds=8", "gate.max_rows=300", "engine.optuna=false", "engine.candidates=[\"dummy\", \"lightgbm\"]"]
 PLAN = {"operations": [{"op": "extract_pattern", "params_json": json.dumps({"column": "size", "pattern": "([0-9.]+)x([0-9.]+)", "into": ["width", "height"], "types": ["number", "number"]}), "issues": [], "reason": "sizes"}], "notes": ""}
 
+# the fake answers: summary, leak review, modeller, else the cleaner plan
+def answer(prompt, count):
+    if "data scientist" in prompt:
+        return {"text": "The run finished."}
+    if "target leakage" in prompt:
+        return {"after_event": []}
+    if "model families" in prompt:
+        return {"families": [{"family": "lightgbm", "share": 1.0}], "reason": "a small table"}
+    return PLAN
+
 # the plans and the CV scores of one run folder
 def outcome(folder):
     run_folder = next(folder.iterdir())
@@ -23,7 +33,6 @@ def test_same_seed_same_result(tmp_path, monkeypatch):
     monkeypatch.setattr(llms.client, "spend_file", tmp_path / "spend.json")
     monkeypatch.setattr(llms.client, "llm_cache_dir", tmp_path / "cache")
     path = units_and_packed(tmp_path)
-    answer = lambda prompt, count: {"text": "The run finished."} if "data scientist" in prompt else PLAN
     first = FakeProvider(answer, model="gpt-4.1-nano")
     run(path, load_settings(assignments=SETTINGS), "y", "binary-classification", variant="full", out_dir=tmp_path / "a", provider=first, console=False)
     second = FakeProvider(answer, model="gpt-4.1-nano")

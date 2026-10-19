@@ -13,7 +13,7 @@ from tools.report import write_report
 from checks.leakage import leak_guard
 from modelling.cv import encode_target
 from agents.summarizer import summarize
-from modelling.evaluator import evaluate
+from agents.modeller import choose_models
 from agents.leakreview import review_leaks
 from agents.freecoder import free_code_plan
 from modelling.backends import train_backend
@@ -22,6 +22,7 @@ from audit.core import issues_text, run_audit
 from modelling.fittedmodel import FittedModel
 from operations.translator import default_plan
 from checks.gate import gate_data, protected_only
+from modelling.evaluator import evaluate, importance
 from tools.splitter import holdout, make_folds, split
 from tools.runfolder import RunFolder, close_logging, setup_logging
 from agents.cleaner import clean_plan, gate_with_refine, protected_part, repair_plan
@@ -31,10 +32,10 @@ from operations.compiler import AgentSteps, feature_pipeline, row_filter, target
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
-BASE = {"audit": True, "leakreview": True, "operations": True, "cleaner": True, "gate": True, "repair": True, "samples": True, "leakguard": True, "freecode": False, "engine": "own"}
+BASE = {"audit": True, "leakreview": True, "operations": True, "cleaner": True, "gate": True, "repair": True, "samples": True, "leakguard": True, "modeller": True, "freecode": False, "engine": "own"}
 VARIANT_OPTIONS = {
-    "generic": dict(BASE, audit=False, leakreview=False, operations=False, cleaner=False, gate=False, leakguard=False),
-    "rules": dict(BASE, leakreview=False, cleaner=False),
+    "generic": dict(BASE, audit=False, leakreview=False, operations=False, cleaner=False, gate=False, leakguard=False, modeller=False),
+    "rules": dict(BASE, leakreview=False, cleaner=False, modeller=False),
     "full": dict(BASE),
     "full-noreview": dict(BASE, leakreview=False),
     "full-nogate": dict(BASE, gate=False),
@@ -43,7 +44,7 @@ VARIANT_OPTIONS = {
     "full-noleakguard": dict(BASE, leakguard=False),
     "freecode": dict(BASE, freecode=True, cleaner=False),
     "full+ag": dict(BASE, engine="autogluon"),
-    "rules+ag": dict(BASE, leakreview=False, cleaner=False, engine="autogluon"),
+    "rules+ag": dict(BASE, leakreview=False, cleaner=False, modeller=False, engine="autogluon"),
 }
 VARIANTS = list(VARIANT_OPTIONS)
 FINISH_SHARE = 0.04
@@ -411,8 +412,21 @@ def save_prepared(state, features):
     prepared = prepared.apply(lambda column: column.astype(str) if column.dtype == object or str(column.dtype) == "category" else column)
     prepared.to_parquet(state.folder.file("prepared.parquet"))
 
+# the modeller's families and time shares, kept only within the configured...
+# candidates and in their order (with at least one boosting family); None...
+# keeps the defaults
+def model_choice(state, train, settings):
+    task = state.context.task
+    choice = choose_models(state.client, state.context, state.objects["glance"], train, task, state.settings.budget.total_seconds)
+    candidates = [family for family in settings.candidates if family == "dummy" or family in choice["shares"]] if choice else []
+    usable = bool({"lightgbm", "catboost"} & set(candidates))
+    reason = f"{', '.join(candidates)} searched: {choice['reason']}" if usable else "no usable answer; default families"
+    decide(state, "model", "families", "engine", usable, reason, "llm" if usable else "rules", proposal=choice or {})
+    return (candidates, {family: choice["shares"][family] for family in candidates if family != "dummy"}) if usable else None
+
 # trains with the engine (target spellings mapped, training-only row filters,...
-# log target), saves model.joblib and the CV results
+# log target), saves model.joblib and the CV results; the LLM variants let the...
+# modeller choose the families and their time shares first
 def train_model(state, families=None):
     task = state.context.task
     plan = state.context.final_plan
@@ -435,7 +449,11 @@ def train_model(state, families=None):
             state.folder.log_error("backend", error)
             decide(state, "model", "backend", backend, False, f"{backend} failed ({type(error).__name__}: {error}); own engine used", "checks")
     if trained is None:
-        trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes, row_filter(plan), transform)
+        choice = model_choice(state, train, settings) if families is None and state.options["modeller"] else None
+        if choice is not None:
+            settings = settings.model_copy(update={"candidates": choice[0]})
+        shares = choice[1] if choice is not None else None
+        trained, summary, trials = engine.train(features, y, task.task, task.metric, state.context.split.folds, make_prep, state.budget.model_seconds(), settings, state.settings.seed, n_classes, row_filter(plan), transform, shares)
         save_trials(state, trials)
     chosen = summary["chosen"]
     summary["cv_score"] = summary["ensemble_cv"] if len(chosen) == 2 else summary["cv"].get(chosen[0])
@@ -460,7 +478,8 @@ def fallback_model(state):
     train_model(state, ["dummy"])
     return "dummy model"
 
-# stage 11: the locked test set, used once (demo mode only)
+# stage 11: the locked test set, used once (demo mode only), and the...
+# permutation importance of the raw columns on it
 def stage_test(state):
     model = state.context.model
     cv = {"score": model.get("cv_score"), "dummy": model.get("cv", {}).get("dummy"), "families": model.get("cv", {})}
@@ -468,6 +487,10 @@ def stage_test(state):
     if state.context.mode != "demo" or state.objects["test"].empty:
         return "no locked test set (benchmark mode)"
     result = evaluate(state.objects["fitted"], state.objects["test"], state.objects["train"][state.context.task.target])
+    try:
+        result["importance"] = importance(state.objects["fitted"], state.objects["test"], max_seconds=min(30.0, max(5.0, state.budget.remaining())))
+    except Exception as error:
+        state.folder.log_error("importance", error)
     state.context.scores = {"metric": state.context.task.metric, "cv": cv, "test": result}
     return f"test {result['metric']} {result['test']:.4f} (dummy {result['dummy_test']:.4f})"
 

@@ -220,11 +220,12 @@ def refit_plan(chosen, results, prep_times, frame, y, full_frame, full_y, n_fold
     return chosen, full_frame, full_y
 
 # the model stage: cross-validated search of every candidate family under the...
-# time budget, an average of the best two families when it beats the best one,...
-# and a refit on all training rows; the dummy model always exists; with a...
-# target transform (log_target) models learn the transformed target and are...
-# scored on the original scale
-def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_classes=None, row_filter=None, target_transform=None):
+# time budget (split by the time shares, the modeller's or the defaults), an...
+# average of the best two families when it beats the best one, and a refit on...
+# all training rows; the dummy model always exists; with a target transform...
+# (log_target) models learn the transformed target and are scored on the...
+# original scale
+def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_classes=None, row_filter=None, target_transform=None, shares=None):
     start = time.monotonic()
     hard_deadline = start + seconds * (1 - RESERVE_SHARE)
     n_classes = n_classes or (int(y.max()) + 1 if task != "regression" else 0)
@@ -241,6 +242,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
     prep_times = {}
     results = {}
     trial_log = []
+    shares = shares or SHARES
     candidates = [family for family in settings.candidates if family in {"dummy", "linear", "lightgbm", "catboost"}]
     if "dummy" not in candidates:
         candidates = ["dummy"] + candidates
@@ -256,7 +258,7 @@ def train(frame, y, task, metric, folds, make_prep, seconds, settings, seed, n_c
                 prep_seconds = time.monotonic() - prep_start
                 prep_times[kind] = prep_seconds
             left = hard_deadline - time.monotonic()
-            share = SHARES.get(family, 0.0) / max(1e-9, sum(SHARES.get(name, 0.0) for name in candidates[position:]))
+            share = shares.get(family, 0.0) / max(1e-9, sum(shares.get(name, 0.0) for name in candidates[position:]))
             family_seconds = left * share if family != "dummy" else left
             if family != "dummy" and left <= 1:
                 logger.info(f"No time left for {family}; skipped")
