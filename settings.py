@@ -54,12 +54,10 @@ class FramerSettings(Section):
     max_target_levels: int
     name_hints: list[str]
 
-# options of the edatool audit stage
+# options of the audit stage: the row sample of the slower checks and the...
+# parallel jobs of the leak check
 class AuditSettings(Section):
-    use_agent: bool
     sample_rows: int
-    session_seconds: float
-    max_sessions: int
     n_jobs: int
 
 # options of the leak guard
@@ -80,12 +78,6 @@ class ChecksSettings(Section):
     max_parse_failure: float
     max_column_growth: float
     op_seconds: float
-
-# options of the edatool verify step
-class VerifySettings(Section):
-    enabled: bool
-    max_snapshots: int
-    max_rows: int
 
 # options of the validation gate: folds, sample size, per-operation tests...
 # and the tolerance of each metric
@@ -123,7 +115,6 @@ class Settings(Section):
     leakage: LeakageSettings
     cleaner: CleanerSettings
     checks: ChecksSettings
-    verify: VerifySettings
     gate: GateSettings
     engine: EngineSettings
     backend: str

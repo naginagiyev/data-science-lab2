@@ -3,7 +3,7 @@ import json
 import logging
 import numpy as np
 import pandas as pd
-from edatool import audit
+from paths import runs_dir
 from modelling import engine
 from llms.client import LlmClient
 from settings import settings_hash
@@ -12,24 +12,21 @@ from agents.framer import frame_task
 from tools.report import write_report
 from checks.leakage import leak_guard
 from modelling.cv import encode_target
-from llms.agentmodel import AgentModel
 from agents.summarizer import summarize
 from modelling.evaluator import evaluate
-from edatool.schemas import Meta, Report
-from checks.datachecks import verify_plan
 from agents.freecoder import free_code_plan
 from modelling.backends import train_backend
 from tools.glance import glance, glance_text
-from paths import edatool_cache_dir, runs_dir
+from audit.core import issues_text, run_audit
 from modelling.fittedmodel import FittedModel
 from operations.translator import default_plan
 from checks.gate import gate_data, protected_only
 from tools.splitter import holdout, make_folds, split
-from tools.runfolder import RunFolder, close_logging, now_text, setup_logging
-from schemas import Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
+from tools.runfolder import RunFolder, close_logging, setup_logging
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
+from schemas import AuditReport, Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
-from agents.cleaner import clean_plan, gate_with_refine, issues_text, prepare_custom_steps, protected_part, repair_plan
+from agents.cleaner import clean_plan, gate_with_refine, prepare_custom_steps, protected_part, repair_plan
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
@@ -180,7 +177,7 @@ def finish_split(state, info, train, test):
     state.objects["train"] = train
     state.objects["test"] = test
     state.folder.write_json("split.json", info.model_dump())
-    decide(state, "split", "strategy", info.strategy, True, info.reason, "edatool", evidence={"key": info.key, "warnings": info.warnings})
+    decide(state, "split", "strategy", info.strategy, True, info.reason, "rules", evidence={"key": info.key, "warnings": info.warnings})
 
 # stage 04: locked test rows (demo mode) and CV folds on the training rows
 def stage_split(state):
@@ -208,68 +205,24 @@ def fallback_split(state):
 def skipped(state):
     return "skipped (variant)"
 
-# the edatool settings of the audit stage: agent cache, session limits, the...
-# stage deadline, the LLM model and the G01 workers
-def edatool_settings(state):
-    audit_settings = state.settings.audit
-    deadline = time.time() + state.budget.stage_limit("audit")
-    agent = {"cache_dir": str(edatool_cache_dir), "session_seconds": audit_settings.session_seconds, "max_sessions": audit_settings.max_sessions, "deadline": deadline, "model_id": state.settings.llm.model}
-    return {"agent": agent, "thresholds": {"G01": {"n_jobs": {"value": audit_settings.n_jobs}}}}
-
-# an empty audit report (when even the deterministic audit fails)
-def empty_report(state):
-    task = state.context.task
-    meta = Meta(tool_version="0", settings_hash="", dataset_hash="", dataset="train", rows=len(state.objects["train"]), columns=state.objects["train"].shape[1], target=task.target, task=task.task, raw_input=True, created_at=now_text())
-    return Report(meta=meta)
-
-# keeps the audit report and its summary; in benchmark mode the task-type...
-# doubt F02 is closed (the task is given)
+# keeps the audit report, saves it as audit.json and counts the issues
 def keep_report(state, report):
-    if state.context.mode == "benchmark":
-        for issue in report.issues:
-            if issue.code == "F02" and issue.status == "open":
-                issue.status = "accepted"
-                decide(state, "audit", "issue", issue.id, True, "task type is given in benchmark mode; F02 ignored", "rules")
     state.objects["report"] = report
-    folders = sorted(state.folder.file("audit").glob("*/")) if state.folder.file("audit").exists() else []
-    state.context.audit_dir = str(folders[-1]) if folders else None
-    counts = {priority: sum(issue.priority == priority for issue in report.issues) for priority in ["must_fix", "should_fix", "consider"]}
+    state.folder.write_json("audit.json", report.model_dump())
+    counts = {priority: sum(issue.priority == priority for issue in report.issues) for priority in ["must_fix", "should_fix"]}
     return f"{len(report.issues)} issues ({counts['must_fix']} must_fix, {counts['should_fix']} should_fix)"
 
-# adds the token use of the edatool agent to the run's LLM usage
-def add_agent_usage(state, model):
-    for key in ["calls", "failed_calls", "input_tokens", "output_tokens", "cost_usd"]:
-        state.client.usage[key] += model.usage.get(key, 0)
-    state.context.llm = dict(state.client.usage)
-
-# stage 05: the edatool audit of the training rows; the agent reviews the...
-# unclear issues when the variant uses it (its calls are logged and budgeted)
+# stage 05: the audit of the training rows (code only): types, then the checks...
+# of structure, formats, values and the target
 def stage_audit(state):
     task = state.context.task
-    use_agent = state.options["review"] and state.settings.audit.use_agent
-    model = None
-    if use_agent:
-        left = max(0.0, state.settings.llm.max_cost_per_run_usd - state.client.usage["cost_usd"])
-        model = AgentModel(state.settings, state.folder, "audit", max_cost_usd=left, deadline=time.monotonic() + state.budget.stage_limit("audit"))
-        state.objects["agent_model"] = model
-    try:
-        report = audit(state.objects["train"], task.target, task.task, use_agent=use_agent, model=model, settings=edatool_settings(state), sample_rows=state.settings.audit.sample_rows, run_dir=state.folder.file("audit"))
-    finally:
-        if model is not None:
-            add_agent_usage(state, model)
-    return keep_report(state, report)
+    audit_settings = state.settings.audit
+    return keep_report(state, run_audit(state.objects["train"], task.target, task.task, audit_settings.sample_rows, audit_settings.n_jobs))
 
-# fallback of stage 05: the deterministic audit, or an empty report
+# fallback of stage 05: an empty report (the later stages still run)
 def fallback_audit(state):
-    task = state.context.task
-    try:
-        report = audit(state.objects["train"], task.target, task.task, use_agent=False, settings=edatool_settings(state), sample_rows=state.settings.audit.sample_rows, run_dir=state.folder.file("audit"))
-        keep_report(state, report)
-        return "deterministic audit"
-    except Exception as error:
-        state.folder.log_error("audit fallback", error)
-        keep_report(state, empty_report(state))
-        return "empty report"
+    keep_report(state, AuditReport())
+    return "empty report"
 
 # stage 06: the leak guard decides ids, saved index columns and leaks from...
 # the audit evidence and the framer; drops are protected plan steps
@@ -279,7 +232,7 @@ def stage_leakguard(state):
     ids = list(task.id_columns)
     if split.strategy == "group" and split.key and any(entry["name"] == split.key and entry.get("type") == "id" for entry in state.objects["glance"]["columns"]):
         ids.append(split.key)
-    decisions, steps = leak_guard(state.objects["report"], task.target, ids, state.settings.leakage.drop_semantic_only, state.options["leakguard"])
+    decisions, steps = leak_guard(state.objects["report"], task.target, ids, drop_semantic_only=state.settings.leakage.drop_semantic_only, enabled=state.options["leakguard"])
     state.context.leaks = decisions
     state.objects["leak_steps"] = steps
     state.folder.write_json("leaks.json", decisions)
@@ -334,14 +287,14 @@ def stage_plan(state):
     source = "translator"
     if state.options["freecode"]:
         report = state.objects["report"]
-        written = free_code_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), issues_text(state.context.audit_dir, report), state.settings, state.options["samples"])
+        written = free_code_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), issues_text(report), state.settings, state.options["samples"])
         decide(state, "plan", "freecode", "code", written is not None, "LLM cleaning code written and tested" if written is not None else "no valid cleaning code; protected steps only", "llm")
         combined = written if written is not None else protected_part(combined)
         state.context.plans.append(combined)
         source = "freecode" if written is not None else "freecode failed"
     elif state.options["cleaner"] and state.settings.cleaner.enabled:
         report = state.objects["report"]
-        cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(state.context.audit_dir, report), state.settings, state.options["samples"])
+        cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(report), state.settings, state.options["samples"])
         if cleaned is not None:
             combined = valid_steps(state, cleaned, list(train.columns))
             combined.version = 1
@@ -369,11 +322,8 @@ def check_data(state):
     return state.objects["check_data"]
 
 # stage 08: data checks of every step on the folds of a sample; the LLM...
-# variants repair failing steps (at most max_repairs times), the others drop...
-# them; then edatool verify of the plan on at most verify.max_rows training rows...
-# (skipped when the stage time is used up)
+# variants repair failing steps (at most max_repairs times), the others drop them
 def stage_compile(state):
-    deadline = time.monotonic() + state.budget.stage_limit("compile")
     task = state.context.task
     plan = state.objects["plan"]
     frame, values, folds = check_data(state)
@@ -389,24 +339,11 @@ def stage_compile(state):
     compiled = valid_steps(state, repaired, list(state.objects["train"].columns))
     compiled.version = plan.version + 1
     compiled.notes = "compiled: failing steps repaired or dropped"
-    verification = None
-    if state.settings.verify.enabled and compiled.steps and time.monotonic() >= deadline:
-        verification = {"skipped": "no time left in the compile stage"}
-    elif state.settings.verify.enabled and compiled.steps:
-        train = state.objects["train"]
-        if len(train) > state.settings.verify.max_rows:
-            train = train.sample(state.settings.verify.max_rows, random_state=state.settings.seed)
-        try:
-            verification = verify_plan(state.objects["report"], compiled, train.drop(columns=[task.target]), train[task.target].to_numpy(), task.target, run_dir=state.folder.file("verify"), max_snapshots=state.settings.verify.max_snapshots)
-        except Exception as error:
-            state.folder.log_error("verify", error)
-            verification = {"error": f"{type(error).__name__}: {error}"}
-    state.folder.write_json("checks.json", {"steps": results, "failing": failing, "verify": verification})
+    state.folder.write_json("checks.json", {"steps": results, "failing": failing})
     state.objects["plan"] = compiled
     state.context.plans.append(compiled)
     save_plans(state)
-    repairs = sum(record["accepted"] for record in records)
-    return f"{repairs} repaired, {len(failing)} dropped" + (f", verify: {verification.get('resolved', 0)} resolved" if verification and "resolved" in verification else "")
+    return f"{sum(record['accepted'] for record in records)} repaired, {len(failing)} dropped"
 
 # fallback of stage 08: the protected steps only
 def fallback_compile(state):
@@ -538,7 +475,7 @@ def top_issues(state):
     if report is None:
         return []
     chosen = [issue for issue in report.issues if issue.priority in {"must_fix", "should_fix"}][:10]
-    return [f"{issue.id} [{issue.priority}] {issue.title} ({', '.join(issue.columns[:3])}) - {issue.status}" for issue in chosen]
+    return [f"{issue.id} [{issue.priority}] {issue.title} ({', '.join(issue.columns[:3])})" for issue in chosen]
 
 # stage 12: scores.json and report.md; the LLM variants add a summary...
 # paragraph (the template report stays when the call fails)

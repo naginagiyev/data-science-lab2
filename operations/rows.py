@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from edatool.agent.rules import evaluate_rule
+from operations.rules import evaluate_rule
 from operations.base import Operation, Params, is_missing
 
 # parameters of the row operations without options
@@ -60,7 +60,7 @@ class DropConflictingRows(RowOperation):
         conflicting = targets.groupby(keys.to_numpy()).transform("nunique").to_numpy() > 1
         return ~conflicting
 
-# drops training rows where a condition in edatool's rule language is true...
+# drops training rows where a condition in the rule language is true...
 # (never eval)
 class DropRowsWhere(RowOperation):
     name = "drop_rows_where"

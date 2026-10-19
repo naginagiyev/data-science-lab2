@@ -1,12 +1,10 @@
 import time
 import numpy as np
 import pandas as pd
-from edatool import verify
 from operations.registry import build
 from operations.base import is_missing
-from operations.compiler import AgentSteps, step_name
+from operations.compiler import step_name
 
-IGNORED_VERIFY = {"P01", "P02"}
 NUMERIC_OPS = {"parse_number", "parse_units", "parse_datetime", "parse_boolean", "date_difference", "add_missing_indicator", "clip_values", "log_transform", "text_features"}
 
 # a short, structured error of one failing operation for the repair prompt,...
@@ -87,28 +85,3 @@ def check_steps(plan, frame, y, folds, target, settings):
                     results[creator]["problems"].append(f"output column {column} equals or is named like the target")
     failing = [position for position, result in results.items() if result["problems"]]
     return list(results.values()), failing
-
-# runs edatool verify on the output of the agent steps (before the typing and...
-# generic stages): the steps are fitted on the given training rows, the target...
-# is added back to every snapshot, and P01/P02 are ignored (expected before...
-# the generic stage); at most max_snapshots evenly spaced snapshots (always the...
-# last) are checked, and the issues of skipped steps go to the next checked...
-# snapshot; returns still-open and new must-fix issues
-def verify_plan(report, plan, frame, target_values, target, run_dir=None, max_snapshots=6):
-    if not plan.steps:
-        return {"skipped": "no column steps", "still_open": [], "new": [], "resolved": 0}
-    agent = AgentSteps(list(plan.steps)).fit(frame)
-    target_series = pd.Series(np.asarray(target_values), index=frame.index)
-    kept = sorted({int(round(value)) for value in np.linspace(0, len(plan.steps) - 1, min(max_snapshots, len(plan.steps)))} | {len(plan.steps) - 1})
-    snapshots = [(name, snapshot.assign(**{target: target_series.loc[snapshot.index].to_numpy()})) for position, (name, snapshot) in enumerate(agent.snapshots(frame)) if position in kept]
-    step_issues = {}
-    for position, step in enumerate(plan.steps):
-        owner = next(index for index in kept if index >= position)
-        step_issues.setdefault(step_name(owner, plan.steps[owner]), []).extend(step.issues)
-    checked = verify(report, snapshots, step_issues, run_dir=run_dir)
-    relevant = [issue for issue in checked.issues if issue.priority == "must_fix" and issue.code not in IGNORED_VERIFY]
-    still_open = [issue for issue in relevant if issue.status == "still_open"]
-    new = [issue for issue in relevant if issue.created_by_step]
-    resolved = sum(issue.status == "resolved" for issue in checked.issues)
-    describe = lambda issue: {"id": issue.id, "code": issue.code, "title": issue.title, "columns": issue.columns, "step": issue.created_by_step}
-    return {"still_open": [describe(issue) for issue in still_open], "new": [describe(issue) for issue in new], "resolved": resolved}

@@ -1067,3 +1067,33 @@ Findings from the decision logs of the worst cells:
   trend over a date, time split). H03 to H05 never changed the advice and were dropped. As before,
   the last matching column wins.
 - `tests/testloader.py` is merged into `tests/testreader.py`; `tests/testsplitter.py` tests the advice.
+
+## 2026-10-19 · P14.2 · The audit package
+
+- `audit/` replaces edatool's detectors: `context.py` (what every check gets), `structure.py`,
+  `formats.py`, `values.py`, `target.py` and `core.py` (`run_audit`, `issues_text`). Catalog and
+  thresholds are one file, `configuration/audit.json`. The audit is code only; it runs once on the
+  training rows (types once, then the checks in order; a failing check is recorded in `failed`).
+- Kept are the 29 codes that the translator or the leak guard act on. Dropped, because no code
+  used them: A01, A03, A06, A07, B03, C01, D04, E07, E09, F01, F02, F04 to F07, H03 to H05, P01 to
+  P05, the future-date rule of D03, the issue links (enrichment), fingerprints, row sets, coverage
+  and the console printer. G02 (pure categories) is now G01 with rule `purity`; G04 (missingness
+  predicts the target) is covered by the G01 tree, which uses missing values as a signal
+  (scikit-learn 1.9). E07 (exact linear relation) is left to E08 (rank correlation).
+- The issue contract is flat (`schemas.Issue`: code, columns, row count, evidence, priority, rule,
+  action, params, diagnosis) and has no status: without the agent nothing confirms or dismisses an
+  issue. Ids are `<code>-<n>` (for example `C02-1`). Two behaviour changes follow: a low-confidence
+  id column is always dropped (before, only the agent could keep it), and B05 similarity pairs and
+  B07 with two or more units go to the LLM cleaner (before, also to the agent).
+- The cleaner prompt gets `issues_text(report)` (evidence and default fix per issue) instead of the
+  `issues.md` file. The audit report is saved as `audit.json` in the run folder.
+- Parity: on the 4 local datasets and on 9 benchmark files (7 level-3 files, 2 Group D leak files),
+  the new audit finds the same (code, columns) pairs as edatool's deterministic audit.
+- edatool `verify` was removed here and not in P14.4: it needs the old report type, and its result
+  (`checks.json`, `verify`) never changed the plan, the gate or the model.
+- The condition language of `drop_rows_where` moved to `operations/rules.py` (unchanged). The
+  catalog text in prompts says "audit fixes" instead of "edatool fixes".
+- `tests/testdetectors.py` became `tests/testaudit.py`; `testleakage`, `testtranslator`,
+  `testcompiler`, `testleaks`, `testcorruptor`, `testfaults` follow the new contract.
+- Check: fast suite 188 passed; `main.py run data/ibmchurn.csv --variant rules --budget 120` ends with
+  all 12 stages ok (audit 3.7 s, 5 issues; test roc_auc 0.8532).

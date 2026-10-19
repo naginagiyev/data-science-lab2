@@ -1,10 +1,9 @@
 import pickle
 import numpy as np
 import pandas as pd
-from edatool import audit
 from schemas import Plan, Step
 from settings import load_settings
-from checks.datachecks import check_steps, verify_plan
+from checks.datachecks import check_steps
 from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
 
 COLUMNS = ["Weight", "City", "Price", "y"]
@@ -63,27 +62,3 @@ def test_target_copy_caught():
     plan = Plan(steps=[Step(op="extract_pattern", params={"column": "code", "pattern": "([a-z]+)", "into": ["answer"], "types": ["text"]})])
     results, failing = check_steps(plan, frame, ["yes", "no"] * 20, [list(range(20)), list(range(20, 40))], "y", load_settings().checks)
     assert failing == [0] and "equals or is named like the target" in results[0]["problems"][0]
-
-# edatool verify sees the hidden missing tokens resolved after replace_values
-def test_verify_plan():
-    rng = np.random.default_rng(0)
-    frame = pd.DataFrame({"charge": [f"{value:.2f}" for value in rng.uniform(10, 90, 200)], "y": rng.choice(["a", "b"], 200)})
-    frame.loc[:9, "charge"] = "?"
-    report = audit(frame, "y", "binary-classification", use_agent=False)
-    hidden = [issue for issue in report.issues if issue.code == "C02"]
-    plan = Plan(steps=[Step(op="replace_values", params={"column": "charge", "items": [{"value": "?", "new": None}]}, issues=[hidden[0].id])])
-    result = verify_plan(report, plan, frame.drop(columns="y"), frame["y"], "y")
-    assert result["resolved"] >= 1 and result["new"] == []
-
-# with fewer snapshots than steps the issues of a skipped step still count on...
-# the next checked snapshot
-def test_verify_plan_few_snapshots():
-    rng = np.random.default_rng(0)
-    frame = pd.DataFrame({"charge": [f"{value:.2f}" for value in rng.uniform(10, 90, 200)], "y": rng.choice(["a", "b"], 200)})
-    frame.loc[:9, "charge"] = "?"
-    report = audit(frame, "y", "binary-classification", use_agent=False)
-    hidden = [issue for issue in report.issues if issue.code == "C02"]
-    replace = Step(op="replace_values", params={"column": "charge", "items": [{"value": "?", "new": None}]}, issues=[hidden[0].id])
-    plan = Plan(steps=[replace, Step(op="parse_number", params={"column": "charge"})])
-    result = verify_plan(report, plan, frame.drop(columns="y"), frame["y"], "y", max_snapshots=1)
-    assert result["resolved"] >= 1 and result["new"] == []

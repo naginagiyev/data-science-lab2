@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
-from edatool import audit
+from audit.core import run_audit
 from benchmark import leaks, splits, materialize
 
 # a toy classification and regression table as raw text
@@ -51,7 +51,7 @@ def test_date_and_grade_styles():
 def test_g01_finds_strong_leak(monkeypatch):
     monkeypatch.setitem(leaks.LEAKS, "toy", {"column": "account_closed_flag", "style": "flag", "strength": "strong"})
     leaked, _ = leaks.add_leak(toy().drop(columns="amount"), "toy", "label", "binary-classification", 0)
-    report = audit(leaked, "label", "binary-classification", use_agent=False)
+    report = run_audit(leaked, "label", "binary-classification")
     assert any(issue.code == "G01" and issue.columns == ["account_closed_flag"] for issue in report.issues)
 
 # Group D files: the leak is empty in the deployment test file and kept in...

@@ -35,6 +35,29 @@ class SplitInfo(BaseModel):
     reason: str = ""
     warnings: list[str] = []
 
+# one data problem found by the audit: its code, columns, number of rows,...
+# evidence, priority, the rule of the check that found it and the default fix
+class Issue(BaseModel):
+    id: str
+    code: str
+    title: str
+    columns: list[str] = []
+    rows: int = 0
+    evidence: dict[str, Any] = {}
+    priority: Literal["must_fix", "should_fix", "consider"]
+    rule: str = ""
+    action: str = ""
+    params: dict[str, Any] = {}
+    diagnosis: str = ""
+
+# the result of the audit stage: the issues, the column types, the checks that...
+# failed and the time it took
+class AuditReport(BaseModel):
+    issues: list[Issue] = []
+    types: dict[str, str] = {}
+    failed: dict[str, str] = {}
+    seconds: float = 0.0
+
 # one operation of a plan with its parameters, the issues it fixes and its origin
 class Step(BaseModel):
     op: str
@@ -61,7 +84,7 @@ class Decision(BaseModel):
     evidence: dict[str, Any] = {}
     accepted: bool
     reason: str
-    source: Literal["rules", "llm", "edatool", "gate", "checks", "user"]
+    source: Literal["rules", "llm", "gate", "checks", "user"]
 
 # the outcome of one stage: success, time, fallback and error
 class StageStatus(BaseModel):
@@ -80,7 +103,6 @@ class RunContext(BaseModel):
     settings_hash: str
     task: TaskSpec | None = None
     split: SplitInfo | None = None
-    audit_dir: str | None = None
     leaks: list[dict[str, Any]] = []
     plans: list[Plan] = []
     final_plan: Plan | None = None

@@ -1,7 +1,6 @@
 import json
 import time
 import pandas as pd
-from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 from schemas import Plan, Step
@@ -125,19 +124,6 @@ def clean_plan(client, context, raw, glance, task, protected, default_plan, issu
 # the protected part of a plan (leak guard drops and protected translator steps)
 def protected_part(plan):
     return Plan(version=plan.version, steps=[step for step in plan.steps if step.protected], row_steps=[step for step in plan.row_steps if step.protected], target_steps=[step for step in plan.target_steps if step.protected])
-
-# a compact issue list for the prompt when no issues.md exists
-def issues_lines(report, limit=40):
-    chosen = [issue for issue in report.issues if issue.priority in {"must_fix", "should_fix"} and issue.status not in {"dismissed", "accepted"}][:limit]
-    return "\n".join(f"- {issue.id} [{issue.priority}] {issue.code} {issue.title} ({', '.join(issue.columns[:3])}): {json.dumps(issue.evidence, default=str)[:200]}" for issue in chosen)
-
-# reads the issues.md of the audit folder (about 2,000 tokens), or builds a...
-# compact list from the report
-def issues_text(audit_dir, report):
-    file = Path(audit_dir) / "issues.md" if audit_dir else None
-    if file is not None and file.exists():
-        return file.read_text(encoding="utf-8")[:9000]
-    return issues_lines(report)
 
 REPAIR_FAMILY = ["parse_number", "parse_units", "parse_datetime", "parse_boolean", "extract_pattern", "replace_values", "set_missing_where", "map_categories", "as_category", "drop_columns"]
 

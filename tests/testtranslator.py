@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from edatool import audit
+from audit.core import run_audit
 from operations.translator import default_plan
 
 # a messy churn-like table: id, blank tokens, duplicates, a date column, a...
@@ -26,7 +26,7 @@ def messy_table(rows=400, seed=0):
 # never a step on the target
 def test_default_plan():
     frame = messy_table()
-    report = audit(frame, "Churn", "binary-classification", use_agent=False)
+    report = run_audit(frame, "Churn", "binary-classification")
     plan, skipped = default_plan(report, "Churn")
     by_op = {(step.op, step.params.get("column")): step for step in plan.steps}
     replace = by_op[("replace_values", "TotalCharges")]
@@ -49,7 +49,7 @@ def test_policy_and_skips():
         "Weight": [f"{value:.2f}kg" if index % 2 else f"{value * 1000:.0f} g" for index, value in enumerate(rng.uniform(1, 3, 300))],
         "y": ["a"] * 150 + ["b"] * 145 + ["c"] * 5,
     })
-    report = audit(frame, "y", "multi-class-classification", use_agent=False)
+    report = run_audit(frame, "y", "multi-class-classification")
     plan, skipped = default_plan(report, "y")
     assert plan.target_steps == []
     assert not any(step.op == "parse_units" for step in plan.steps)
@@ -69,7 +69,7 @@ def test_currency_magnitudes_and_packed():
         "Packed": [f"L:{lat:.2f} W:{income:.4f}" for lat, income in zip(rng.uniform(32, 42, rows), rng.uniform(0.5, 15, rows))],
         "y": rng.normal(0, 1, rows).astype(str),
     })
-    report = audit(frame, "y", "regression", use_agent=False)
+    report = run_audit(frame, "y", "regression")
     plan, skipped = default_plan(report, "y")
     by_op = {(step.op, step.params.get("column")): step for step in plan.steps}
     assert "USD" in by_op[("parse_number", "Age")].params["remove"]

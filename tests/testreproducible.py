@@ -5,7 +5,7 @@ from settings import load_settings
 from torture import units_and_packed
 from llms.providers import FakeProvider
 
-SETTINGS = ["budget.total_seconds=60", "budget.min_model_seconds=8", "gate.max_rows=300", "engine.optuna=false", "engine.candidates=[\"dummy\", \"lightgbm\"]", "audit.use_agent=false"]
+SETTINGS = ["budget.total_seconds=60", "budget.min_model_seconds=8", "gate.max_rows=300", "engine.optuna=false", "engine.candidates=[\"dummy\", \"lightgbm\"]"]
 PLAN = {"operations": [{"op": "extract_pattern", "params_json": json.dumps({"column": "size", "pattern": "([0-9.]+)x([0-9.]+)", "into": ["width", "height"], "types": ["number", "number"]}), "issues": [], "reason": "sizes"}], "notes": ""}
 
 # the plans and the CV scores of one run folder

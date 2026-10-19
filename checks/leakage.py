@@ -1,30 +1,21 @@
 from schemas import Step
 
-STATISTICAL_CODES = {"G01", "G02", "G04"}
-
-# collects the leak evidence of every column from the edatool report and the...
-# framer: structural (ids, saved index), statistical (G01, G02, G04) and...
-# semantic (G03 name review, or the agent confirming a statistical leak with a...
-# drop fix); dismissed issues stay statistical evidence only
-def collect_evidence(report, id_columns):
+# collects the leak evidence of every column: structural (ids and a saved...
+# index from the audit, framer ids), statistical (G01: one feature predicts...
+# the target alone) and semantic (the leak review: known only after the event)
+def collect_evidence(report, id_columns, after_event=()):
     evidence = {}
-    def add(column, kind, code, status):
-        evidence.setdefault(column, {"structural": [], "statistical": [], "semantic": []})[kind].append({"code": code, "status": status})
+    def add(column, kind, code, note):
+        evidence.setdefault(column, {"structural": [], "statistical": [], "semantic": []})[kind].append({"code": code, "note": note})
     for issue in report.issues:
-        if issue.code in {"A02", "E03"} and issue.status != "dismissed":
-            for column in issue.columns[:1]:
-                add(column, "structural", issue.code, issue.status)
-        elif issue.code in STATISTICAL_CODES:
-            for column in issue.columns[:1]:
-                add(column, "statistical", issue.code, issue.status)
-                agent_confirmed = issue.status == "confirmed" and issue.needs_review and issue.fix is not None and issue.fix.action == "drop_column"
-                if agent_confirmed:
-                    add(column, "semantic", issue.code, "confirmed by the agent")
-        elif issue.code == "G03" and issue.status != "dismissed":
-            for column in issue.columns:
-                add(column, "semantic", "G03", issue.status)
+        if issue.code in {"A02", "E03"}:
+            add(issue.columns[0], "structural", issue.code, issue.title)
+        elif issue.code == "G01":
+            add(issue.columns[0], "statistical", issue.code, ", ".join(f"{key} {value}" for key, value in issue.evidence.items()))
     for column in id_columns:
         add(column, "structural", "framer", "id column")
+    for column, reason in after_event:
+        add(column, "semantic", "leakreview", reason)
     return evidence
 
 # decides every column with evidence by the table of §3.6: structural -> drop;...
@@ -43,7 +34,7 @@ def decide(evidence, drop_semantic_only=True, enabled=True):
             action, reason = "drop", "leak removed: known only after the event and predicts the target alone"
         elif semantic:
             action = "drop" if drop_semantic_only else "warn"
-            reason = "leak removed: the name suggests information known only after the event" if drop_semantic_only else "the name suggests a leak; please check"
+            reason = "leak removed: the column holds information known only after the event" if drop_semantic_only else "the column may be a leak; please check"
         elif statistical:
             action, reason = "warn", "suspiciously strong, please check"
         else:
@@ -53,11 +44,12 @@ def decide(evidence, drop_semantic_only=True, enabled=True):
 
 # the leak guard: decisions per column and the protected drop steps for the...
 # plan (the target is never dropped)
-def leak_guard(report, target, id_columns, drop_semantic_only=True, enabled=True):
-    decisions = [item for item in decide(collect_evidence(report, [column for column in id_columns if column != target]), drop_semantic_only, enabled) if item["column"] != target]
+def leak_guard(report, target, id_columns, after_event=(), drop_semantic_only=True, enabled=True):
+    evidence = collect_evidence(report, [column for column in id_columns if column != target], after_event)
+    decisions = [item for item in decide(evidence, drop_semantic_only, enabled) if item["column"] != target]
     drops = [item["column"] for item in decisions if item["action"] == "drop"]
     steps = []
     if drops:
-        issues = sorted({issue.id for issue in report.issues if set(issue.columns[:1]) & set(drops) and issue.code in {"A02", "E03", "G01", "G02", "G03", "G04"}})
+        issues = sorted({issue.id for issue in report.issues if issue.code in {"A02", "E03", "G01"} and issue.columns[0] in drops})
         steps.append(Step(op="drop_columns", params={"columns": drops}, issues=issues, reason="leak guard: ids, saved index and leaks", protected=True, source="leakguard"))
     return decisions, steps

@@ -151,8 +151,8 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 
 ## P14. Restructuring (one codebase at MSc scale)
 - [x] P14.0 Baseline · 2026-10-19 · 96d0b2e · local git, line counts in decisions.md, fast suite 191 passed
-- [x] P14.1 Shared foundations · 2026-10-19 · (this commit) · tools/columntypes.py, reader absorbs the loader, splitter absorbs the split advice; types identical on the 4 local datasets
-- [ ] P14.2 The audit package
+- [x] P14.1 Shared foundations · 2026-10-19 · e185a69 · tools/columntypes.py, reader absorbs the loader, splitter absorbs the split advice; types identical on the 4 local datasets
+- [x] P14.2 The audit package · 2026-10-19 · (this commit) · audit/ (29 codes, code only), configuration/audit.json, same issues as edatool on 13 files; verify removed; rules run on ibmchurn ok
 - [ ] P14.3 Leak review as a normal agent
 - [ ] P14.4 Slim the cleaning checks
 - [ ] P14.5 Delete edatool and edabench

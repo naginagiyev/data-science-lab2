@@ -39,11 +39,11 @@ def build(step):
     return operation
 
 # one catalog entry for prompts: name, kind, purpose, a JSON example and the...
-# edatool fix actions it implements
+# audit fix actions it implements
 def entry_text(operation):
     example = json.dumps(operation.example, ensure_ascii=False)
     actions = ", ".join(operation.actions) or "-"
-    return f"- {operation.name} ({operation.kind}): {operation.purpose}. params_json example: {example}. edatool fixes: {actions}."
+    return f"- {operation.name} ({operation.kind}): {operation.purpose}. params_json example: {example}. audit fixes: {actions}."
 
 # the catalog text injected into prompts (prompts never list operations by hand)
 def catalog_text(names=None):

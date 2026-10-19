@@ -22,11 +22,10 @@
   },
   "spend": {"category": "dev", "dev_cap_usd": 1.5, "experiments_cap_usd": 2.75, "stop_optional_usd": 4.0, "total_cap_usd": 5.0},
   "framer": {"candidates": 5, "min_confidence": 0.6, "max_target_levels": 20, "name_hints": ["target", "label", "class", "y", "outcome", "result", "churn", "price", "survived", "fraud", "default", "status", "score", "quality", "response", "diagnosis", "risk", "rating", "grade", "salary", "income", "sales", "revenue", "cost", "charges", "strength", "value", "amount", "attrition", "approved", "dropout", "won", "success"]},
-  "audit": {"use_agent": true, "sample_rows": 50000, "session_seconds": 60, "max_sessions": 8, "n_jobs": 4},
+  "audit": {"sample_rows": 50000, "n_jobs": 4},
   "leakage": {"drop_semantic_only": true},
   "cleaner": {"enabled": true, "show_values": true, "max_values_per_column": 15, "max_repairs": 3, "max_refines": 2},
   "checks": {"max_parse_failure": 0.05, "max_column_growth": 10, "op_seconds": 30},
-  "verify": {"enabled": true, "max_snapshots": 6, "max_rows": 20000},
   "gate": {
     "enabled": true,
     "folds": 3,

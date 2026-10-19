@@ -2,7 +2,7 @@ import json
 import numpy as np
 import pandas as pd
 from decimal import Decimal
-from edatool import load_raw
+from tools.reader import read_table
 from benchmark import splits, materialize
 from benchmark.corruptor import ALL_TYPES, as_decimal, corrupt, restore, write_layout
 
@@ -89,7 +89,7 @@ def test_layout_files(tmp_path):
     for level in [1, 2, 3]:
         path = tmp_path / f"layout{level}.csv"
         write_layout(clean, path, level)
-        loaded = load_raw(path)
+        loaded, _ = read_table(path)
         assert list(loaded.columns) == list(clean.columns) and len(loaded) == 50, level
         if level == 3:
             assert loaded["price"].iloc[0] == clean["price"].iloc[0].replace(".", ",")

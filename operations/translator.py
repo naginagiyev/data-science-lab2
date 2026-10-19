@@ -4,11 +4,8 @@ from schemas import Plan, Step
 from tools.columntypes import TOKENS
 
 logger = logging.getLogger("automl.plan")
-SKIPPED_STATUSES = {"dismissed", "accepted", "resolved"}
-LEAK_CODES = {"E03", "G01", "G02", "G03", "G04"}
-PROTECTED_CODES = {"A02", "C02", "A04", "F03"}
+LEAK_CODES = {"E03", "G01"}
 TARGET_CODES = {"F03", "A05"}
-NOT_TRANSLATED = {"F01", "F02", "F04", "F05", "F06", "F07", "H01", "H02", "H03", "H04", "H05", "A01", "A03", "A07", "B03", "C01", "E09"}
 ORDER = [
     "replace_values", "set_missing_where", "parse_number", "parse_units", "parse_datetime", "parse_boolean", "extract_pattern",
     "map_categories", "as_category", "date_difference", "add_missing_indicator", "group_rare", "text_features", "drop_columns",
@@ -23,14 +20,13 @@ def step(op, params, issue, protected=False, reason=None):
 
 # the column of an issue: the fix parameter, else its only column
 def column_of(issue):
-    params = issue.fix.params if issue.fix else {}
-    return params.get("column") or (issue.columns[0] if len(issue.columns) == 1 else None)
+    return issue.params.get("column") or (issue.columns[0] if len(issue.columns) == 1 else None)
 
 # unit factors from the fix parameters: a dict {unit: factor}, a list of...
 # {"unit", "factor"} pairs, one unit without a factor (factor 1), or the...
 # magnitude suffixes k, M, B (with k present: M is million, not metres)
 def unit_factors(issue):
-    units = (issue.fix.params if issue.fix else {}).get("units") or []
+    units = issue.params.get("units") or []
     if isinstance(units, dict):
         return [{"unit": str(unit), "factor": float(factor)} for unit, factor in units.items() if factor is not None]
     pairs = [item for item in units if isinstance(item, dict) and "unit" in item and "factor" in item]
@@ -63,7 +59,7 @@ def outlier_limits(issue):
 # steps], [target steps], reason when skipped)
 def translate_issue(issue, tokens):
     code = issue.code
-    params = issue.fix.params if issue.fix else {}
+    params = issue.params
     column = column_of(issue)
     if code == "A02":
         return [step("drop_columns", {"columns": [column]}, issue, True)], [], [], None
@@ -117,10 +113,10 @@ def translate_issue(issue, tokens):
         return [replace, step("add_missing_indicator", {"columns": [column]}, issue)], [], [], None
     if code in {"C04", "C05"}:
         return [step("add_missing_indicator", {"columns": list(issue.columns)}, issue)], [], [], None
-    if code in {"C06", "E01", "E02", "E06", "E07", "E08"}:
+    if code in {"C06", "E01", "E02", "E06", "E08"}:
         return [step("drop_columns", {"columns": [column]}, issue)], [], [], None
     if code == "D01":
-        rule = issue.detector.split("rule: ")[-1]
+        rule = issue.rule
         if rule == "few_negatives":
             return [step("set_missing_where", {"column": column, "below": 0}, issue)], [], [], None
         if rule == "percent_over_100":
@@ -139,29 +135,21 @@ def translate_issue(issue, tokens):
         return [step("replace_values", {"column": column, "items": items}, issue)], [], [], None
     if code == "A05":
         return [], [step("drop_conflicting_rows", {}, issue)], [], None
-    if code == "D04":
-        condition = params.get("condition")
-        return ([], [step("drop_rows_where", {"condition": condition}, issue)], [], None) if condition else ([], [], [], "no condition")
     if code in {"D05", "E04"}:
         return [step("group_rare", {"column": column, "min_count": int(params.get("min_count", 10)), "label": "Other"}, issue)], [], [], None
     if code == "E05":
         return [step("text_features", {"column": column}, issue)], [], [], None
     return [], [], [], f"no translation for {code}"
 
-# the default plan from an edatool report (Appendix C): must_fix issues and...
-# the listed should_fix codes; dismissed and accepted issues are skipped; leaks...
-# and ids are left to the leak guard; target-changing fixes are never...
+# the default plan from the audit report (Appendix C): must_fix and should_fix...
+# issues; leaks and ids are left to the leak guard; target-changing fixes are never...
 # translated; group_rare is left out on columns parsed to numbers; returns the...
 # plan and the skipped issues with reasons
 def default_plan(report, target):
     tokens = {name: set(TOKENS[name]) for name in ["boolean_true", "boolean_false"]}
     steps, row_steps, target_steps, skipped = [], [], [], []
     for issue in report.issues:
-        if issue.status in SKIPPED_STATUSES or issue.code in LEAK_CODES or issue.code in NOT_TRANSLATED or issue.code.startswith("P"):
-            continue
-        if issue.priority == "consider":
-            continue
-        if issue.fix is not None and issue.fix.action in {"no_action", "split_strategy"}:
+        if issue.code in LEAK_CODES or issue.priority == "consider":
             continue
         if target in issue.columns and issue.code not in TARGET_CODES:
             skipped.append({"issue": issue.id, "reason": "touches the target"})
@@ -174,9 +162,6 @@ def default_plan(report, target):
             skipped.append({"issue": issue.id, "code": issue.code, "reason": reason})
             logger.info(f"translator skipped {issue.id} ({issue.code}): {reason}")
             continue
-        if issue.status == "open" and issue.needs_review and issue.code not in PROTECTED_CODES:
-            for item in columns + rows:
-                item.protected = False
         steps += columns
         row_steps += rows
         target_steps += targets
