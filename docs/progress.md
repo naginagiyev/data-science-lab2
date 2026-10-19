@@ -11,26 +11,26 @@ Line format: status, task, date, commit (filled in by the next commit), note.
 
 ## P0. Setup and safety net
 - [x] P0.1 Read the inputs · 2026-10-11 · no files · read buildplan, v2-plan Parts 1, 2, 4, overview.md, eda README and architecture §1-16, edaadapter and the wine log
-- [x] P0.2 Git · 2026-10-11 · 73f0f98 · git init, ignores, .gitattributes (LF), tag v1-dslab1
-- [x] P0.3 Memory files · 2026-10-11 · f701d8c · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
-- [x] P0.4 Freeze v1 · 2026-10-11 · 6d8ed7f · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
-- [x] P0.5 Check the LLM · 2026-10-11 · 0fa301c · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
+- [x] P0.2 Git · 2026-10-11 · e0ac275 · git init, ignores, .gitattributes (LF), tag v1-dslab1
+- [x] P0.3 Memory files · 2026-10-11 · 4d0dbf8 · CLAUDE.md, progress.md, docs/decisions.md, docs/deviations.md
+- [x] P0.4 Freeze v1 · 2026-10-11 · fee24cc · v1 code copied to benchmark/legacy/v1, diff with the root shows no differences
+- [x] P0.5 Check the LLM · 2026-10-11 · 3080d50 · nano and mini work with temperature 0 and seed 0; prices unchanged; ledger started ($0.00005)
 
 ## P1. Foundation
-- [x] P1.1 Environment · 2026-10-11 · 6271716 · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
-- [x] P1.2 Remove v1 from the root · 2026-10-11 · 900fa72 · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
-- [x] P1.3 Core files · 2026-10-11 · f00390e · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
-- [x] P1.4 Run folder, logging, metrics · 2026-10-11 · 9509f16 · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
-- [x] P1.5 LLM layer · 2026-10-11 · 0d7ec3e · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
-- [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · cd982be · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
+- [x] P1.1 Environment · 2026-10-11 · 96c2264 · Python 3.12.14 x86_64 (win-amd64), all packages import; versions in decisions.md
+- [x] P1.2 Remove v1 from the root · 2026-10-11 · 8fa986d · v1 logic removed; main.py, paths.py, schemas.py, metrics.json kept for rewriting
+- [x] P1.3 Core files · 2026-10-11 · ec8bf4d · paths, settings (+ overrides, hash), metrics.json, schemas; settings and style tests pass
+- [x] P1.4 Run folder, logging, metrics · 2026-10-11 · 4f64d7d · RunFolder, UTF-8 run.log + ASCII console, metrics with aligned probabilities; missing-class test passes
+- [x] P1.5 LLM layer · 2026-10-11 · 16cba91 · client (cache, retries, budgets, logging), OpenAI + fake provider, spend ledger; real nano test passed ($0.00001); cap refusal tested
+- [x] P1.6 Orchestrator and CLI skeleton · 2026-10-11 · 2dac1ec · run_stage, Budget, RunState, stub stages, CLI run/predict/report + interactive; ibmchurn run creates context.json and run.log
 
 ## P2. Baselines first
-- [x] P2.1 Harness skeleton · 2026-10-11 · 4ef5d7a · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
-- [x] P2.2 Main-environment baselines (dummy, lightgbm, skrub) · 2026-10-11 · 81f7f0e, 929e78b · all 3 score on the 4 local datasets (benchmark/results/p2-local.csv)
-- [x] P2.3 Separate environments (flaml, autogluon) · 2026-10-11 · 80be799 · flaml 2.7.0 and autogluon 1.6.3 in own uv envs (no WSL needed); both score on the 4 local datasets with 60 s
-- [x] P2.4 v1 adapter (optional, never run) · 2026-10-11 · b1d7b1c · v1 env from frozen lock (3.10); headless.py fails cleanly with a refused OPENAI_BASE_URL (slow test)
-- [-] P2.5 Optional baseline (tabpfn) · 2026-10-11 · efebcc4 · skipped: tabpfn 9.1.0 weights are gated (license acceptance via browser login)
-- [x] P2.6 Baseline smoke table · 2026-10-11 · 837c64d · 20/20 cells ok, table below (benchmark/results/p2-smoke.csv)
+- [x] P2.1 Harness skeleton · 2026-10-11 · feba3e5 · runner (resumable, time-out + tree kill, 2 workers, spend stop), scoring (label keys, dummy fallback), splits, materialize; 4 local datasets level 0 seeds 0-2 written; hand-made predictions scored correctly
+- [x] P2.2 Main-environment baselines (dummy, lightgbm, skrub) · 2026-10-11 · ada081a, 9bbd076 · all 3 score on the 4 local datasets (benchmark/results/p2-local.csv)
+- [x] P2.3 Separate environments (flaml, autogluon) · 2026-10-11 · b7e58b6 · flaml 2.7.0 and autogluon 1.6.3 in own uv envs (no WSL needed); both score on the 4 local datasets with 60 s
+- [x] P2.4 v1 adapter (optional, never run) · 2026-10-11 · 71321c2 · v1 env from frozen lock (3.10); headless.py fails cleanly with a refused OPENAI_BASE_URL (slow test)
+- [-] P2.5 Optional baseline (tabpfn) · 2026-10-11 · db33db3 · skipped: tabpfn 9.1.0 weights are gated (license acceptance via browser login)
+- [x] P2.6 Baseline smoke table · 2026-10-11 · 5862891 · 20/20 cells ok, table below (benchmark/results/p2-smoke.csv)
 
 P2.6 smoke table (4 local datasets, seed 0, 60 s budget, level 0; score and wall seconds; RMSE in price units, log-loss and RMSE lower is better):
 
@@ -45,13 +45,13 @@ P2.6 smoke table (4 local datasets, seed 0, 60 s budget, level 0; score and wall
 Note: FLAML and AutoGluon search under a wall-clock limit, so their scores move between runs of the same cell (AutoGluon on creditcardfraud: 0.9419 in the P2.3 check, 1.0000 here). This is why the pilot uses 2 seeds for the free systems.
 
 ## P3. v2 core without LLM (variant generic)
-- [x] P3.1 Vendor edatool · 2026-10-11 · 72d3773 · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
-- [x] P3.2 Reader and glance · 2026-10-11 · ad36fa1 · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
-- [x] P3.3 Splitter · 2026-10-11 · b92e81e · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
-- [x] P3.4 Typing step and generic stage · 2026-10-11 · 0e99f20 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
-- [x] P3.5 Engine · 2026-10-11 · 75d6853 · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
-- [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · e5956db · generic run folders complete for the 4 local datasets; predict works on test features
-- [x] P3.7 v2 adapter · 2026-10-11 · 49cbb8c · generic is at least as good as lightgbm and skrub on all 4 local datasets (table below)
+- [x] P3.1 Vendor edatool · 2026-10-11 · cb31d5a · edatool/ and edabench/ copied; edabench paths in root paths.py; CLI audit (--no-agent) works on the 4 local datasets (2.9-22.7 s)
+- [x] P3.2 Reader and glance · 2026-10-11 · e7f42f8 · reader (raw view, hard stops), glance + pattern stats; TotalCharges shows ' ':11, kinghouse date is datetime (YYYYMMDDTHHMMSS)
+- [x] P3.3 Splitter · 2026-10-11 · 8c7780c · presplit advice -> group/time/stratified/random hold-out + folds; kinghousedata: group split on id
+- [x] P3.4 Typing step and generic stage · 2026-10-11 · 01b2f46 · pandas-parity test passes; LightGBM fits on torture headers (tree and linear kinds)
+- [x] P3.5 Engine · 2026-10-11 · 2e71939 · dummy/linear/LightGBM/CatBoost + Optuna under a deadline, OOF average of best two, refit; kinghousedata 60 s budget -> 58.7 s
+- [x] P3.6 Evaluator, FittedModel, report, predict · 2026-10-11 · 7009e00 · generic run folders complete for the 4 local datasets; predict works on test features
+- [x] P3.7 v2 adapter · 2026-10-11 · a198482 · generic is at least as good as lightgbm and skrub on all 4 local datasets (table below)
 
 P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `generic` from p3-generic.csv, the rest from p2-smoke.csv):
 
@@ -65,21 +65,21 @@ P3.7 sanity table (benchmark mode, 4 local datasets, seed 0, 60 s budget; `gener
 | generic | 0.8510 | 103896 | 0.8067 | 1.0000 |
 
 ## P4. edatool improvements
-- [x] P4.1 Baseline numbers before changing anything · 2026-10-11 · 3bc011f · recall 0.986, precision 0.896 on 358 injected issues (same as before); baselines: ydata 0.433, old eda.py 0.317, cleanlab 0.158 recall; docs/edatool-baseline.md
-- [x] P4.2 Windows-safe output · 2026-10-11 · 3eb03e2 · SafeConsoleText filter on the edatool logger; cp1252 test: 0 logging errors (2 without the filter)
-- [x] P4.3 Loader robustness · 2026-10-11 · 60d2dc9 · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
-- [x] P4.4 Semantic-mess detectors · 2026-10-11 · 830bb36 · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
-- [x] P4.5 Policy and cost · 2026-10-11 · bfa1258, b438abe · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
-- [x] P4.6 Benchmark the auditor again · 2026-10-11 · 57cbcd2 · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
+- [x] P4.1 Baseline numbers before changing anything · 2026-10-11 · 6c4cfcc · recall 0.986, precision 0.896 on 358 injected issues (same as before); baselines: ydata 0.433, old eda.py 0.317, cleanlab 0.158 recall; docs/edatool-baseline.md
+- [x] P4.2 Windows-safe output · 2026-10-11 · 27ebd2e · SafeConsoleText filter on the edatool logger; cp1252 test: 0 logging errors (2 without the filter)
+- [x] P4.3 Loader robustness · 2026-10-11 · e82869a · BOM/UTF-16/cp1252 files, ; tab | delimiters, title rows and footer notes (CSV and Excel), quoted newlines, empty and header-only files: tests pass
+- [x] P4.4 Semantic-mess detectors · 2026-10-11 · 1e15729 · B07 units, B08 packed, B09 mixed dates, new tokens, fix vocabulary injected; tests pass; no new issues on the 4 local datasets
+- [x] P4.5 Policy and cost · 2026-10-11 · 5bc4388, ba74b88 · creditcardfraud 5k sample, nano: 223,178 -> 14,144 agent tokens (6.3%), both runs $0.0247; batching, session cap, time limits, anonymized skip, F05/F07 no_action
+- [x] P4.6 Benchmark the auditor again · 2026-10-11 · 8c0738f · old kinds identical (recall per kind, precision 0.8957); new kinds 14/14; before/after in docs/edatool-baseline.md
 
 ## P5. Toolbox and verification (variant rules)
-- [x] P5.1 Operations · 2026-10-11 · d981c3e · 17 column operations + registry/catalog text; contract tests (index, unseen rows, NaN, unicode, empty column, one row, pickle) pass
-- [x] P5.2 Row and target operations · 2026-10-11 · d981c3e · row filters never transform; map_target_labels never merges classes; log_target exact inverse
-- [x] P5.3 Translator · 2026-10-11 · aab5dd7 · Appendix C default plans look right on churn, kinghousedata and wine (see decisions.md)
-- [x] P5.4 Compiler, data checks, verify integration · 2026-10-11 · 47a805b · wrong unit map -> "parse_units on Weight: 40.0% of values could not be parsed, examples: \"800 g\", ..."; verify resolves C02 after replace_values
-- [x] P5.5 Leak guard · 2026-10-11 · c00c5ff · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
-- [x] P5.6 Gate · 2026-10-11 · 160b245 · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
-- [x] P5.7 Variant rules end to end · 2026-10-11 · 380f8e1 · complete run folders on the 4 local datasets; rules >= generic on ibmchurn and kinghousedata (table below); worse on winequality (explained)
+- [x] P5.1 Operations · 2026-10-11 · 481fb95 · 17 column operations + registry/catalog text; contract tests (index, unseen rows, NaN, unicode, empty column, one row, pickle) pass
+- [x] P5.2 Row and target operations · 2026-10-11 · 481fb95 · row filters never transform; map_target_labels never merges classes; log_target exact inverse
+- [x] P5.3 Translator · 2026-10-11 · 39384af · Appendix C default plans look right on churn, kinghousedata and wine (see decisions.md)
+- [x] P5.4 Compiler, data checks, verify integration · 2026-10-11 · 648f750 · wrong unit map -> "parse_units on Weight: 40.0% of values could not be parsed, examples: \"800 g\", ..."; verify resolves C02 after replace_values
+- [x] P5.5 Leak guard · 2026-10-11 · aa0de68 · decision-table tests pass (structural, semantic + statistical, semantic only, statistical only, guard off)
+- [x] P5.6 Gate · 2026-10-11 · e83d370 · helpful unit parse accepted (positive effect); dropping the strongest feature and a class-removing row filter rejected; validation folds never filtered
+- [x] P5.7 Variant rules end to end · 2026-10-11 · 1c4c871 · complete run folders on the 4 local datasets; rules >= generic on ibmchurn and kinghousedata (table below); worse on winequality (explained)
 
 P5.7 table (benchmark mode, 4 local datasets, seed 0, 120 s budget, benchmark/results/p5-rules.csv):
 
@@ -91,62 +91,63 @@ P5.7 table (benchmark mode, 4 local datasets, seed 0, 120 s budget, benchmark/re
 winequality: `rules` drops 240 exact duplicate training rows (a protected step); they look like genuine repeated wines, and without them the class weights change (CV log-loss 0.894 vs 0.876 for `generic`). creditcardfraud: equal within noise.
 
 ## P6. Benchmark data
-- [x] P6.1 Dataset registry · 2026-10-11 · f581cd9 · 31 OpenML datasets downloaded and checked (ids, targets, tasks, licences); manifest + data cards; no spare needed
-- [x] P6.2 Corruptor · 2026-10-11 · 2aa8f7a · 12 types (layout in the writer, leak in P6.3); determinism, nested levels, exact restore, target untouched; one example per type in docs/datasets.md
-- [x] P6.3 Leak generator · 2026-10-11 · a4c88e3 · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
-- [x] P6.4 Materialize the dev pool · 2026-10-11 · 5bef67a · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
-- [x] P6.5 Group C · 2026-10-11 · 82019e6 · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
+- [x] P6.1 Dataset registry · 2026-10-11 · f1d0856 · 31 OpenML datasets downloaded and checked (ids, targets, tasks, licences); manifest + data cards; no spare needed
+- [x] P6.2 Corruptor · 2026-10-11 · bc3a1f3 · 12 types (layout in the writer, leak in P6.3); determinism, nested levels, exact restore, target untouched; one example per type in docs/datasets.md
+- [x] P6.3 Leak generator · 2026-10-11 · 501214c · 10 post-event leak columns; G01 finds all 5 strong leaks; naive and deployment test files
+- [x] P6.4 Materialize the dev pool · 2026-10-11 · dd8a0d3 · 6 dev datasets x levels 0-3 x seeds 0-2 = 72 cells with truth.json and cells.parquet (cache/benchmark/files/dev, 683 MB, not in git)
+- [x] P6.5 Group C · 2026-10-11 · b7c0f68 · 4 of 5 messy as expected; Food_Delivery_Time (cleaned) replaced by employee_salaries; section "Natural mess" in docs/datasets.md
 
 ## P7. LLM agents (variant full)
-- [x] P7.1 Framer · 2026-10-11 · a6b3189 · fake-provider tests and --ask pass; real nano check: 4/4 targets right
-- [x] P7.2 edatool agent integration · 2026-10-11 · 54f6c6d · agent calls in llm.jsonl and the ledger (real nano run: 14 calls, 81k tokens, $0.0085); provider failure falls back to the deterministic audit (test)
-- [x] P7.3 Cleaner · 2026-10-11 · a26b73d · fake-provider tests pass; real nano run on a level-3 churn sample: valid plan with parse_boolean and map_categories on the first try
-- [x] P7.4 Repair loop · 2026-10-11 · 9904ca9 · wrong unit map repaired from the structured error (test); capped at 3 attempts; no-repair ablation drops at once
-- [x] P7.5 Refine loop · 2026-10-11 · 7af39ad · a plan with a harmful step is revised from the gate evidence (test); best gated round wins
-- [x] P7.6 Sandbox and custom operation · 2026-10-11 · 0b4368b · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
-- [x] P7.7 Free-code variant · 2026-10-11 · 82f41a9 · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
-- [x] P7.8 Summary paragraph · 2026-10-11 · 55e6a8b · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
-- [x] P7.9 Dev iteration · 2026-10-12 · f8d8f91 · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
+- [x] P7.1 Framer · 2026-10-11 · c04fe65 · fake-provider tests and --ask pass; real nano check: 4/4 targets right
+- [x] P7.2 edatool agent integration · 2026-10-11 · 3257ea7 · agent calls in llm.jsonl and the ledger (real nano run: 14 calls, 81k tokens, $0.0085); provider failure falls back to the deterministic audit (test)
+- [x] P7.3 Cleaner · 2026-10-11 · 6e3d59e · fake-provider tests pass; real nano run on a level-3 churn sample: valid plan with parse_boolean and map_categories on the first try
+- [x] P7.4 Repair loop · 2026-10-11 · 2c7033a · wrong unit map repaired from the structured error (test); capped at 3 attempts; no-repair ablation drops at once
+- [x] P7.5 Refine loop · 2026-10-11 · e966740 · a plan with a harmful step is revised from the gate evidence (test); best gated round wins
+- [x] P7.6 Sandbox and custom operation · 2026-10-11 · a24f6ec · AST-check, time-out and no-API-key tests pass; custom op via the sandbox; code generation with retry
+- [x] P7.7 Free-code variant · 2026-10-11 · ea07999 · fake-provider tests and an end-to-end freecode run pass; nano on churn and kinghouse samples: success and failure logged, gate removes code that does not help
+- [x] P7.8 Summary paragraph · 2026-10-11 · 98b7975 · summary in report.md (test and real nano check); number and length checks; provider failure keeps the template report
+- [x] P7.9 Dev iteration · 2026-10-12 · c535bfe · 2 free and 2 nano rounds on 12 dev5k cells, then mini on 6: 100% success; mini $0.029 per full run; full >= rules >= generic on the messy files (exceptions explained in decisions.md); dev spend $0.36
 
 ## P8. Robustness and performance
-- [x] P8.1 Torture suite · 2026-10-12 · 15c1960 · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
-- [x] P8.2 Fault injection · 2026-10-12 · 8cfa0fd · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
-- [x] P8.3 Performance · 2026-10-12 · 97a2bc3 · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
-- [x] P8.4 Reproducibility test · 2026-10-12 · afa30fb · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
-- [x] P8.5 Fresh-clone test · 2026-10-12 · 1d6defb · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
+- [x] P8.1 Torture suite · 2026-10-12 · df6aeff · 26 files: 20 give a model and a report, 6 stop with a clear message (header only, one row, one class, and three files whose rows are all duplicates in demo mode); the 1M-row file is measured in P8.3
+- [x] P8.2 Fault injection · 2026-10-12 · b56ba97 · operation, Optuna, candidate model, verify and provider faults: every run ends with a model and a report (fast and slow tests pass)
+- [x] P8.3 Performance · 2026-10-12 · 8955e35 · rules at 300 s: creditcardfraud (284,807 rows) 286 s wall, peak 2.14 GB; 1,000,000-row file 267 s, peak 1.35 GB (after fixes to verify rows, refit time and a finish reserve); full not measured (no cached answers)
+- [x] P8.4 Reproducibility test · 2026-10-12 · 19053ef · same seed + warm LLM cache: identical plans, CV and test scores (Optuna off; a time-bounded search depends on machine load)
+- [x] P8.5 Fresh-clone test · 2026-10-12 · 8fba464 · clone + uv sync + pytest: 182 passed (192 s cold first run, 140 s warm)
 
 ## P9. Pilot experiments (no full benchmark)
-- [x] P9.1 Materialize · 2026-10-12 · df33b79 · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
-- [x] P9.2 Pre-registration · 2026-10-12 · dce6c06 · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
-- [x] P9.3 Smoke grid and freeze · 2026-10-12 · c3e5616 · smoke 40/40 ok (after the FLAML column-name fix); the 6 full grids pass --check; tag v2-freeze
-- [x] P9.4 E7 framer accuracy · 2026-10-12 · b76f241 · 40 datasets: rules 32/40 targets (31/40 with task), rules + mini 36/40 (35/40); $0.025
-- [x] P9.5 pilot-main · 2026-10-12 · 5d3d1fd · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
-- [x] P9.6 pilot-leaks · 2026-10-12 · 90b0a13 · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
-- [x] P9.7 pilot-ablations · 2026-10-12 · e8f6849 · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
-- [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · 1575c26 · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
-- [x] P9.9 pilot-seed · 2026-10-14 · 9be559d · 96/96 ok (free systems, seed 1); paused and resumed without loss
-- [x] P9.10 pilot-natural · 2026-10-14 · 65d417a · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
-- [x] P9.11 pilot-budget · 2026-10-14 · f8cf261 · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
-- [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · b677fe7 · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
-- [x] P9.13 Held-out cells · 2026-10-14 · 5f69553 · predictions committed first (f78ebf7); 3 of 4 actual scores inside their intervals (projection not unreliable)
+- [x] P9.1 Materialize · 2026-10-12 · 997785d · 390 cells (A 180, single types 165, C 15, D 30); manifest benchmark/results/files.json; packed-position bug fixed
+- [x] P9.2 Pre-registration · 2026-10-12 · 4c42842 · docs/preregistration.md (pilot datasets, support criteria, held-out cells and prediction rule, exclusion rules); pilot, smoke and full grid files; tag prereg
+- [x] P9.3 Smoke grid and freeze · 2026-10-12 · 6d4e8db · smoke 40/40 ok (after the FLAML column-name fix); the 6 full grids pass --check; tag v2-freeze
+- [x] P9.4 E7 framer accuracy · 2026-10-12 · eccc83f · 40 datasets: rules 32/40 targets (31/40 with task), rules + mini 36/40 (35/40); $0.025
+- [x] P9.5 pilot-main · 2026-10-12 · 07eea01 · 212 cells (4 held-out later), 211 ok; one full run timed out (stage limits not enforced once the budget is used up; kept as a failure); full $0.026 per run; experiments spend $0.83
+- [x] P9.6 pilot-leaks · 2026-10-12 · cd347ad · 25/25 ok; full found 5/5 leaks with 0 false drops; rules and full-noleakguard 0/5; $0.13
+- [x] P9.7 pilot-ablations · 2026-10-12 · b3c5fab · 20/20 ok; all v2 cleaning variants 0.986-0.995 normalized at level 3 vs generic 0.894, autogluon 0.784; $0.14
+- [x] P9.8 pilot-types and E6b reading robustness · 2026-10-14 · 05e1c0f · types 47/48 ok; repair accuracy rules (15 datasets) booleans 0.99 ... impossible 0.00, full (4 datasets) packed 1.00, units 0.69; reading: generic/rules 12/15, lightgbm/skrub/autogluon 0/15
+- [x] P9.9 pilot-seed · 2026-10-14 · ee93bff · 96/96 ok (free systems, seed 1); paused and resumed without loss
+- [x] P9.10 pilot-natural · 2026-10-14 · 9243d04 · 12/12 ok; full, generic and autogluon within 0.006 roc_auc on the 3 Group C files; $0.12
+- [x] P9.11 pilot-budget · 2026-10-14 · 108adc1 · 4/4 ok; the order of full and autogluon is the same at 120 s and 300 s
+- [x] P9.12 E8 audit benchmark (final) · 2026-10-14 · 1e12924 · recall 0.987, precision 0.855 (same as after P4); benchmark/results/edabench-final.* and edabench-baselines.*
+- [x] P9.13 Held-out cells · 2026-10-14 · 1d8049a · predictions committed first (7230685); 3 of 4 actual scores inside their intervals (projection not unreliable)
 
 ## P10. Analysis
-- [x] P10.1 analysis.py · 2026-10-12 · d8b1322 · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
-- [x] P10.2 figures.py · 2026-10-14 · 96d13ab · python -m benchmark.figures regenerates 8 figures (PDF, PNG) and 13 tables (CSV, MD)
-- [x] P10.3 docs/results.md · 2026-10-14 · 7998f19 · generated by python -m benchmark.resultsdoc from the pilot files, labelled as pilot results
-- [x] P10.4 projection · 2026-10-14 · 2b1b0f5 · docs/projection.md generated: power 0.28 (full vs autogluon), 0.79 (vs skrub), 0.68 (full+ag vs autogluon); held-out 3/4; budget order stable; recommendation: not worth running the full benchmark yet
+- [x] P10.1 analysis.py · 2026-10-12 · fcdf603 · tests on a synthetic results file pass (normalized scores, ranks, Friedman/Nemenyi, Wilcoxon + Holm, bootstrap, reliability, leaks)
+- [x] P10.2 figures.py · 2026-10-14 · 6690556 · python -m benchmark.figures regenerates 8 figures (PDF, PNG) and 13 tables (CSV, MD)
+- [x] P10.3 docs/results.md · 2026-10-14 · 365beaa · generated by python -m benchmark.resultsdoc from the pilot files, labelled as pilot results
+- [x] P10.4 projection · 2026-10-14 · 46b80e7 · docs/projection.md generated: power 0.28 (full vs autogluon), 0.79 (vs skrub), 0.68 (full+ag vs autogluon); held-out 3/4; budget order stable; recommendation: not worth running the full benchmark yet
 
 ## P11. Documentation and demo
-- [x] P11.1 Code quality pass · 2026-10-14 · a32b032 · one dead function removed, two wired (leak table CLI, optional-stop rule in the runner); ruff F clean; tests pass
-- [x] P11.2 Documentation · 2026-10-14 · 7cd1bed · README (install, quick start, CLI, variants, sandbox limits, reproduction with time and cost, folder map), docs/architecture.md, benchmark/reproduce.py
-- [x] P11.3 Demo · 2026-10-14 · 0e68aaf · benchmark/showcase.py; real run in docs/showcase.md: concrete level 3, rmse autogluon 12.93, full 4.11, full+ag 4.20
+- [x] P11.1 Code quality pass · 2026-10-14 · e44255c · one dead function removed, two wired (leak table CLI, optional-stop rule in the runner); ruff F clean; tests pass
+- [x] P11.2 Documentation · 2026-10-14 · 3a20d4e · README (install, quick start, CLI, variants, sandbox limits, reproduction with time and cost, folder map), docs/architecture.md, benchmark/reproduce.py
+- [x] P11.3 Demo · 2026-10-14 · c523ad9 · benchmark/showcase.py; real run in docs/showcase.md: concrete level 3, rmse autogluon 12.93, full 4.11, full+ag 4.20
 
 ## P12. Final quality check and handover
-- [x] P12.1 Checks · 2026-10-14 · dc3a41c · full suite incl. slow 216 passed (18.6 min); secret scan clean (files and history); reproduce --grid smoke works (40 finished cells skipped); style test passes; git status clean
+- [x] P12.1 Checks · 2026-10-14 · 050c540 · full suite incl. slow 216 passed (18.6 min); secret scan clean (files and history); reproduce --grid smoke works (40 finished cells skipped); style test passes; git status clean
 - [x] P12.2 Handover · 2026-10-14 · (this commit) · handover section below
 
 ## P13. Cleanup
-- [x] P13 Workspace cleanup · 2026-10-16 · (this commit) · v1 copy, dev grids, duplicates and unused files removed; one results file (runs.csv), one tables file; plan, progress, study and design inputs moved to docs/; caches 7.6 GB -> 1.4 GB; 191 fast tests pass; regenerated docs have the same numbers (decisions.md)
+- [x] P13 Workspace cleanup · 2026-10-16 · 3d27f06 · v1 copy, dev grids, duplicates and unused files removed; one results file (runs.csv), one tables file; plan, progress, study and design inputs moved to docs/; caches 7.6 GB -> 1.4 GB; 191 fast tests pass; regenerated docs have the same numbers (decisions.md)
+- [x] P13.3 GitHub · 2026-10-19 · (this commit) · history without the Claude co-author line (ids updated in the docs and runs.csv), branch V2 pushed to GitHub, push after every commit
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style

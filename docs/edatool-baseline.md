@@ -1,7 +1,7 @@
 # edatool baseline (P4.1, before any change)
 
 Measured on 2026-10-11 with the vendored edatool exactly as copied from `../eda` (style-only changes,
-commit `72d3773`), deterministic mode, no LLM calls. Commands:
+commit `cb31d5a`), deterministic mode, no LLM calls. Commands:
 
 ```
 uv run python -m edabench.evaluate types --drafts

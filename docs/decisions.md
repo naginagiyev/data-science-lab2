@@ -980,7 +980,7 @@ Findings from the decision logs of the worst cells:
 
 ## 2026-10-14 · P9.13 · Held-out cells
 
-- The 4 held-out cells ran last (`--holdout`), after the predictions were committed (f78ebf7): 4/4
+- The 4 held-out cells ran last (`--holdout`), after the predictions were committed (7230685): 4/4
   ok. 3 of 4 actual scores fell inside their predicted 95% intervals (E-CommereShippingData full
   0.7359 and autogluon 0.7164; concrete full rmse 3.714 inside; concrete autogluon rmse 11.979 outside
   [9.175, 10.272], worse than predicted). By the pre-registered rule (at least 3 of 4) the projection
@@ -1021,3 +1021,19 @@ Findings from the decision logs of the worst cells:
   of every benchmark run folder (554 MB; reports, decisions, LLM logs and predictions are kept),
   work folders, dev run folders, the generated 1M-row file, the edabench baseline cache and Python
   caches. Kept: the LLM caches, OpenML downloads, benchmark files and run logs.
+
+## 2026-10-19 · P13.3 · GitHub and clean commit history
+
+- Asked by the user: push the project to `https://github.com/naginagiyev/data-science-lab2.git` on a
+  branch `V2` (the default branch for now), push every later commit, and show only the user as
+  author. The 87 commits so far ended with a Claude co-author line, so the commit messages were
+  rewritten once (`git filter-branch --msg-filter`) to drop that line. Authors, dates and file
+  contents of every commit are unchanged; only the commit ids changed.
+- Every old commit id in `docs/progress.md`, `docs/decisions.md`, `docs/edatool-baseline.md` and the
+  `git_hash` column of `benchmark/results/runs.csv` was replaced by its new id (711 places), so the
+  references still point to the right commits. The pre-registration order is kept: the held-out
+  predictions commit still comes before the held-out runs, with its original date.
+- The tags `prereg`, `v1-dslab1` and `v2-freeze` now point to the rewritten commits; they stay local
+  (not pushed, by the user's choice). A bundle of the old history is kept outside the project
+  (`../test-history-backup-2026-10-19.bundle`).
+- The local branch `main` is renamed to `V2`. `CLAUDE.md` now says to push after every commit.
