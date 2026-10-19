@@ -1,0 +1,61 @@
+{
+  "name": "pilot-main",
+  "systems": [
+    "dummy",
+    "lightgbm",
+    "skrub",
+    "flaml",
+    "autogluon",
+    "generic",
+    "rules",
+    "full",
+    "full+ag"
+  ],
+  "datasets": [
+    "credit-g",
+    "Bank_Customer_Churn",
+    "E-CommereShippingData",
+    "maternal_health_risk",
+    "students_dropout_and_academic_success",
+    "concrete_compressive_strength",
+    "Another-Dataset-on-used-Fiat-500",
+    "diamonds"
+  ],
+  "group": "A",
+  "levels": [
+    0,
+    2,
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 120,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ],
+  "holdout": [
+    {
+      "system": "full",
+      "dataset": "E-CommereShippingData",
+      "level": 2
+    },
+    {
+      "system": "autogluon",
+      "dataset": "E-CommereShippingData",
+      "level": 2
+    },
+    {
+      "system": "full",
+      "dataset": "concrete_compressive_strength",
+      "level": 2
+    },
+    {
+      "system": "autogluon",
+      "dataset": "concrete_compressive_strength",
+      "level": 2
+    }
+  ]
+}

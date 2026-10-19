@@ -1,0 +1,42 @@
+{
+  "seed": 0,
+  "split": {"test_size": 0.2, "cv_folds": 5, "min_rows": 20},
+  "budget": {
+    "total_seconds": 300,
+    "min_model_seconds": 60,
+    "stage_seconds": {"audit": 90, "plan": 45, "compile": 45, "gate": 60, "report": 20}
+  },
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-4.1-nano",
+    "pilot_model": "gpt-4.1-mini",
+    "temperature": 0,
+    "seed": 0,
+    "timeout_seconds": 60,
+    "api_retries": 4,
+    "schema_retries": 2,
+    "cache": true,
+    "max_calls_per_run": 40,
+    "max_cost_per_run_usd": 0.1,
+    "prices_per_million_tokens": {"gpt-4.1-mini": {"input": 0.4, "output": 1.6}, "gpt-4.1-nano": {"input": 0.1, "output": 0.4}}
+  },
+  "spend": {"category": "dev", "dev_cap_usd": 1.5, "experiments_cap_usd": 2.75, "stop_optional_usd": 4.0, "total_cap_usd": 5.0},
+  "framer": {"candidates": 5, "min_confidence": 0.6, "max_target_levels": 20, "name_hints": ["target", "label", "class", "y", "outcome", "result", "churn", "price", "survived", "fraud", "default", "status", "score", "quality", "response", "diagnosis", "risk", "rating", "grade", "salary", "income", "sales", "revenue", "cost", "charges", "strength", "value", "amount", "attrition", "approved", "dropout", "won", "success"]},
+  "audit": {"use_agent": true, "sample_rows": 50000, "session_seconds": 60, "max_sessions": 8, "n_jobs": 4},
+  "leakage": {"drop_semantic_only": true},
+  "cleaner": {"enabled": true, "show_values": true, "max_values_per_column": 15, "max_repairs": 3, "max_refines": 2},
+  "checks": {"max_parse_failure": 0.05, "max_column_growth": 10, "op_seconds": 30},
+  "verify": {"enabled": true, "max_snapshots": 6, "max_rows": 20000},
+  "gate": {
+    "enabled": true,
+    "folds": 3,
+    "max_rows": 10000,
+    "per_op": true,
+    "max_per_op_tests": 10,
+    "n_jobs": 4,
+    "tolerance": {"roc_auc": {"absolute": 0.002}, "log_loss": {"relative": 0.005}, "rmse": {"relative": 0.005}}
+  },
+  "engine": {"candidates": ["dummy", "lightgbm", "linear", "catboost"], "optuna": true, "ensemble": true, "n_jobs": 4, "patience_trials": 30, "max_search_rows": 50000},
+  "backend": "own",
+  "report": {"llm_summary": true}
+}

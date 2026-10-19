@@ -1,0 +1,44 @@
+{
+  "name": "types",
+  "systems": [
+    "full",
+    "generic",
+    "autogluon",
+    "skrub"
+  ],
+  "datasets": [
+    "credit-g",
+    "Bank_Customer_Churn",
+    "E-CommereShippingData",
+    "maternal_health_risk",
+    "students_dropout_and_academic_success",
+    "concrete_compressive_strength",
+    "Another-Dataset-on-used-Fiat-500",
+    "diamonds"
+  ],
+  "group": "A",
+  "levels": [
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 300,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ],
+  "mess": [
+    "ids",
+    "packed",
+    "dates",
+    "booleans",
+    "spellings",
+    "mixed_units",
+    "units",
+    "impossible",
+    "fake_missing",
+    "plain_missing"
+  ]
+}

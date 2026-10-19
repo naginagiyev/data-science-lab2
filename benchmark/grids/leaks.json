@@ -1,0 +1,39 @@
+{
+  "name": "leaks",
+  "systems": [
+    "full",
+    "full-noleakguard",
+    "rules",
+    "autogluon",
+    "flaml",
+    "skrub",
+    "lightgbm"
+  ],
+  "datasets": [
+    "credit-g",
+    "Fitness_Club",
+    "Marketing_Campaign",
+    "Bank_Customer_Churn",
+    "E-CommereShippingData",
+    "maternal_health_risk",
+    "concrete_compressive_strength",
+    "healthcare_insurance_expenses",
+    "Another-Dataset-on-used-Fiat-500",
+    "diamonds"
+  ],
+  "group": "D",
+  "levels": [
+    0
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "budget": 300,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

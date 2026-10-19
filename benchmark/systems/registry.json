@@ -1,0 +1,18 @@
+{
+  "dummy": {"python": "main", "module": "benchmark.systems.dummy", "llm": false},
+  "lightgbm": {"python": "main", "module": "benchmark.systems.lightgbm", "llm": false},
+  "skrub": {"python": "main", "module": "benchmark.systems.skrub", "llm": false},
+  "flaml": {"python": "benchmark/envs/flaml/.venv/Scripts/python.exe", "module": "benchmark.systems.flaml", "llm": false},
+  "autogluon": {"python": "benchmark/envs/autogluon/.venv/Scripts/python.exe", "module": "benchmark.systems.autogluon", "llm": false},
+  "generic": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "generic"], "llm": false, "settings": true, "variant": "generic"},
+  "rules": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "rules"], "llm": false, "settings": true, "variant": "rules"},
+  "rules+ag": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "rules+ag"], "llm": false, "settings": true, "variant": "rules+ag"},
+  "full": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full"], "llm": true, "settings": true, "variant": "full"},
+  "full-noreview": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-noreview"], "llm": true, "settings": true, "variant": "full-noreview"},
+  "full-nogate": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-nogate"], "llm": true, "settings": true, "variant": "full-nogate"},
+  "full-norepair": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-norepair"], "llm": true, "settings": true, "variant": "full-norepair"},
+  "full-nosamples": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-nosamples"], "llm": true, "settings": true, "variant": "full-nosamples"},
+  "full-noleakguard": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-noleakguard"], "llm": true, "settings": true, "variant": "full-noleakguard"},
+  "freecode": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "freecode"], "llm": true, "settings": true, "variant": "freecode"},
+  "full+ag": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full+ag"], "llm": true, "settings": true, "variant": "full+ag"}
+}

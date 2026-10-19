@@ -1,0 +1,35 @@
+{
+  "dataset": "kinghousedata.csv",
+  "reviewed": false,
+  "types": {
+    "id": "id",
+    "date": "datetime",
+    "price": "numeric_continuous",
+    "bedrooms": "numeric_discrete",
+    "bathrooms": "numeric_discrete",
+    "sqft_living": "numeric_continuous",
+    "sqft_lot": "numeric_continuous",
+    "floors": "numeric_discrete",
+    "waterfront": "boolean",
+    "view": "numeric_discrete",
+    "condition": "numeric_discrete",
+    "grade": "numeric_discrete",
+    "sqft_above": "numeric_continuous",
+    "sqft_basement": "numeric_continuous",
+    "yr_built": "numeric_continuous",
+    "yr_renovated": "numeric_continuous",
+    "zipcode": "numeric_code",
+    "lat": "numeric_continuous",
+    "long": "numeric_continuous",
+    "sqft_living15": "numeric_continuous",
+    "sqft_lot15": "numeric_continuous"
+  },
+  "notes": {
+    "bathrooms": "Counts in quarter steps (30 values); discrete by meaning, but not integers.",
+    "floors": "Half-floor steps (6 values); discrete by meaning, but not integers.",
+    "view": "0-4 score with order; kept numeric_discrete.",
+    "condition": "1-5 rating with order; kept numeric_discrete.",
+    "grade": "1-13 rating with order; kept numeric_discrete.",
+    "yr_renovated": "Years with 0 meaning never renovated (a sentinel, issue C03)."
+  }
+}

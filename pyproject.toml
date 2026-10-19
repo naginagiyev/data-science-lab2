@@ -1,0 +1,49 @@
+[project]
+name = "agentic-automl"
+version = "2.0.0"
+description = "Agentic AutoML v2: the LLM proposes typed data-preparation operations, code verifies them."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pandas<3",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "lightgbm",
+    "catboost",
+    "optuna",
+    "pydantic>=2.7,<3",
+    "openai",
+    "python-dotenv",
+    "tenacity",
+    "joblib",
+    "pyarrow",
+    "openpyxl",
+    "rich",
+    "questionary",
+    "tabulate",
+    "smolagents[openai]==1.26.0",
+    "skrub",
+    "matplotlib",
+    "autorank",
+    "openml",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff", "psutil"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test*.py"]
+addopts = "-m \"not slow and not llm\""
+markers = [
+    "slow: big files or the full pipeline on dev data (not in the fast suite)",
+    "llm: calls the real LLM API and costs cents (opt-in)",
+]
+
+[tool.ruff]
+extend-exclude = ["benchmark/legacy", "edabench/legacy"]

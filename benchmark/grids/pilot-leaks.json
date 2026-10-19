@@ -1,0 +1,30 @@
+{
+  "name": "pilot-leaks",
+  "systems": [
+    "full",
+    "full-noleakguard",
+    "rules",
+    "autogluon",
+    "lightgbm"
+  ],
+  "datasets": [
+    "credit-g",
+    "Bank_Customer_Churn",
+    "maternal_health_risk",
+    "concrete_compressive_strength",
+    "healthcare_insurance_expenses"
+  ],
+  "group": "D",
+  "levels": [
+    0
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 120,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

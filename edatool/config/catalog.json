@@ -1,0 +1,722 @@
+{
+  "A01": {
+    "title": "Parsing problems",
+    "prefix": "PARSE",
+    "category": "structure",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The file was not parsed into clean rows and columns.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "A02": {
+    "title": "Index saved as a column",
+    "prefix": "INDEX",
+    "category": "structure",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "An old row index was saved into the file as a column.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "A03": {
+    "title": "Duplicate columns",
+    "prefix": "DUPCOL",
+    "category": "structure",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Two columns have the same name or the same content.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "A04": {
+    "title": "Duplicate rows",
+    "prefix": "DUPROW",
+    "category": "structure",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some rows are exact copies of other rows.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {
+        "condition": "duplicated"
+      }
+    }
+  },
+  "A05": {
+    "title": "Conflicting duplicates",
+    "prefix": "CONFLICT",
+    "category": "structure",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Rows with the same features have different target values.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "A06": {
+    "title": "Almost empty rows",
+    "prefix": "EMPTYROW",
+    "category": "structure",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some rows have most of their cells missing.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "A07": {
+    "title": "Problem column names",
+    "prefix": "NAME",
+    "category": "structure",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some column names have spaces, special characters or are empty.",
+    "fix": {
+      "action": "no_action",
+      "params": {
+        "reason": "rename the column; the fix vocabulary has no rename action"
+      }
+    }
+  },
+  "B01": {
+    "title": "Numbers stored as text",
+    "prefix": "TYPE",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column holds numbers stored as text.",
+    "fix": {
+      "action": "convert_type",
+      "params": {
+        "to": "numeric"
+      }
+    }
+  },
+  "B02": {
+    "title": "Dates stored as text",
+    "prefix": "TYPE",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column holds dates stored as text.",
+    "fix": {
+      "action": "convert_type",
+      "params": {
+        "to": "datetime"
+      }
+    }
+  },
+  "B03": {
+    "title": "Mixed formats in one column",
+    "prefix": "FORMAT",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The column mixes several value formats.",
+    "fix": {
+      "action": "convert_type",
+      "params": {}
+    }
+  },
+  "B04": {
+    "title": "Numeric code, may be categorical",
+    "prefix": "CODE",
+    "category": "types",
+    "priority": "should_fix",
+    "needs_review": true,
+    "diagnosis": "The numbers are codes, so their size and order have no meaning.",
+    "fix": {
+      "action": "encode",
+      "params": {
+        "method": "onehot"
+      }
+    }
+  },
+  "B05": {
+    "title": "Inconsistent category labels",
+    "prefix": "LABEL",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The same category is written in several ways.",
+    "fix": {
+      "action": "normalize_labels",
+      "params": {}
+    }
+  },
+  "B06": {
+    "title": "Mixed boolean tokens",
+    "prefix": "BOOL",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column uses several token pairs for true and false.",
+    "fix": {
+      "action": "normalize_labels",
+      "params": {}
+    }
+  },
+  "B07": {
+    "title": "Numbers with units or suffixes",
+    "prefix": "UNIT",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column holds numbers written with a unit or suffix (for example 1.37kg or 3.2k).",
+    "fix": {
+      "action": "convert_type",
+      "params": {
+        "to": "numeric"
+      }
+    }
+  },
+  "B08": {
+    "title": "Several values packed in one column",
+    "prefix": "PACK",
+    "category": "types",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Each value holds two or more numbers in a fixed text pattern (for example 3 bd / 2 ba).",
+    "fix": {
+      "action": "extract_pattern",
+      "params": {}
+    }
+  },
+  "B09": {
+    "title": "Mixed date formats",
+    "prefix": "DATE",
+    "category": "types",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column writes dates in two or more formats.",
+    "fix": {
+      "action": "convert_type",
+      "params": {
+        "to": "datetime"
+      }
+    }
+  },
+  "C01": {
+    "title": "Missing values",
+    "prefix": "MISS",
+    "category": "missing",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The column has missing values.",
+    "fix": {
+      "action": "impute",
+      "params": {
+        "strategy": "median"
+      }
+    }
+  },
+  "C02": {
+    "title": "Hidden missing values",
+    "prefix": "MISS",
+    "category": "missing",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Missing values are stored as text tokens.",
+    "fix": {
+      "action": "replace_values",
+      "params": {}
+    }
+  },
+  "C03": {
+    "title": "Sentinel numbers",
+    "prefix": "SENT",
+    "category": "missing",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "A special number is used in place of a missing or special value.",
+    "fix": {
+      "action": "replace_values",
+      "params": {}
+    }
+  },
+  "C04": {
+    "title": "Informative missingness",
+    "prefix": "MISS",
+    "category": "missing",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Rows with a missing value have a different target than other rows.",
+    "fix": {
+      "action": "add_indicator",
+      "params": {}
+    }
+  },
+  "C05": {
+    "title": "Co-missing block",
+    "prefix": "MISS",
+    "category": "missing",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "These columns are missing in the same rows, so they share one cause.",
+    "fix": {
+      "action": "add_indicator",
+      "params": {}
+    }
+  },
+  "C06": {
+    "title": "Almost fully missing column",
+    "prefix": "MISS",
+    "category": "missing",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Almost all values of the column are missing.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "D01": {
+    "title": "Impossible values",
+    "prefix": "VALID",
+    "category": "validity",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Some values are outside the possible range of the column.",
+    "fix": {
+      "action": "replace_values",
+      "params": {}
+    }
+  },
+  "D02": {
+    "title": "Extreme isolated values",
+    "prefix": "OUTL",
+    "category": "validity",
+    "priority": "should_fix",
+    "needs_review": true,
+    "diagnosis": "Some values are far from all other values, likely typos.",
+    "fix": {
+      "action": "replace_values",
+      "params": {}
+    }
+  },
+  "D03": {
+    "title": "Invalid dates",
+    "prefix": "DATE",
+    "category": "validity",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Some dates are in the future or are placeholder dates.",
+    "fix": {
+      "action": "replace_values",
+      "params": {}
+    }
+  },
+  "D04": {
+    "title": "Cross-column rule violations",
+    "prefix": "RULE",
+    "category": "validity",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "A few rows break a rule that holds for almost all other rows.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "D05": {
+    "title": "Rare categories",
+    "prefix": "RARE",
+    "category": "validity",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some categories have very few rows.",
+    "fix": {
+      "action": "group_rare",
+      "params": {
+        "new_label": "Other"
+      }
+    }
+  },
+  "E01": {
+    "title": "Constant column",
+    "prefix": "CONST",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The column has one value only, so it carries no information.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E02": {
+    "title": "Quasi-constant column",
+    "prefix": "CONST",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Almost all rows have the same value.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E03": {
+    "title": "ID-like column",
+    "prefix": "ID",
+    "category": "columns",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The column is an identifier and must not be used as a feature.",
+    "fix": {
+      "action": "set_role",
+      "params": {
+        "role": "id"
+      }
+    }
+  },
+  "E04": {
+    "title": "High-cardinality categorical",
+    "prefix": "CARD",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The column has too many categories for one-hot encoding.",
+    "fix": {
+      "action": "group_rare",
+      "params": {
+        "new_label": "Other"
+      }
+    }
+  },
+  "E05": {
+    "title": "Free text column",
+    "prefix": "TEXT",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The column holds free text, which this tool does not analyze.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E06": {
+    "title": "One-to-one categorical mapping",
+    "prefix": "REDUN",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Two columns map one to one, so one of them is redundant.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E07": {
+    "title": "Exact linear relation",
+    "prefix": "REDUN",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "One column is an exact linear combination of others.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E08": {
+    "title": "Very high correlation",
+    "prefix": "REDUN",
+    "category": "columns",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Two columns carry almost the same information.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "E09": {
+    "title": "Heavy skew",
+    "prefix": "SKEW",
+    "category": "columns",
+    "priority": "consider",
+    "needs_review": false,
+    "diagnosis": "The distribution has a long tail.",
+    "fix": {
+      "action": "log_transform",
+      "params": {}
+    }
+  },
+  "F01": {
+    "title": "Missing target",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Some rows have no target value and can not be used for training.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "F02": {
+    "title": "Task type doubt",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "should_fix",
+    "needs_review": true,
+    "diagnosis": "The target values do not clearly fit the given task type.",
+    "fix": {
+      "action": "no_action",
+      "params": {}
+    }
+  },
+  "F03": {
+    "title": "Inconsistent class labels",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The same class is written in several ways.",
+    "fix": {
+      "action": "normalize_labels",
+      "params": {}
+    }
+  },
+  "F04": {
+    "title": "Class imbalance",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "One class is much more common than the others.",
+    "fix": {
+      "action": "split_strategy",
+      "params": {
+        "type": "stratified"
+      }
+    }
+  },
+  "F05": {
+    "title": "Rare classes",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some classes have very few rows; the target label space never changes, so this is reported only.",
+    "fix": {
+      "action": "no_action",
+      "params": {
+        "reason": "the target label space never changes, so this is reported only"
+      }
+    }
+  },
+  "F06": {
+    "title": "Regression target shape",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "consider",
+    "needs_review": false,
+    "diagnosis": "The target is skewed or has zeros or negatives.",
+    "fix": {
+      "action": "log_transform",
+      "params": {}
+    }
+  },
+  "F07": {
+    "title": "Target outliers",
+    "prefix": "TARGET",
+    "category": "target",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some target values are far from the others; the target label space never changes, so this is reported only.",
+    "fix": {
+      "action": "no_action",
+      "params": {
+        "reason": "the target label space never changes, so this is reported only"
+      }
+    }
+  },
+  "G01": {
+    "title": "Feature predicts the target almost perfectly",
+    "prefix": "LEAK",
+    "category": "leakage",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "One feature alone predicts the target, which suggests leakage.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "G02": {
+    "title": "Categories map almost purely to one target value",
+    "prefix": "LEAK",
+    "category": "leakage",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The categories of this column give away the target.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "G03": {
+    "title": "Name suggests after-the-event information",
+    "prefix": "LEAK",
+    "category": "leakage",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The column name suggests it is known only after the target event.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "G04": {
+    "title": "Missingness predicts the target",
+    "prefix": "LEAK",
+    "category": "leakage",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The column is missing almost only for one class.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "H01": {
+    "title": "Repeated entities",
+    "prefix": "SPLIT",
+    "category": "split",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The same entity appears in several rows, so a random split leaks.",
+    "fix": {
+      "action": "split_strategy",
+      "params": {
+        "type": "group"
+      }
+    }
+  },
+  "H02": {
+    "title": "Time structure",
+    "prefix": "SPLIT",
+    "category": "split",
+    "priority": "must_fix",
+    "needs_review": true,
+    "diagnosis": "The target changes over time, so a random split is too optimistic.",
+    "fix": {
+      "action": "split_strategy",
+      "params": {
+        "type": "time"
+      }
+    }
+  },
+  "H03": {
+    "title": "Sorted file",
+    "prefix": "SPLIT",
+    "category": "split",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The rows are sorted, so they must be shuffled before splitting.",
+    "fix": {
+      "action": "split_strategy",
+      "params": {
+        "type": "random"
+      }
+    }
+  },
+  "H04": {
+    "title": "Near-duplicate rows",
+    "prefix": "SPLIT",
+    "category": "split",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Some rows are almost equal and would leak across the split.",
+    "fix": {
+      "action": "drop_rows",
+      "params": {}
+    }
+  },
+  "H05": {
+    "title": "Small dataset",
+    "prefix": "SPLIT",
+    "category": "split",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "The dataset is small, so use cross-validation and simple models.",
+    "fix": {
+      "action": "no_action",
+      "params": {
+        "reason": "use cross-validation and simple models"
+      }
+    }
+  },
+  "P01": {
+    "title": "Non-numeric columns left",
+    "prefix": "PROC",
+    "category": "processed",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The model input still has non-numeric columns.",
+    "fix": {
+      "action": "encode",
+      "params": {}
+    }
+  },
+  "P02": {
+    "title": "NaN or infinite values",
+    "prefix": "PROC",
+    "category": "processed",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "The model input still has NaN or infinite values.",
+    "fix": {
+      "action": "impute",
+      "params": {}
+    }
+  },
+  "P03": {
+    "title": "New constant columns",
+    "prefix": "PROC",
+    "category": "processed",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "A processing step created constant columns.",
+    "fix": {
+      "action": "drop_column",
+      "params": {}
+    }
+  },
+  "P04": {
+    "title": "Column explosion",
+    "prefix": "PROC",
+    "category": "processed",
+    "priority": "should_fix",
+    "needs_review": false,
+    "diagnosis": "Encoding created too many columns.",
+    "fix": {
+      "action": "group_rare",
+      "params": {}
+    }
+  },
+  "P05": {
+    "title": "Train/test schema mismatch",
+    "prefix": "PROC",
+    "category": "processed",
+    "priority": "must_fix",
+    "needs_review": false,
+    "diagnosis": "Train and test data have different columns, order or types.",
+    "fix": {
+      "action": "no_action",
+      "params": {}
+    }
+  }
+}

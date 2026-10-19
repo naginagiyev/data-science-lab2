@@ -1,0 +1,29 @@
+{
+  "name": "pilot-ablations",
+  "systems": [
+    "freecode",
+    "full-nogate",
+    "full-norepair",
+    "full-noreview",
+    "full-nosamples"
+  ],
+  "datasets": [
+    "Bank_Customer_Churn",
+    "students_dropout_and_academic_success",
+    "concrete_compressive_strength",
+    "diamonds"
+  ],
+  "group": "A",
+  "levels": [
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 120,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

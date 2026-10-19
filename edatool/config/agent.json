@@ -1,0 +1,24 @@
+{
+  "provider": "openai",
+  "model_id": "gpt-4.1-mini",
+  "temperature": 0,
+  "max_steps": 200,
+  "guard_k": 6,
+  "max_tokens_per_run": 2000000,
+  "max_tool_threads": 4,
+  "max_parallel_sessions": 4,
+  "api_key_env": "OPENAI_API_KEY",
+  "max_example_rows": 10,
+  "hide_examples": false,
+  "use_gate": true,
+  "cache_dir": null,
+  "anonymized_pattern": "^(V|X|f|col|feature)_?\\d+$",
+  "anonymized_codes": [
+    "D02",
+    "E09"
+  ],
+  "batch_size": 8,
+  "max_sessions": 8,
+  "session_seconds": 60,
+  "deadline": null
+}
