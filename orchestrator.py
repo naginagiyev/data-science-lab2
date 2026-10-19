@@ -24,10 +24,10 @@ from operations.translator import default_plan
 from checks.gate import gate_data, protected_only
 from tools.splitter import holdout, make_folds, split
 from tools.runfolder import RunFolder, close_logging, setup_logging
+from agents.cleaner import clean_plan, gate_with_refine, protected_part, repair_plan
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
 from schemas import AuditReport, Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
 from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
-from agents.cleaner import clean_plan, gate_with_refine, prepare_custom_steps, protected_part, repair_plan
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
@@ -333,9 +333,6 @@ def stage_compile(state):
     plan = state.objects["plan"]
     frame, values, folds = check_data(state)
     llm = state.options["cleaner"] and state.settings.cleaner.enabled
-    plan, custom_records = prepare_custom_steps(plan, state.client if llm else None, state.context, frame)
-    for record in custom_records:
-        decide(state, "compile", "custom", record["subject"], record["accepted"], record["reason"], "llm", proposal=record["proposal"])
     repaired, results, records = repair_plan(plan, frame, values, folds, task.target, task.task, state.settings, state.client if llm else None, state.context, state.options["repair"])
     for record in records:
         kind = "repair" if record["reason"].startswith("repair") else "check"

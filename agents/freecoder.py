@@ -1,8 +1,13 @@
 import json
 from schemas import Plan, Step
-from operations.custom import FREE_CLASS
-from agents.cleaner import CodeAnswer, columns_view
+from pydantic import BaseModel
+from agents.cleaner import columns_view
+from operations.freecode import FREE_CLASS
 from tools.sandbox import SandboxError, allowed_imports_text, check_code, run_code
+
+# the code answer of the free-code prompt
+class CodeAnswer(BaseModel):
+    code: str
 
 # the task text of the free-code prompt: what to clean, the audit issues and...
 # the columns with their values

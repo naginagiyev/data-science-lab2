@@ -1121,3 +1121,13 @@ Findings from the decision logs of the worst cells:
   a G01 warning into a drop.
 - Check: a `full` run on ibmchurn with a fake provider (every call except the review fails) ends with
   all 12 stages ok; the cleaner falls back to the translator plan and the report has no summary.
+
+## 2026-10-19 · P14.4 · Slim the cleaning checks
+
+- Removed the `custom` operation: the cleaner could ask for an operation whose code an LLM then wrote
+  (`prompts/customop.md`, `prepare_custom_steps`, `CustomOperation`). It was a second code-writing
+  path next to the `freecode` variant, which stays as the code-writing comparison. The `freecode`
+  operation moved to `operations/freecode.py`; the sandbox stays for it.
+- Kept: the LLM cleaner, repair (at most 3 per step), refine (at most 2 rounds), the data checks and
+  the gate. These are the plan, check and feedback loop the thesis studies.
+- `tests/testsandbox.py`: the custom-step tests became one test of the `freecode` operation.

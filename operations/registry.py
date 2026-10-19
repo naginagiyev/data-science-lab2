@@ -1,8 +1,8 @@
 import json
 from operations.text import TextFeatures
+from operations.freecode import FreeCodeOperation
 from operations.target import LogTarget, MapTargetLabels
 from operations.categories import GroupRare, MapCategories
-from operations.custom import CustomOperation, FreeCodeOperation
 from operations.rows import DropConflictingRows, DropDuplicateRows, DropRowsWhere
 from operations.parsing import ParseBoolean, ParseDatetime, ParseNumber, ParseUnits
 from operations.values import ClipValues, ImputeConstant, LogTransform, ReplaceValues, SetMissingWhere
@@ -16,11 +16,10 @@ COLUMN_OPERATIONS = [
 ROW_OPERATIONS = [DropDuplicateRows, DropConflictingRows, DropRowsWhere]
 TARGET_OPERATIONS = [MapTargetLabels, LogTarget]
 OPERATIONS = {operation.name: operation for operation in COLUMN_OPERATIONS + ROW_OPERATIONS + TARGET_OPERATIONS}
-OPERATIONS[CustomOperation.name] = CustomOperation
 OPERATIONS[FreeCodeOperation.name] = FreeCodeOperation
 HIDDEN = {FreeCodeOperation.name}
 
-# registers more operations (row, target and custom operations add themselves)
+# registers more operations
 def register(*operations):
     for operation in operations:
         OPERATIONS[operation.name] = operation

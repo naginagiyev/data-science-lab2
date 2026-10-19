@@ -65,7 +65,7 @@ class Step(BaseModel):
     issues: list[str] = []
     reason: str = ""
     protected: bool = False
-    source: Literal["leakguard", "translator", "llm", "repair", "refine", "custom"] = "translator"
+    source: Literal["leakguard", "translator", "llm", "repair", "refine"] = "translator"
 
 # a data-preparation plan: column steps, training-only row steps and target steps
 class Plan(BaseModel):
