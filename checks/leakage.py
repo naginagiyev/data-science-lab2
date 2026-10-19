@@ -20,16 +20,13 @@ def collect_evidence(report, id_columns, after_event=()):
 
 # decides every column with evidence by the table of §3.6: structural -> drop;...
 # semantic + statistical -> drop (leak removed); semantic only -> drop when...
-# drop_semantic_only, else warn; statistical only -> keep with a warning; with...
-# the guard off only the structural drops (ids, index) remain
-def decide(evidence, drop_semantic_only=True, enabled=True):
+# drop_semantic_only, else warn; statistical only -> keep with a warning
+def decide(evidence, drop_semantic_only=True):
     decisions = []
     for column, kinds in evidence.items():
         structural, statistical, semantic = (bool(kinds[name]) for name in ["structural", "statistical", "semantic"])
         if structural:
             action, reason = "drop", "id or saved index column (structural)"
-        elif not enabled:
-            action, reason = "keep", "leak guard is off"
         elif semantic and statistical:
             action, reason = "drop", "leak removed: known only after the event and predicts the target alone"
         elif semantic:
@@ -44,9 +41,9 @@ def decide(evidence, drop_semantic_only=True, enabled=True):
 
 # the leak guard: decisions per column and the protected drop steps for the...
 # plan (the target is never dropped)
-def leak_guard(report, target, id_columns, after_event=(), drop_semantic_only=True, enabled=True):
+def leak_guard(report, target, id_columns, after_event=(), drop_semantic_only=True):
     evidence = collect_evidence(report, [column for column in id_columns if column != target], after_event)
-    decisions = [item for item in decide(evidence, drop_semantic_only, enabled) if item["column"] != target]
+    decisions = [item for item in decide(evidence, drop_semantic_only) if item["column"] != target]
     drops = [item["column"] for item in decisions if item["action"] == "drop"]
     steps = []
     if drops:

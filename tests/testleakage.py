@@ -23,12 +23,9 @@ def test_statistical_only():
     assert decide(collect_evidence(report, []))[0]["action"] == "warn"
     assert decide(collect_evidence(report, [], [("final_grade", "given at the end")]))[0]["action"] == "drop"
 
-# the guard gives one protected drop step, never drops the target, and with...
-# the guard off only ids are dropped
+# the guard gives one protected drop step and never drops the target
 def test_guard_steps():
     report = AuditReport(issues=[issue("E03", "id"), issue("G01", "leak"), issue("G01", "y")])
     decisions, steps = leak_guard(report, "y", [], after_event=[("leak", "after the event"), ("y", "the target")])
     assert steps[0].params["columns"] == ["id", "leak"] and steps[0].protected and steps[0].source == "leakguard"
     assert steps[0].issues == ["E03-id", "G01-leak"] and all(item["column"] != "y" for item in decisions)
-    decisions, steps = leak_guard(report, "y", [], after_event=[("leak", "after the event")], enabled=False)
-    assert steps[0].params["columns"] == ["id"]

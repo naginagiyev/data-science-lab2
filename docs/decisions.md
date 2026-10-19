@@ -1168,3 +1168,17 @@ Findings from the decision logs of the worst cells:
 - Check: a `full` run on ibmchurn with a fake provider (modeller answer lightgbm 2 : linear 1) searched
   dummy, lightgbm and linear, chose lightgbm + linear (CV 0.8478, test 0.8545); the importance ranks
   tenure, Contract and InternetService first (15 s for 20 columns). Fast suite 187 passed.
+
+## 2026-10-19 · P14.7 · Variants (11 to 6)
+
+- Kept: `generic` (no audit, no LLM), `rules` (audit and translator, no LLM), `full` (all LLM
+  stages), `full-nogate` (RQ5: what the gate prevents), `freecode` (RQ5: typed operations vs free
+  code) and `full+ag` (the plug-in comparison with AutoGluon). Together they answer RQ1 to RQ5:
+  value of auditing (`generic` vs `rules`), value of the LLM (`rules` vs `full`), the gate, and
+  typed operations.
+- Removed: `full-noreview`, `full-norepair`, `full-nosamples`, `full-noleakguard` and `rules+ag`.
+  With them the variant options `samples`, `repair`, `leakguard` and `operations` became constant
+  and were removed. Value samples in prompts stay a setting (`cleaner.show_values`), and repair can
+  still be switched off with `cleaner.max_repairs=0`; `repair_plan`, `gate_with_refine` and the
+  leak guard lost their on/off parameters.
+- `benchmark/systems/registry.json` lists the six variants; the grids follow in P14.8.

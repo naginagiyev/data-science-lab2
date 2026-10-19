@@ -177,7 +177,7 @@ def repair_step(client, context, plan, position, error, frame, target, task):
 # (at most max_repairs attempts per step) or dropped at once (no client, or...
 # repair off); returns the plan without failing steps, the last check...
 # results and the decisions (one per attempt)
-def repair_plan(plan, frame, values, folds, target, task, settings, client=None, context=None, repair=True):
+def repair_plan(plan, frame, values, folds, target, task, settings, client=None, context=None):
     attempts = {}
     records = []
     plan = plan.model_copy(deep=True)
@@ -190,7 +190,7 @@ def repair_plan(plan, frame, values, folds, target, task, settings, client=None,
             error = "; ".join(results[position]["problems"])
             key = id(step)
             attempts[key] = attempts.get(key, 0) + 1
-            if not repair or client is None or step.protected or attempts[key] > settings.cleaner.max_repairs:
+            if client is None or step.protected or attempts[key] > settings.cleaner.max_repairs:
                 records.append({"subject": step.op, "accepted": False, "reason": f"dropped after the checks: {error}", "proposal": step.model_dump()})
                 plan.steps.pop(position)
                 continue
@@ -238,7 +238,7 @@ def refine_plan(client, context, plan, result, task, protected, columns, labels)
 # (or the plan loses to P0) the LLM may revise it (at most max_refines rounds);...
 # each revision is checked (failing steps repaired or dropped) and gated; the...
 # best gated plan wins; returns the final plan and every gate result
-def gate_with_refine(plan, train, task, split, settings, seed, client=None, context=None, deadline=None, repair=True):
+def gate_with_refine(plan, train, task, split, settings, seed, client=None, context=None, deadline=None):
     columns = list(train.columns)
     labels = train[task.target].astype(str).tolist() if task.task != "regression" else []
     protected = protected_part(plan)
@@ -253,7 +253,7 @@ def gate_with_refine(plan, train, task, split, settings, seed, client=None, cont
         if revised is None:
             break
         sample, folds, _ = gate_data(train, task.target, task.task, split, settings.gate, seed)
-        revised, _, _ = repair_plan(revised, sample.drop(columns=[task.target]), sample[task.target].to_numpy(), folds, task.target, task.task, settings, client, context, repair)
+        revised, _, _ = repair_plan(revised, sample.drop(columns=[task.target]), sample[task.target].to_numpy(), folds, task.target, task.task, settings, client, context)
         candidate, result = run_gate(revised, train, task.target, task.task, task.metric, split, settings.gate, seed, columns, deadline)
         result["refined"] = True
         results.append(result)

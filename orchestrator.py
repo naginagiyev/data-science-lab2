@@ -32,19 +32,14 @@ from operations.compiler import AgentSteps, feature_pipeline, row_filter, target
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
-BASE = {"audit": True, "leakreview": True, "operations": True, "cleaner": True, "gate": True, "repair": True, "samples": True, "leakguard": True, "modeller": True, "freecode": False, "engine": "own"}
+BASE = {"audit": True, "leakreview": True, "cleaner": True, "gate": True, "modeller": True, "freecode": False, "engine": "own"}
 VARIANT_OPTIONS = {
-    "generic": dict(BASE, audit=False, leakreview=False, operations=False, cleaner=False, gate=False, leakguard=False, modeller=False),
+    "generic": dict(BASE, audit=False, leakreview=False, cleaner=False, modeller=False),
     "rules": dict(BASE, leakreview=False, cleaner=False, modeller=False),
     "full": dict(BASE),
-    "full-noreview": dict(BASE, leakreview=False),
     "full-nogate": dict(BASE, gate=False),
-    "full-norepair": dict(BASE, repair=False),
-    "full-nosamples": dict(BASE, samples=False),
-    "full-noleakguard": dict(BASE, leakguard=False),
     "freecode": dict(BASE, freecode=True, cleaner=False),
     "full+ag": dict(BASE, engine="autogluon"),
-    "rules+ag": dict(BASE, leakreview=False, cleaner=False, modeller=False, engine="autogluon"),
 }
 VARIANTS = list(VARIANT_OPTIONS)
 FINISH_SHARE = 0.04
@@ -164,7 +159,7 @@ def clean_rows(state, task):
 def stage_frame(state):
     uses_llm = state.options["cleaner"] or state.options["leakreview"] or state.options["freecode"]
     client = state.client if uses_llm else None
-    profile = glance_text(state.objects["glance"], examples=state.options["samples"]) if uses_llm and state.objects["glance"]["columns"] else ""
+    profile = glance_text(state.objects["glance"], examples=state.settings.cleaner.show_values) if uses_llm and state.objects["glance"]["columns"] else ""
     ask = state.objects["options"].get("ask", False)
     task = frame_task(state.objects["raw"], state.objects["glance"], state.settings, state.objects["target"], state.objects["task"], client, state.context, ask, profile)
     state.context.task = task
@@ -238,7 +233,7 @@ def stage_leakguard(state):
     after_event = review_leaks(state.client, state.context, state.objects["glance"], state.objects["report"], task) if state.options["leakreview"] else []
     for column, reason in after_event:
         decide(state, "leakguard", "review", column, True, f"known only after the event: {reason}", "llm")
-    decisions, steps = leak_guard(state.objects["report"], task.target, ids, after_event, state.settings.leakage.drop_semantic_only, state.options["leakguard"])
+    decisions, steps = leak_guard(state.objects["report"], task.target, ids, after_event, state.settings.leakage.drop_semantic_only)
     state.context.leaks = decisions
     state.objects["leak_steps"] = steps
     state.folder.write_json("leaks.json", decisions)
@@ -283,7 +278,7 @@ def stage_plan(state):
     train = state.objects["train"]
     leak_steps = state.objects.get("leak_steps", [])
     dropped = {column for step in leak_steps for column in step.params.get("columns", [])}
-    plan, skipped_issues = default_plan(state.objects["report"], task.target) if state.options["operations"] else (Plan(), [])
+    plan, skipped_issues = default_plan(state.objects["report"], task.target)
     for item in skipped_issues:
         decide(state, "plan", "issue", item["issue"], False, f"translator skipped: {item['reason']}", "rules")
     steps = [step for step in plan.steps if not ({step.params.get("column")} | set(step.params.get("columns", []))) & dropped]
@@ -293,14 +288,14 @@ def stage_plan(state):
     source = "translator"
     if state.options["freecode"]:
         report = state.objects["report"]
-        written = free_code_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), issues_text(report), state.settings, state.options["samples"])
+        written = free_code_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), issues_text(report), state.settings, state.settings.cleaner.show_values)
         decide(state, "plan", "freecode", "code", written is not None, "LLM cleaning code written and tested" if written is not None else "no valid cleaning code; protected steps only", "llm")
         combined = written if written is not None else protected_part(combined)
         state.context.plans.append(combined)
         source = "freecode" if written is not None else "freecode failed"
     elif state.options["cleaner"] and state.settings.cleaner.enabled:
         report = state.objects["report"]
-        cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(report), state.settings, state.options["samples"])
+        cleaned = clean_plan(state.client, state.context, train, state.objects["glance"], task, protected_part(combined), combined, issues_text(report), state.settings, state.settings.cleaner.show_values)
         if cleaned is not None:
             combined = valid_steps(state, cleaned, list(train.columns))
             combined.version = 1
@@ -334,7 +329,7 @@ def stage_compile(state):
     plan = state.objects["plan"]
     frame, values, folds = check_data(state)
     llm = state.options["cleaner"] and state.settings.cleaner.enabled
-    repaired, results, records = repair_plan(plan, frame, values, folds, task.target, task.task, state.settings, state.client if llm else None, state.context, state.options["repair"])
+    repaired, results, records = repair_plan(plan, frame, values, folds, task.target, task.task, state.settings, state.client if llm else None, state.context)
     for record in records:
         kind = "repair" if record["reason"].startswith("repair") else "check"
         decide(state, "compile", kind, record["subject"], record["accepted"], record["reason"], "llm" if kind == "repair" else "checks", proposal=record["proposal"])
@@ -367,7 +362,7 @@ def stage_gate(state):
     else:
         deadline = time.monotonic() + state.budget.stage_limit("gate")
         llm = state.options["cleaner"] and state.settings.cleaner.enabled
-        final, rounds = gate_with_refine(plan, state.objects["train"], task, state.context.split, state.settings, state.settings.seed, state.client if llm else None, state.context, deadline, state.options["repair"])
+        final, rounds = gate_with_refine(plan, state.objects["train"], task, state.context.split, state.settings, state.settings.seed, state.client if llm else None, state.context, deadline)
         best = max(rounds, key=lambda result: oriented(task.metric, result["final_score"]))
         state.context.gate = {"p0": rounds[0]["p0"], "final_score": best["final_score"], "rounds": len(rounds), "accepted": best["accepted"]}
         state.folder.write_json("gate.json", {"rounds": rounds, "final_score": best["final_score"]})

@@ -46,5 +46,5 @@ def test_drop_and_no_repair(tmp_path):
     client, provider = fake_client(tmp_path, [{"action": "drop", "op": "", "params_json": "{}", "reason": "not fixable"}])
     plan, _, records = repair_plan(Plan(steps=[WRONG]), frame, values, folds, "y", "binary-classification", load_settings(), client)
     assert plan.steps == [] and "not fixable" in records[0]["reason"]
-    plan, _, records = repair_plan(Plan(steps=[WRONG]), frame, values, folds, "y", "binary-classification", load_settings(), client, repair=False)
+    plan, _, records = repair_plan(Plan(steps=[WRONG]), frame, values, folds, "y", "binary-classification", load_settings(assignments=["cleaner.max_repairs=0"]), client)
     assert plan.steps == [] and len(provider.calls) == 1
