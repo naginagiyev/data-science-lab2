@@ -35,27 +35,5 @@
   "settings": [
     "spend.category=experiments",
     "llm.model=gpt-4.1-mini"
-  ],
-  "holdout": [
-    {
-      "system": "full",
-      "dataset": "E-CommereShippingData",
-      "level": 2
-    },
-    {
-      "system": "autogluon",
-      "dataset": "E-CommereShippingData",
-      "level": 2
-    },
-    {
-      "system": "full",
-      "dataset": "concrete_compressive_strength",
-      "level": 2
-    },
-    {
-      "system": "autogluon",
-      "dataset": "concrete_compressive_strength",
-      "level": 2
-    }
   ]
 }

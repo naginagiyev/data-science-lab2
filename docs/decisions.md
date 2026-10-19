@@ -1182,3 +1182,29 @@ Findings from the decision logs of the worst cells:
   still be switched off with `cleaner.max_repairs=0`; `repair_plan`, `gate_with_refine` and the
   leak guard lost their on/off parameters.
 - `benchmark/systems/registry.json` lists the six variants; the grids follow in P14.8.
+
+## 2026-10-19 · P14.8 · Benchmark at MSc core
+
+- Kept: the benchmark data (OpenML pools, corruptor with 12 mess types and 4 levels, leak
+  generator, natural-mess group), the resumable runner, scoring, the five baselines (dummy,
+  LightGBM, skrub, FLAML, AutoGluon), the statistics (normalized score, average ranks,
+  Friedman/Nemenyi, Wilcoxon with Holm, bootstrap intervals), figures, `docs/results.md` generation,
+  one-command reproduction and the showcase.
+- Experiments kept: E1 (score vs mess level, RQ1 and RQ2), E2 (`full+ag` vs AutoGluon), E3 (leaks,
+  RQ3), E4 (reliability and cost, from the same runs), E5 (ablations: `rules`, `freecode`,
+  `full-nogate` next to `full`, RQ5) and E10 (natural mess). Removed: E6 (per mess type, with the
+  repair-accuracy check), E6b (reading robustness), E7 (framer accuracy on 40 datasets), E8 (audit
+  quality, gone with edabench in P14.5) and E9 (budget sensitivity), and the power projection with
+  the held-out cells. They answer side questions; the five research questions do not need them.
+- Deleted: `benchmark/projection.py`, `framereval.py`, `performance.py`, `repairs.py`, their tests,
+  `docs/projection.md`, the grids `pilot-seed`, `pilot-types`, `pilot-budget`, `reading`, `types`,
+  `budgets` and their result files. The runner lost the held-out cells and the budget lists; the
+  orchestrator lost `stop_after` and `prepared.parquet` (both only served the repair check).
+- Grids now: `smoke` 36 cells, `pilot-main` 216, `pilot-leaks` 20, `pilot-ablations` 8,
+  `pilot-natural` 12; full grids (written, not run) `main` 1,440, `leaks` 180, `ablations` 160.
+- `benchmark/results/runs.csv` is renamed to `runs-before-p14.csv`: the runner resumes a grid from
+  the rows in `runs.csv`, so the old pilot rows would make the re-run skip every cell. The old rows
+  stay for comparison. `docs/results.md`, `tables.md` and the figures keep the old numbers with a
+  notice at the top of `docs/results.md` until the re-run.
+- Check: `figures.build` and `resultsdoc.build` run on a copy of the old rows (5 figures, sections
+  RQ1 to RQ5 and E10); fast suite 184 passed.

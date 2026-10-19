@@ -6,11 +6,11 @@ import pandas as pd
 from benchmark import analysis
 import matplotlib.pyplot as plt
 from benchmark.materialize import cell_dir
-from paths import figures_dir, results_dir, tables_file
+from paths import figures_dir, tables_file
 
-SYSTEMS = ["lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag"]
-COLORS = dict(zip(SYSTEMS, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]))
-MARKERS = dict(zip(SYSTEMS, ["o", "s", "D", "^", "v", "P", "X", "*"]))
+SYSTEMS = ["lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag", "full-nogate", "freecode"]
+COLORS = dict(zip(SYSTEMS, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948", "#52514e", "#8f6b00"]))
+MARKERS = dict(zip(SYSTEMS, ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]))
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 BASELINES = ["autogluon", "skrub", "lightgbm", "flaml", "generic"]
 TABLES = {}
@@ -85,30 +85,6 @@ def cd_diagram(frame, level):
     save(figure, f"cd-level{level}")
     return result
 
-# figure 3: gain over generic per mess type (mean normalized difference at level 3)
-def type_gains(frame):
-    data = analysis.normalized(frame)
-    rows = []
-    for mess, part in data.groupby("mess_types"):
-        pivot = part.pivot_table(index="dataset", columns="system", values="normalized")
-        for system in [name for name in ["full", "autogluon"] if name in pivot and "generic" in pivot]:
-            rows.append({"mess": mess, "system": system, "gain": float((pivot[system] - pivot["generic"]).mean())})
-    gains = pd.DataFrame(rows)
-    if gains.empty:
-        return gains
-    pivot = gains.pivot(index="mess", columns="system", values="gain")
-    figure, axis = plt.subplots(figsize=(6.4, 3.6))
-    width = 0.8 / len(pivot.columns)
-    for position, system in enumerate(pivot.columns):
-        axis.bar(np.arange(len(pivot)) + position * width, pivot[system], width=width - 0.03, color=COLORS[system], label=system)
-    axis.axhline(0, color=MUTED, linewidth=0.8)
-    axis.set_xticks(np.arange(len(pivot)) + width * (len(pivot.columns) - 1) / 2, pivot.index, rotation=20)
-    axis.set_ylabel("normalized score minus generic")
-    axis.grid(axis="y", color=GRID, linewidth=0.8)
-    axis.legend(frameon=False)
-    save(figure, "gain-per-type")
-    return table(pivot, "gain-per-type")
-
 # leak experiment: mean naive score (leak present at test time) and...
 # deployment score (leak masked) per system, normalized with the deployment...
 # cell's dummy and best
@@ -123,7 +99,7 @@ def leak_summary(frame):
     data["naive_normalized"] = (data["naive"] * sign - data["dummy_oriented"]) / (best - data["dummy_oriented"])
     return data.groupby("system")[["naive_normalized", "normalized"]].mean().rename(columns={"normalized": "deployment_normalized"})
 
-# figure 4: the leak summary as naive vs deployment points per system
+# figure 3: the leak summary as naive vs deployment points per system
 def leak_scores(frame):
     summary = leak_summary(frame)
     if summary.empty:
@@ -140,7 +116,7 @@ def leak_scores(frame):
     save(figure, "leaks")
     return table(summary, "leaks-naive-vs-deployment")
 
-# figure 5: ablations at level 3 on the ablation datasets (one hue, sorted)
+# figure 4: ablations at level 3 on the ablation datasets (one hue, sorted)
 def ablations(frame, datasets):
     data = analysis.normalized(frame[(frame["level"] == 3) & frame["dataset"].isin(datasets)])
     means = data.groupby(["system", "dataset"])["normalized"].mean().groupby("system").mean().sort_values()
@@ -157,7 +133,7 @@ def ablations(frame, datasets):
     save(figure, "ablations")
     return table(means.to_frame("normalized"), "ablations")
 
-# figure 6: cost vs score per system (dollars per run and mean normalized score)
+# figure 5: cost vs score per system (dollars per run and mean normalized score)
 def cost_vs_score(frame):
     data = analysis.normalized(frame)
     summary = data.groupby("system").agg(score=("normalized", "mean"), cost=("cost_usd", "mean"), seconds=("seconds", "median"))
@@ -180,10 +156,8 @@ def cell_truth(row):
 # regenerates every pilot figure and table from the results files
 def build():
     main = analysis.load_results(["pilot-main"])
-    seed = analysis.load_results(["pilot-seed"])
     outputs = {}
     if not main.empty:
-        both = pd.concat([main, seed], ignore_index=True)
         score_vs_level(main)
         outputs["cd"] = [cd_diagram(main, level) for level in sorted(main["level"].unique())]
         table(analysis.mean_normalized(main), "mean-normalized")
@@ -193,22 +167,16 @@ def build():
             tests.append(analysis.wilcoxon_table(main, "full+ag", ["autogluon"], [2, 3]))
         table(pd.concat(tests, ignore_index=True), "wilcoxon", index=False)
         table(main.pivot_table(index=["dataset", "level"], columns="system", values="score", aggfunc="first"), "per-dataset-scores")
-        table(analysis.reliability(both), "reliability")
+        table(analysis.reliability(main), "reliability")
         cost_vs_score(main)
     ablation = analysis.load_results(["pilot-ablations"])
     if not ablation.empty:
         names = sorted(ablation["dataset"].unique())
         ablations(pd.concat([main, ablation], ignore_index=True), names)
-    types = analysis.load_results(["pilot-types"])
-    if not types.empty:
-        type_gains(types)
     leaks = analysis.load_results(["pilot-leaks"])
     if not leaks.empty:
         leak_scores(leaks)
         table(analysis.leak_metrics(leaks, cell_truth), "leak-detection")
-    if (results_dir / "framer.csv").exists():
-        framer = pd.read_csv(results_dir / "framer.csv")
-        table(framer[["rules_target_ok", "rules_task_ok", "llm_target_ok", "llm_task_ok"]].sum().to_frame("correct of 40"), "framer-accuracy")
     write_tables()
     return outputs
 

@@ -37,20 +37,15 @@ def load_registry(path=None):
     return json.loads((path or systems_registry_file).read_text(encoding="utf-8"))
 
 # expands a grid into its cells: systems x datasets x levels x seeds (x mess...
-# types when "mess" is a list, x budgets when the grid has "budgets")
+# types when "mess" is a list)
 def expand_cells(grid):
     cells = []
     messes = grid.get("mess", "mixed")
     messes = messes if isinstance(messes, list) else [messes]
-    for system, dataset, level, seed, mess, budget in itertools.product(grid["systems"], grid["datasets"], grid["levels"], grid["seeds"], messes, grid.get("budgets", [grid["budget"]])):
+    for system, dataset, level, seed, mess in itertools.product(grid["systems"], grid["datasets"], grid["levels"], grid["seeds"], messes):
         name, group = (dataset, grid.get("group", "dev")) if isinstance(dataset, str) else (dataset["name"], dataset["group"])
-        cells.append({"system": system, "dataset": name, "group": group, "level": level, "seed": seed, "budget": budget, "mess": mess})
+        cells.append({"system": system, "dataset": name, "group": group, "level": level, "seed": seed, "budget": grid["budget"], "mess": mess})
     return cells
-
-# true when a cell is one of the grid's held-out cells (they run last, with...
-# --holdout)
-def is_holdout(cell, grid):
-    return any(cell["system"] == item["system"] and cell["dataset"] == item["dataset"] and cell["level"] == item["level"] for item in grid.get("holdout", []))
 
 # the key that says if a cell already has a result
 def cell_key(row):
@@ -171,14 +166,13 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
     return row
 
 # runs every cell of a grid that has no result yet, with at most `workers`...
-# cells in parallel (held-out cells only with holdout=True, then only them);...
-# returns the new result rows
-def run_grid(name, workers=None, registry_path=None, results_folder=None, systems=None, limit=None, holdout=False):
+# cells in parallel; returns the new result rows
+def run_grid(name, workers=None, registry_path=None, results_folder=None, systems=None, limit=None):
     grid = load_grid(name)
     registry = load_registry(registry_path)
     results_file = (results_folder or results_dir) / "runs.csv"
     finished = done_keys(results_file, grid["name"])
-    cells = [cell for cell in expand_cells(grid) if cell_key(cell) not in finished and (not systems or cell["system"] in systems) and is_holdout(cell, grid) == holdout]
+    cells = [cell for cell in expand_cells(grid) if cell_key(cell) not in finished and (not systems or cell["system"] in systems)]
     cells = cells[:limit] if limit else cells
     lock = threading.Lock()
     log_dir = logs_dir / grid["name"]
@@ -228,14 +222,13 @@ def main():
     parser.add_argument("--workers", type=int)
     parser.add_argument("--systems", nargs="*")
     parser.add_argument("--limit", type=int)
-    parser.add_argument("--holdout", action="store_true", help="run only the grid's held-out cells")
     parser.add_argument("--check", action="store_true", help="check the grid files and start its first cell, without running it")
     arguments = parser.parse_args()
     if arguments.check:
         problems = check_grid(arguments.grid)
         print(f"Grid {arguments.grid}: " + ("ok" if not problems else "; ".join(problems)), flush=True)
         return 1 if problems else 0
-    run_grid(arguments.grid, arguments.workers, systems=arguments.systems, limit=arguments.limit, holdout=arguments.holdout)
+    run_grid(arguments.grid, arguments.workers, systems=arguments.systems, limit=arguments.limit)
     return 0
 
 if __name__ == "__main__":

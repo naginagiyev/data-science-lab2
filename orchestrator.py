@@ -26,9 +26,9 @@ from modelling.evaluator import evaluate, importance
 from tools.splitter import holdout, make_folds, split
 from tools.runfolder import RunFolder, close_logging, setup_logging
 from agents.cleaner import clean_plan, gate_with_refine, protected_part, repair_plan
+from operations.compiler import feature_pipeline, row_filter, target_steps, validate_plan
 from tools.reader import check_target, drop_duplicate_rows, drop_missing_target, read_table
 from schemas import AuditReport, Decision, Plan, RunContext, SplitInfo, StageStatus, Step, StopRun
-from operations.compiler import AgentSteps, feature_pipeline, row_filter, target_steps, validate_plan
 
 logger = logging.getLogger("automl")
 STAGES = ["read", "glance", "frame", "split", "audit", "leakguard", "plan", "compile", "gate", "model", "test", "report"]
@@ -398,15 +398,6 @@ def save_trials(state, trials):
         frame["params"] = frame["params"].map(json.dumps)
         frame.to_csv(state.folder.file("optuna.csv"), index=False, lineterminator="\n")
 
-# benchmark mode: the training frame after the agent steps, for repair accuracy
-def save_prepared(state, features):
-    plan = state.context.final_plan
-    if state.context.mode != "benchmark" or plan is None or not plan.steps:
-        return
-    prepared = AgentSteps(list(plan.steps)).fit(features).transform(features)
-    prepared = prepared.apply(lambda column: column.astype(str) if column.dtype == object or str(column.dtype) == "category" else column)
-    prepared.to_parquet(state.folder.file("prepared.parquet"))
-
 # the modeller's families and time shares, kept only within the configured...
 # candidates and in their order (with at least one boosting family); None...
 # keeps the defaults
@@ -456,10 +447,6 @@ def train_model(state, families=None):
     fitted = FittedModel(trained, encoder, features.columns, task.target, task.task, task.metric, state.context.settings_hash, plan=plan, target_transform=transform)
     fitted.save(state.folder.file("model.joblib"))
     state.objects["fitted"] = fitted
-    try:
-        save_prepared(state, features)
-    except Exception as error:
-        state.folder.log_error("prepared.parquet", error)
     cv_text = f"{summary['cv_score']:.4f}" if summary["cv_score"] is not None else "n/a"
     return f"{' + '.join(chosen)} | CV {task.metric} {cv_text}"
 
@@ -530,8 +517,7 @@ def stage_table(state):
     return [(name, *table[name]) for name in STAGES]
 
 # runs the whole pipeline on one file and returns the RunContext; demo and...
-# benchmark use this same function; options["stop_after"] ends the run after...
-# that stage (the cleaning-only repair checks stop after the gate)
+# benchmark use this same function
 def run(data_path, settings, target=None, task=None, mode="demo", variant="full", out_dir=None, folder=None, provider=None, console=True, options=None):
     if variant not in VARIANT_OPTIONS:
         raise ValueError(f"Unknown variant '{variant}'. Choose one of: {', '.join(VARIANTS)}.")
@@ -549,9 +535,6 @@ def run(data_path, settings, target=None, task=None, mode="demo", variant="full"
         logger.info(f"Run {context.run_id} | {variant} | {mode} | budget {settings.budget.total_seconds:.0f} s")
         for name, function, fallback in stage_table(state):
             run_stage(state, name, function, fallback)
-            if name == state.objects["options"].get("stop_after"):
-                state.context.final_plan = state.context.final_plan or state.objects.get("plan")
-                return context
         logger.info(f"Done in {budget.elapsed():.1f} s | run folder: {folder.path}")
         return context
     except StopRun as error:

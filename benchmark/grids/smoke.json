@@ -9,8 +9,7 @@
     "generic",
     "rules",
     "full",
-    "full+ag",
-    "rules+ag"
+    "full+ag"
   ],
   "datasets": [
     "ibmchurn",

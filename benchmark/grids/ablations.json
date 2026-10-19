@@ -4,11 +4,7 @@
     "generic",
     "rules",
     "full",
-    "full-noreview",
     "full-nogate",
-    "full-norepair",
-    "full-nosamples",
-    "full-noleakguard",
     "freecode"
   ],
   "datasets": [

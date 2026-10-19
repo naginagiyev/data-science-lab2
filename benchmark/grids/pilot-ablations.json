@@ -2,10 +2,7 @@
   "name": "pilot-ablations",
   "systems": [
     "freecode",
-    "full-nogate",
-    "full-norepair",
-    "full-noreview",
-    "full-nosamples"
+    "full-nogate"
   ],
   "datasets": [
     "Bank_Customer_Churn",
