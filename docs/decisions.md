@@ -1037,3 +1037,33 @@ Findings from the decision logs of the worst cells:
   (not pushed, by the user's choice). A bundle of the old history is kept outside the project
   (`../test-history-backup-2026-10-19.bundle`).
 - The local branch `main` is renamed to `V2`. `CLAUDE.md` now says to push after every commit.
+
+## 2026-10-19 · P14.0 · Restructuring: baseline
+
+- The user asked to make every part of the pipeline the same depth, to merge the vendored edatool
+  into the main code, and to scope the project as an MSc thesis. Plan: phases P14.0 to P14.10
+  (`docs/buildplan.md` §6). Local git only (no push), no co-author lines.
+- Python lines before P14: edatool 4,582 (plus 1,236 lines of JSON config), edabench 2,331,
+  benchmark 2,872, operations 1,491, tools 746, modelling 637, orchestrator 605, agents 567,
+  checks 346, llms 332, main/settings/schemas/paths 425, tests 2,958. Fast suite: 191 passed.
+- Found while making the baseline: `tests/testagentmodel.py::test_provider_failure_falls_back` breaks
+  only the smolagents model; the summary of its `full` run used the real OpenAI provider and the real
+  ledger (2 nano calls, $0.00035, logged in `spend.json`). The file goes in P14.3; until then it is
+  left out of the test runs.
+
+## 2026-10-19 · P14.1 · Shared foundations
+
+- `tools/columntypes.py` holds the type inference and the value patterns (from edatool
+  `typeinference.py` and `patterns.py`). The thresholds that only the type inference uses are module
+  constants; the tokens are in `configuration/tokens.json`. One list of date patterns now carries
+  its strptime format (before: four separate lists). `name_words` of the framer is the same function
+  as `name_tokens` and was removed.
+- Parity check on the 4 local datasets (20,000 rows each): the same types, confidences and typed
+  values as edatool's `infer_schema`.
+- `tools/reader.py` is the only reader (from edatool `loader.py`). The read report is returned
+  directly instead of being stored in `DataFrame.attrs["edatool"]`; an empty file now stops with
+  "The file ... is empty." instead of a wrapped `ValueError`.
+- `tools/splitter.py` makes its own split advice: H01 (repeated ids, group split) and H02 (target
+  trend over a date, time split). H03 to H05 never changed the advice and were dropped. As before,
+  the last matching column wins.
+- `tests/testloader.py` is merged into `tests/testreader.py`; `tests/testsplitter.py` tests the advice.

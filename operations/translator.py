@@ -1,7 +1,7 @@
 import json
 import logging
 from schemas import Plan, Step
-from edatool.settings import load_settings
+from tools.columntypes import TOKENS
 
 logger = logging.getLogger("automl.plan")
 SKIPPED_STATUSES = {"dismissed", "accepted", "resolved"}
@@ -154,7 +154,7 @@ def translate_issue(issue, tokens):
 # translated; group_rare is left out on columns parsed to numbers; returns the...
 # plan and the skipped issues with reasons
 def default_plan(report, target):
-    tokens = {name: set(values) for name, values in load_settings()["tokens"].items() if name.startswith("boolean_")}
+    tokens = {name: set(TOKENS[name]) for name in ["boolean_true", "boolean_false"]}
     steps, row_steps, target_steps, skipped = [], [], [], []
     for issue in report.issues:
         if issue.status in SKIPPED_STATUSES or issue.code in LEAK_CODES or issue.code in NOT_TRANSLATED or issue.code.startswith("P"):

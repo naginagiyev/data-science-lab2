@@ -149,6 +149,19 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P13 Workspace cleanup · 2026-10-16 · 3d27f06 · v1 copy, dev grids, duplicates and unused files removed; one results file (runs.csv), one tables file; plan, progress, study and design inputs moved to docs/; caches 7.6 GB -> 1.4 GB; 191 fast tests pass; regenerated docs have the same numbers (decisions.md)
 - [x] P13.3 GitHub · 2026-10-19 · (this commit) · history without the Claude co-author line (ids updated in the docs and runs.csv), branch V2 pushed to GitHub, push after every commit
 
+## P14. Restructuring (one codebase at MSc scale)
+- [x] P14.0 Baseline · 2026-10-19 · 96d0b2e · local git, line counts in decisions.md, fast suite 191 passed
+- [x] P14.1 Shared foundations · 2026-10-19 · (this commit) · tools/columntypes.py, reader absorbs the loader, splitter absorbs the split advice; types identical on the 4 local datasets
+- [ ] P14.2 The audit package
+- [ ] P14.3 Leak review as a normal agent
+- [ ] P14.4 Slim the cleaning checks
+- [ ] P14.5 Delete edatool and edabench
+- [ ] P14.6 Small additions to modelling and evaluation
+- [ ] P14.7 Variants (11 to 6)
+- [ ] P14.8 Benchmark at MSc core
+- [ ] P14.9 Documentation
+- [ ] P14.10 Final checks
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)

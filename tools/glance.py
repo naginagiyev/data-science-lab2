@@ -1,8 +1,6 @@
 import logging
 import pandas as pd
-from edatool.settings import load_settings
-from edatool.core.typeinference import infer_schema
-from edatool.core.patterns import pattern_stats, pattern_text
+from tools.columntypes import infer_types, pattern_stats, pattern_text
 
 SAMPLE_ROWS = 50000
 FULL_COLUMNS = 40
@@ -17,7 +15,7 @@ def short(value, length=40):
 
 # the quick look at one column: type, missing share, uniques, top and random...
 # values, range and pattern stats
-def column_glance(name, raw_column, info, typed_column, details, seed):
+def column_glance(name, raw_column, column_type, typed_column, details, seed):
     text = raw_column.astype(str)
     missing_tokens = {str(token): int(count) for token, count in details.get("missing_tokens", {}).items()}
     missing = sum(missing_tokens.values())
@@ -26,8 +24,8 @@ def column_glance(name, raw_column, info, typed_column, details, seed):
     examples = distinct.sample(min(5, len(distinct)), random_state=seed).tolist() if len(distinct) else []
     entry = {
         "name": str(name),
-        "type": info.type,
-        "confidence": info.confidence,
+        "type": column_type,
+        "confidence": details.get("confidence", "high"),
         "missing_share": round(missing / max(1, len(text)), 4),
         "missing_tokens": missing_tokens,
         "unique": int(present.nunique()),
@@ -35,7 +33,7 @@ def column_glance(name, raw_column, info, typed_column, details, seed):
         "examples": [str(value) for value in examples],
         "patterns": pattern_stats(present, seed=seed),
     }
-    if info.type in NUMERIC_TYPES:
+    if column_type in NUMERIC_TYPES:
         numbers = pd.to_numeric(typed_column, errors="coerce")
         if numbers.notna().any():
             entry["min"] = float(numbers.min())
@@ -54,15 +52,14 @@ def interest(entry):
 # the quick look at the whole table (a sample of at most 50,000 rows for types)
 def glance(raw, seed=0):
     sample = raw.sample(SAMPLE_ROWS, random_state=seed) if len(raw) > SAMPLE_ROWS else raw
-    schema, typed, details = infer_schema(sample, None, load_settings())
+    types, typed, details = infer_types(sample)
     columns = []
-    for position, info in enumerate(schema):
-        name = sample.columns[position]
+    for position, name in enumerate(sample.columns):
         try:
-            columns.append(column_glance(name, sample.iloc[:, position], info, typed.iloc[:, position], details[name], seed))
+            columns.append(column_glance(name, sample.iloc[:, position], types[name], typed.iloc[:, position], details[name], seed))
         except Exception as error:
             logger.warning(f"Glance of column {name!r} failed: {type(error).__name__}: {error}")
-            columns.append({"name": str(name), "type": info.type, "error": f"{type(error).__name__}: {error}", "patterns": {}, "missing_tokens": {}})
+            columns.append({"name": str(name), "type": types[name], "error": f"{type(error).__name__}: {error}", "patterns": {}, "missing_tokens": {}})
     return {"rows": int(len(raw)), "sampled_rows": int(len(sample)), "columns": columns}
 
 # one compact line per column for prompts (about 60 tokens): type, missing...

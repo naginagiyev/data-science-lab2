@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from tools.splitter import holdout, make_folds, split
+from tools.splitter import holdout, make_folds, split, split_advice
 
 # a toy classification frame with a repeated entity id and a date
 def toy_frame(rows=200, seed=0):
@@ -66,3 +66,15 @@ def test_regression_and_benchmark_mode():
     info, train, test = split(frame, "y", "regression", "benchmark", 0.2, 5, 0)
     assert info.test_rows == [] and len(train) == len(frame) and len(test) == 0
     assert len(info.folds) == 5
+
+# repeated ids give a group split; a target that follows a date gives a time...
+# split; otherwise classification is stratified
+def test_split_advice():
+    frame = toy_frame()
+    frame["house"] = [str(1000 + index) for index in range(len(frame))]
+    frame.loc[1, "house"] = "1000"
+    assert split_advice(frame, "y", "binary-classification")[:2] == ("group", "house")
+    trend = toy_frame().drop(columns=["house"])
+    trend["y"] = [str(index + value) for index, value in enumerate(np.random.default_rng(0).normal(size=len(trend)))]
+    assert split_advice(trend, "y", "regression")[:2] == ("time", "sold")
+    assert split_advice(toy_frame().drop(columns=["sold"]), "y", "binary-classification")[0] == "stratified"

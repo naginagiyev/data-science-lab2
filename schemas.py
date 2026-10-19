@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Any, Literal
-from edatool.schemas import Task
+
+Task = Literal["binary-classification", "multi-class-classification", "regression"]
 
 # short task names that the command line accepts, mapped once to the full names
 TASK_ALIASES = {

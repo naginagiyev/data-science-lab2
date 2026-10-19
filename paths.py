@@ -8,6 +8,8 @@ env_file = root_dir / ".env"
 configuration_dir = root_dir / "configuration"
 settings_file = configuration_dir / "settings.json"
 metrics_file = configuration_dir / "metrics.json"
+tokens_file = configuration_dir / "tokens.json"
+audit_file = configuration_dir / "audit.json"
 
 prompts_dir = root_dir / "prompts"
 data_dir = root_dir / "data"

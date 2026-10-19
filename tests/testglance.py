@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from tools.glance import glance, glance_text
-from edatool.core.patterns import pattern_stats, pattern_text, template
+from tools.columntypes import pattern_stats, pattern_text, template
 
 # numbers with units, currency, percent, dates, packed values and booleans...
 # are measured with their top units, formats and templates

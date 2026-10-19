@@ -2,22 +2,67 @@ import logging
 import warnings
 import numpy as np
 import pandas as pd
-from edatool import presplit
 from schemas import SplitInfo
+from tools.columntypes import infer_types
+from scipy.stats import chi2_contingency, spearmanr
 from sklearn.model_selection import GroupKFold, GroupShuffleSplit, KFold, StratifiedKFold, train_test_split
 
 logger = logging.getLogger("automl.split")
+TIME_MIN_CORRELATION = 0.1
+TIME_MAX_P_VALUE = 0.01
+TIME_BINS = 10
 
-# asks edatool how to split; if presplit fails, classification is stratified...
-# and regression random
+# H01: the id columns whose values repeat (the same entity in several rows)
+def repeated_ids(types, typed, target):
+    columns = [column for column, kind in types.items() if kind == "id" and column != target]
+    return [column for column in columns if typed[column].dropna().astype(str).duplicated().any()]
+
+# the target as numbers (classes become sorted codes)
+def target_numbers(typed, target, task):
+    if task == "regression":
+        return pd.to_numeric(typed[target], errors="coerce").astype(float)
+    codes, _ = pd.factorize(typed[target].astype(str).where(typed[target].notna()), sort=True)
+    return pd.Series(codes.astype(float), index=typed.index).where(codes >= 0)
+
+# H02: the date columns over which the target changes (Spearman, or Cramer's V...
+# over time bins for multi-class)
+def time_trends(types, typed, target, task):
+    found = []
+    numbers = target_numbers(typed, target, task)
+    for column in [column for column, kind in types.items() if kind == "datetime" and column != target]:
+        frame = pd.DataFrame({"time": typed[column], "target": numbers}).dropna()
+        if len(frame) < 20 or frame["time"].nunique() < 2:
+            continue
+        times = frame["time"].astype("int64")
+        if task == "multi-class-classification":
+            table = pd.crosstab(pd.qcut(times.rank(method="first"), TIME_BINS, labels=False), frame["target"])
+            chi2, p_value = chi2_contingency(table)[:2]
+            strength = float(np.sqrt(chi2 / (table.to_numpy().sum() * (min(table.shape) - 1))))
+        else:
+            strength, p_value = spearmanr(times, frame["target"])
+        if abs(strength) >= TIME_MIN_CORRELATION and p_value <= TIME_MAX_P_VALUE:
+            found.append(column)
+    return found
+
+# the split advice on all rows: repeated ids need a group split, a target...
+# trend over a date needs a time split; otherwise classification is...
+# stratified and regression random; returns (strategy, key, reason, notes)
 def split_advice(raw, target, task):
+    notes = []
     try:
-        advice = presplit(raw, target, task)
-        return advice.strategy, advice.key, advice.reason, []
+        types, typed, _ = infer_types(raw)
+        groups = repeated_ids(types, typed, target)
+        if groups:
+            return "group", groups[-1], f"Rows repeat the same `{groups[-1]}`; keep each group in one split.", notes
+        times = time_trends(types, typed, target, task)
+        if times:
+            return "time", times[-1], f"The target changes over `{times[-1]}`; split by time.", notes
     except Exception as error:
-        logger.warning(f"presplit failed: {type(error).__name__}: {error}")
-        strategy = "random" if task == "regression" else "stratified"
-        return strategy, target if strategy == "stratified" else None, "presplit failed; default split", [f"presplit failed: {error}"]
+        logger.warning(f"split advice failed: {type(error).__name__}: {error}")
+        notes.append(f"split advice failed: {error}")
+    if task != "regression":
+        return "stratified", target, "Classification task; keep class shares equal in each split.", notes
+    return "random", None, "No group, time or class structure found.", notes
 
 # the class labels used for stratification (stripped text)
 def class_labels(frame, target):

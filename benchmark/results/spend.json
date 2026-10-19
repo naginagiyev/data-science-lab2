@@ -1,6 +1,6 @@
 {
   "totals": {
-    "dev": 0.39631990000000017,
+    "dev": 0.39667320000000017,
     "experiments": 1.6218758999999978
   },
   "calls": [
@@ -11784,6 +11784,24 @@
       "input_tokens": 1090,
       "output_tokens": 122,
       "cost_usd": 0.00015780000000000001
+    },
+    {
+      "time": "2026-10-19T14:22:03+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 993,
+      "output_tokens": 184,
+      "cost_usd": 0.00017290000000000003
+    },
+    {
+      "time": "2026-10-19T14:22:06+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1236,
+      "output_tokens": 142,
+      "cost_usd": 0.0001804
     }
   ]
 }

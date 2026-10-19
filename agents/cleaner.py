@@ -10,7 +10,7 @@ from checks.datachecks import check_steps
 from checks.gate import gate_data, run_gate
 from operations.compiler import validate_plan
 from tools.metrics import lower_is_better, oriented
-from edatool.core.patterns import pattern_stats, pattern_text
+from tools.columntypes import pattern_stats, pattern_text
 from operations.registry import HIDDEN, OPERATIONS, catalog_text, operation_class
 from tools.sandbox import SandboxError, allowed_imports_text, check_code, run_code
 

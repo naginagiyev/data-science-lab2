@@ -1,17 +1,12 @@
-import re
 import questionary
 import pandas as pd
 from typing import Literal
 from schemas import TaskSpec
 from pydantic import BaseModel
 from tools.metrics import primary_metric
+from tools.columntypes import name_tokens
 
 EXCLUDED_TYPES = {"id", "constant", "empty", "text"}
-
-# splits a column name into lowercase words (camelCase and separators)
-def name_words(name):
-    spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", str(name))
-    return [word for word in re.split(r"[^a-z0-9]+", spaced.lower()) if word]
 
 # proposes the task from the target values: 2 values -> binary; text with 3+...
 # values -> multi-class; numbers with decimals or more than max_levels values ->...
@@ -43,7 +38,7 @@ def rank_candidates(glance, hints):
     for position, entry in enumerate(columns):
         if entry.get("type") in EXCLUDED_TYPES:
             continue
-        words = name_words(entry["name"])
+        words = name_tokens(entry["name"])
         matches = [word for word in words if word in hint_set]
         strength = max((len(hints) - hints.index(word)) / len(hints) for word in matches) if matches else 0.0
         score = (3.0 + strength) * bool(matches) + (1.0 if position == len(columns) - 1 else 0.0)
@@ -97,7 +92,7 @@ def id_like(raw, glance, column):
     if entry.get("type") == "id":
         return True
     values = raw[column].astype(str)
-    return bool(ID_WORDS & set(name_words(column))) and values.nunique() >= 0.9 * len(values)
+    return bool(ID_WORDS & set(name_tokens(column))) and values.nunique() >= 0.9 * len(values)
 
 # the checks of a framer answer against the table; returns error texts
 def answer_problems(answer, raw, candidates, glance=None):
