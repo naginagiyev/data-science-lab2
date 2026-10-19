@@ -1,5 +1,7 @@
 # Agentic AutoML v2: build plan
 
+> **Note (2026-10-19, P14).** Parts of this plan are superseded by the P14 restructuring (section P14 in §6): `edatool/` and `edabench/` are gone (the audit is the `audit/` package, the leak judgement is one LLM call), edatool `verify`, the `custom` operation, the power projection, the held-out cells and experiments E6 to E9 are removed, and six variants remain. `docs/protocol.md` replaces the pre-registration. The rest of this file is kept as the history of the build.
+
 This file is the complete work order for DS LAB 2. You (Claude Code) will carry it out on your own, from the first commit to the final report. The user will not answer questions while you work. When this plan leaves a detail open, choose the simplest option that keeps the research honest, and write the choice into `docs/decisions.md`.
 
 - Date of this plan: 10 October 2026.
@@ -957,6 +959,21 @@ Never start the full grids of §4.6. They are for the user to run later.
 
 - **P12.1 Checks**: full test suite (including `slow`); `uv run python -m benchmark.reproduce --grid smoke`; style check script (one empty line between definitions, imports sorted by length, file names, no empty line at the end of files); secret scan (`git grep -n "sk-"` finds nothing); `git status` clean. → All pass.
 - **P12.2 Handover**: final summary in `progress.md` and as your final message: what was built, the pilot results (from `docs/results.md`), the projection and its recommendation (from `docs/projection.md`), the total LLM spend, what failed or was skipped and why, limitations, and the plan for the thesis semester. List the files created, edited and deleted in the last phase. Simple English.
+
+### P14. Restructuring (2026-10-19, asked by the user)
+
+Goal: one codebase in which every pipeline part has the same depth, at MSc scale.
+
+- **P14.0 Baseline**: local git, line counts, fast suite. → green start recorded.
+- **P14.1 Shared foundations**: type inference and value patterns in `tools/columntypes.py`; the loader in `tools/reader.py`; the split advice in `tools/splitter.py`. → identical types on the 4 local datasets.
+- **P14.2 Audit package**: `audit/` with only the issue codes a stage acts on; one config file. → same issues as edatool's deterministic audit.
+- **P14.3 Leak review**: one structured LLM call replaces the smolagents review agent. → fake-provider tests and a full run.
+- **P14.4 Cleaning checks**: no edatool verify, no custom operation. → tests pass.
+- **P14.5 Delete edatool and edabench**. → no reference left.
+- **P14.6 Small additions**: LLM modeller (families and time shares), permutation importance. → tests pass.
+- **P14.7 Variants**: generic, rules, full, full-nogate, freecode, full+ag.
+- **P14.8 Benchmark**: E1 to E5 and E10; no projection or held-out cells.
+- **P14.9 Documentation**, **P14.10 Final checks**. The pilot is re-run by the user afterwards.
 
 ### Stretch goals (only after P12, in this order)
 

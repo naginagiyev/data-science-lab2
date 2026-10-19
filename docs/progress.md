@@ -158,9 +158,35 @@ winequality: `rules` drops 240 exact duplicate training rows (a protected step);
 - [x] P14.5 Delete edatool and edabench · 2026-10-19 · 5b1571f · both packages, the edabench env and E8 removed; no code reference left; 184 passed, ruff F clean
 - [x] P14.6 Small additions to modelling and evaluation · 2026-10-19 · 6c4d7aa · agents/modeller.py (families and time shares, CV decides), permutation importance in the report (demo mode); 187 passed
 - [x] P14.7 Variants (11 to 6) · 2026-10-19 · 74b3b9e · generic, rules, full, full-nogate, freecode, full+ag; constant options removed; 187 passed
-- [x] P14.8 Benchmark at MSc core · 2026-10-19 · (this commit) · E1-E5 and E10 kept; projection, held-out cells, E6-E9 removed; runs.csv archived for the re-run; 184 passed
-- [ ] P14.9 Documentation
+- [x] P14.8 Benchmark at MSc core · 2026-10-19 · 8c2eaa5 · E1-E5 and E10 kept; projection, held-out cells, E6-E9 removed; runs.csv archived for the re-run; 184 passed
+- [x] P14.9 Documentation · 2026-10-19 · (this commit) · README, docs/architecture.md, docs/protocol.md (replaces the pre-registration), deviations, buildplan note and P14 section, re-run section below; study/ rebuilt (19 pages, in sync)
 - [ ] P14.10 Final checks
+
+### Re-run of the pilot with the P14 code (for the user, not run yet)
+
+The old pilot rows are in `benchmark/results/runs-before-p14.csv`; `runs.csv` starts empty, so the
+runner runs every cell again. `docs/results.md`, `tables.md` and the figures keep the old numbers
+until step 4.
+
+1. `uv run python -m benchmark.reproduce --grid smoke` (36 cells on dev samples, `gpt-4.1-nano`, a few
+   cents at most): checks that every system starts.
+2. `uv run python -m benchmark.runner --grid pilot-main --check` (and the same for `pilot-leaks`,
+   `pilot-ablations`, `pilot-natural`): files and systems are in place.
+3. `uv run python -m benchmark.reproduce --grid pilot` (256 cells, 2 workers, 120 s each; about 4 to 5
+   hours by the old pilot's pace). 64 of the cells call the LLM (`gpt-4.1-mini`): `full` and `full+ag`
+   in `pilot-main` (48), `full` in `pilot-leaks` (5), `freecode` and `full-nogate` in
+   `pilot-ablations` (8), `full` in `pilot-natural` (3).
+4. `reproduce --grid pilot` ends with `benchmark.figures` and `benchmark.resultsdoc`; remove the
+   "Out of date" note at the top of `docs/results.md` if it is still there, and record the run in
+   this file.
+
+> **Spend.** The ledger stands at $2.02 (dev $0.40, experiments $1.62). The experiments cap is $2.75,
+> so only $1.13 is left for experiments, and the runner marks LLM cells `skipped-spend` once the cap
+> is reached. The old `full` cost about $0.026 per run with `gpt-4.1-mini`; the new `full` has no
+> agent sessions but two new calls (leak review, modeller), so 64 LLM runs should cost roughly $1 to
+> $2. If you want the whole pilot inside the caps, raise `spend.experiments_cap_usd` in
+> `configuration/settings.json` (for example to 3.6, which keeps the total under the $4
+> optional-stop level and the $5 hard cap) before step 3.
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style

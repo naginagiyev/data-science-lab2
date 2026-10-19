@@ -1208,3 +1208,19 @@ Findings from the decision logs of the worst cells:
   notice at the top of `docs/results.md` until the re-run.
 - Check: `figures.build` and `resultsdoc.build` run on a copy of the old rows (5 figures, sections
   RQ1 to RQ5 and E10); fast suite 184 passed.
+
+## 2026-10-19 · P14.9 · Documentation
+
+- `README.md` and `docs/architecture.md` describe the restructured pipeline: the package table, the
+  12 stages with their LLM calls and fallbacks, the six variants and the 29 audit codes with their
+  main thresholds.
+- `docs/protocol.md` replaces `docs/preregistration.md` (still in the git history). It keeps the
+  hypotheses, metrics, statistics and exclusion rules, adapts RQ5 and the grids to the six variants,
+  and drops the projection and the held-out cells. It says openly that it is written after a first
+  pilot of the earlier code, so it is not a pre-registration in the strict sense.
+- `docs/deviations.md` records the method change and that every pilot cell is re-run;
+  `docs/buildplan.md` has a note at the top and a P14 section; `docs/progress.md` has the re-run
+  steps for the user, with a warning that the experiments cap leaves $1.13.
+- The study (`study/`, git-ignored) was rebuilt for the new code with the code-study skill: 19 pages,
+  every source file covered, the check reports it in sync. The old edatool pages were removed, and
+  new pages explain the audit package, the orchestrator and CLI, and the benchmark.
