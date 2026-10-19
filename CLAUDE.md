@@ -14,3 +14,9 @@
 - LLM spend: target about $4, hard maximum $5 for the whole plan (`configuration/settings.json` → `spend`; the
   client enforces it). Use `gpt-4.1-nano` while developing. Never start the full benchmark grids.
 - Commit after every task: `P<phase>.<task>: <what changed>`.
+
+<!-- code-study -->
+## Study folder
+This project has a `study/` folder that explains the code in plain English.
+Whenever you add, edit, move, or remove code, use the `code-study` skill to update the matching pages in `study/content/` and rebuild.
+Never change source code while doing study work.

@@ -31,3 +31,4 @@ catboost_info/
 AutogluonModels/
 *.json.lock
 *.json.tmp
+study/
