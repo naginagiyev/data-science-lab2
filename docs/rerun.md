@@ -37,3 +37,4 @@ uv run python -m benchmark.resultsdoc
 ## Log
 
 - **Chunk 0** (12:38 to 13:18 UTC, 40 min): 207 passed, 1 deselected (the real-LLM test) in 23 min. Smoke grid: 36 of 36 cells ok in 17 min; 48 LLM calls (`gpt-4.1-nano`), $0.0103. The slowest `full` cell took 131 s on a 60 s budget (time-out 135 s): the stage limits are not enforced from outside (known weakness).
+- **Chunk 1, part 1** (13:20 UTC, stopped by the user before leaving): 48 of 96 cells done, all ok (dummy 24, lightgbm 24). The skrub cell that was running was killed and has no row, so it runs again. Resume with the chunk 1 command; finished cells are skipped.
