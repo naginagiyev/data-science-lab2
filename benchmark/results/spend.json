@@ -1,7 +1,7 @@
 {
   "totals": {
     "dev": 0.3984175000000002,
-    "experiments": 1.6321388999999975
+    "experiments": 2.0309720999999965
   },
   "calls": [
     {
@@ -12279,6 +12279,2220 @@
       "input_tokens": 1624,
       "output_tokens": 108,
       "cost_usd": 0.0002056
+    },
+    {
+      "time": "2026-10-20T16:59:29+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 778,
+      "output_tokens": 5,
+      "cost_usd": 0.00031920000000000006
+    },
+    {
+      "time": "2026-10-20T16:59:33+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4075,
+      "output_tokens": 279,
+      "cost_usd": 0.0020764
+    },
+    {
+      "time": "2026-10-20T16:59:34+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 814,
+      "output_tokens": 5,
+      "cost_usd": 0.00033360000000000003
+    },
+    {
+      "time": "2026-10-20T16:59:38+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4395,
+      "output_tokens": 388,
+      "cost_usd": 0.0023788000000000004
+    },
+    {
+      "time": "2026-10-20T16:59:50+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2159,
+      "output_tokens": 173,
+      "cost_usd": 0.0011404000000000002
+    },
+    {
+      "time": "2026-10-20T16:59:56+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 426,
+      "output_tokens": 66,
+      "cost_usd": 0.000276
+    },
+    {
+      "time": "2026-10-20T16:59:59+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 9497,
+      "output_tokens": 2800,
+      "cost_usd": 0.0082788
+    },
+    {
+      "time": "2026-10-20T17:00:35+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4197,
+      "output_tokens": 2463,
+      "cost_usd": 0.005619600000000001
+    },
+    {
+      "time": "2026-10-20T17:00:40+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 430,
+      "output_tokens": 81,
+      "cost_usd": 0.0003016
+    },
+    {
+      "time": "2026-10-20T17:00:42+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1153,
+      "output_tokens": 196,
+      "cost_usd": 0.0007748000000000001
+    },
+    {
+      "time": "2026-10-20T17:00:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1413,
+      "output_tokens": 164,
+      "cost_usd": 0.0008276000000000002
+    },
+    {
+      "time": "2026-10-20T17:00:53+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 805,
+      "output_tokens": 5,
+      "cost_usd": 0.00033
+    },
+    {
+      "time": "2026-10-20T17:01:20+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 9805,
+      "output_tokens": 3086,
+      "cost_usd": 0.0088596
+    },
+    {
+      "time": "2026-10-20T17:01:32+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1731,
+      "output_tokens": 161,
+      "cost_usd": 0.0009500000000000001
+    },
+    {
+      "time": "2026-10-20T17:01:34+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1930,
+      "output_tokens": 139,
+      "cost_usd": 0.0009943999999999999
+    },
+    {
+      "time": "2026-10-20T17:01:42+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 497,
+      "output_tokens": 5,
+      "cost_usd": 0.0002068
+    },
+    {
+      "time": "2026-10-20T17:01:44+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2715,
+      "output_tokens": 34,
+      "cost_usd": 0.0011404000000000002
+    },
+    {
+      "time": "2026-10-20T17:01:48+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 423,
+      "output_tokens": 79,
+      "cost_usd": 0.00029560000000000003
+    },
+    {
+      "time": "2026-10-20T17:01:49+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 12948,
+      "output_tokens": 3066,
+      "cost_usd": 0.010084800000000001
+    },
+    {
+      "time": "2026-10-20T17:01:54+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 430,
+      "output_tokens": 71,
+      "cost_usd": 0.0002856
+    },
+    {
+      "time": "2026-10-20T17:02:32+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1741,
+      "output_tokens": 156,
+      "cost_usd": 0.0009460000000000001
+    },
+    {
+      "time": "2026-10-20T17:02:43+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 543,
+      "output_tokens": 5,
+      "cost_usd": 0.00022520000000000003
+    },
+    {
+      "time": "2026-10-20T17:02:51+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4835,
+      "output_tokens": 846,
+      "cost_usd": 0.0032876000000000003
+    },
+    {
+      "time": "2026-10-20T17:02:54+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 539,
+      "output_tokens": 132,
+      "cost_usd": 0.0004268000000000001
+    },
+    {
+      "time": "2026-10-20T17:02:56+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 714,
+      "output_tokens": 157,
+      "cost_usd": 0.0005368
+    },
+    {
+      "time": "2026-10-20T17:02:59+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5735,
+      "output_tokens": 923,
+      "cost_usd": 0.0037708000000000004
+    },
+    {
+      "time": "2026-10-20T17:03:07+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 545,
+      "output_tokens": 5,
+      "cost_usd": 0.000226
+    },
+    {
+      "time": "2026-10-20T17:03:34+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 427,
+      "output_tokens": 87,
+      "cost_usd": 0.00031
+    },
+    {
+      "time": "2026-10-20T17:03:51+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 8462,
+      "output_tokens": 5021,
+      "cost_usd": 0.011418400000000002
+    },
+    {
+      "time": "2026-10-20T17:04:00+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 13554,
+      "output_tokens": 837,
+      "cost_usd": 0.0067608
+    },
+    {
+      "time": "2026-10-20T17:04:20+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1538,
+      "output_tokens": 165,
+      "cost_usd": 0.0008792
+    },
+    {
+      "time": "2026-10-20T17:04:22+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1765,
+      "output_tokens": 148,
+      "cost_usd": 0.0009427999999999999
+    },
+    {
+      "time": "2026-10-20T17:04:32+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 501,
+      "output_tokens": 5,
+      "cost_usd": 0.0002084
+    },
+    {
+      "time": "2026-10-20T17:04:33+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2630,
+      "output_tokens": 37,
+      "cost_usd": 0.0011112000000000001
+    },
+    {
+      "time": "2026-10-20T17:04:38+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 419,
+      "output_tokens": 75,
+      "cost_usd": 0.0002876
+    },
+    {
+      "time": "2026-10-20T17:05:00+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1025,
+      "output_tokens": 137,
+      "cost_usd": 0.0006292
+    },
+    {
+      "time": "2026-10-20T17:05:01+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1205,
+      "output_tokens": 149,
+      "cost_usd": 0.0007204
+    },
+    {
+      "time": "2026-10-20T17:05:12+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 555,
+      "output_tokens": 5,
+      "cost_usd": 0.00023
+    },
+    {
+      "time": "2026-10-20T17:05:20+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5455,
+      "output_tokens": 672,
+      "cost_usd": 0.0032572
+    },
+    {
+      "time": "2026-10-20T17:05:40+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 539,
+      "output_tokens": 144,
+      "cost_usd": 0.000446
+    },
+    {
+      "time": "2026-10-20T17:05:47+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2368,
+      "output_tokens": 521,
+      "cost_usd": 0.0017808000000000001
+    },
+    {
+      "time": "2026-10-20T17:05:50+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 553,
+      "output_tokens": 5,
+      "cost_usd": 0.00022920000000000001
+    },
+    {
+      "time": "2026-10-20T17:06:01+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5438,
+      "output_tokens": 1072,
+      "cost_usd": 0.0038904000000000005
+    },
+    {
+      "time": "2026-10-20T17:06:05+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 423,
+      "output_tokens": 89,
+      "cost_usd": 0.00031160000000000004
+    },
+    {
+      "time": "2026-10-20T17:06:09+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6599,
+      "output_tokens": 895,
+      "cost_usd": 0.004071600000000001
+    },
+    {
+      "time": "2026-10-20T17:06:40+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2705,
+      "output_tokens": 402,
+      "cost_usd": 0.0017252
+    },
+    {
+      "time": "2026-10-20T17:06:51+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1474,
+      "output_tokens": 171,
+      "cost_usd": 0.0008632000000000001
+    },
+    {
+      "time": "2026-10-20T17:06:53+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1688,
+      "output_tokens": 166,
+      "cost_usd": 0.0009408000000000001
+    },
+    {
+      "time": "2026-10-20T17:07:02+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 431,
+      "output_tokens": 5,
+      "cost_usd": 0.0001804
+    },
+    {
+      "time": "2026-10-20T17:07:04+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2805,
+      "output_tokens": 156,
+      "cost_usd": 0.0013716
+    },
+    {
+      "time": "2026-10-20T17:07:09+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1784,
+      "output_tokens": 90,
+      "cost_usd": 0.0008576
+    },
+    {
+      "time": "2026-10-20T17:07:13+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 413,
+      "output_tokens": 69,
+      "cost_usd": 0.00027560000000000003
+    },
+    {
+      "time": "2026-10-20T17:07:42+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1487,
+      "output_tokens": 169,
+      "cost_usd": 0.0008652
+    },
+    {
+      "time": "2026-10-20T17:07:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1699,
+      "output_tokens": 164,
+      "cost_usd": 0.000942
+    },
+    {
+      "time": "2026-10-20T17:07:53+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 469,
+      "output_tokens": 5,
+      "cost_usd": 0.0001956
+    },
+    {
+      "time": "2026-10-20T17:07:57+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4071,
+      "output_tokens": 553,
+      "cost_usd": 0.0025132
+    },
+    {
+      "time": "2026-10-20T17:07:59+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 737,
+      "output_tokens": 167,
+      "cost_usd": 0.000562
+    },
+    {
+      "time": "2026-10-20T17:08:02+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4696,
+      "output_tokens": 597,
+      "cost_usd": 0.0028336000000000004
+    },
+    {
+      "time": "2026-10-20T17:08:08+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 463,
+      "output_tokens": 5,
+      "cost_usd": 0.0001932
+    },
+    {
+      "time": "2026-10-20T17:08:12+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3833,
+      "output_tokens": 499,
+      "cost_usd": 0.0023316000000000005
+    },
+    {
+      "time": "2026-10-20T17:08:16+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4404,
+      "output_tokens": 514,
+      "cost_usd": 0.002584
+    },
+    {
+      "time": "2026-10-20T17:08:18+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2369,
+      "output_tokens": 262,
+      "cost_usd": 0.0013668000000000003
+    },
+    {
+      "time": "2026-10-20T17:08:21+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4990,
+      "output_tokens": 628,
+      "cost_usd": 0.0030008
+    },
+    {
+      "time": "2026-10-20T17:08:26+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 423,
+      "output_tokens": 81,
+      "cost_usd": 0.0002988
+    },
+    {
+      "time": "2026-10-20T17:08:36+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2388,
+      "output_tokens": 442,
+      "cost_usd": 0.0016624
+    },
+    {
+      "time": "2026-10-20T17:09:14+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1298,
+      "output_tokens": 156,
+      "cost_usd": 0.0007688
+    },
+    {
+      "time": "2026-10-20T17:09:24+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1214,
+      "output_tokens": 5,
+      "cost_usd": 0.0004936000000000001
+    },
+    {
+      "time": "2026-10-20T17:09:29+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1443,
+      "output_tokens": 188,
+      "cost_usd": 0.000878
+    },
+    {
+      "time": "2026-10-20T17:09:31+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1688,
+      "output_tokens": 172,
+      "cost_usd": 0.0009504000000000001
+    },
+    {
+      "time": "2026-10-20T17:09:35+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 9504,
+      "output_tokens": 1443,
+      "cost_usd": 0.0061104
+    },
+    {
+      "time": "2026-10-20T17:09:43+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 11073,
+      "output_tokens": 1236,
+      "cost_usd": 0.0064068
+    },
+    {
+      "time": "2026-10-20T17:09:43+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1267,
+      "output_tokens": 5,
+      "cost_usd": 0.0005147999999999999
+    },
+    {
+      "time": "2026-10-20T17:10:19+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 424,
+      "output_tokens": 71,
+      "cost_usd": 0.00028320000000000005
+    },
+    {
+      "time": "2026-10-20T17:10:30+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 16119,
+      "output_tokens": 6521,
+      "cost_usd": 0.016881200000000002
+    },
+    {
+      "time": "2026-10-20T17:10:34+00:00",
+      "category": "experiments",
+      "source": "compile/repair",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1371,
+      "output_tokens": 145,
+      "cost_usd": 0.0007804
+    },
+    {
+      "time": "2026-10-20T17:11:03+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 428,
+      "output_tokens": 94,
+      "cost_usd": 0.0003216
+    },
+    {
+      "time": "2026-10-20T17:11:13+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1682,
+      "output_tokens": 135,
+      "cost_usd": 0.0008888
+    },
+    {
+      "time": "2026-10-20T17:11:26+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1277,
+      "output_tokens": 5,
+      "cost_usd": 0.0005187999999999999
+    },
+    {
+      "time": "2026-10-20T17:11:56+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1881,
+      "output_tokens": 128,
+      "cost_usd": 0.0009572000000000001
+    },
+    {
+      "time": "2026-10-20T17:12:04+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 510,
+      "output_tokens": 5,
+      "cost_usd": 0.000212
+    },
+    {
+      "time": "2026-10-20T17:12:06+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3164,
+      "output_tokens": 134,
+      "cost_usd": 0.0014800000000000002
+    },
+    {
+      "time": "2026-10-20T17:12:09+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 395,
+      "output_tokens": 82,
+      "cost_usd": 0.00028920000000000004
+    },
+    {
+      "time": "2026-10-20T17:12:18+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 16750,
+      "output_tokens": 7158,
+      "cost_usd": 0.018152800000000004
+    },
+    {
+      "time": "2026-10-20T17:12:48+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 428,
+      "output_tokens": 71,
+      "cost_usd": 0.00028480000000000004
+    },
+    {
+      "time": "2026-10-20T17:13:13+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 649,
+      "output_tokens": 168,
+      "cost_usd": 0.0005284
+    },
+    {
+      "time": "2026-10-20T17:13:22+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 548,
+      "output_tokens": 5,
+      "cost_usd": 0.00022720000000000002
+    },
+    {
+      "time": "2026-10-20T17:13:26+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4605,
+      "output_tokens": 573,
+      "cost_usd": 0.0027588
+    },
+    {
+      "time": "2026-10-20T17:13:31+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5231,
+      "output_tokens": 645,
+      "cost_usd": 0.0031244000000000003
+    },
+    {
+      "time": "2026-10-20T17:13:40+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1912,
+      "output_tokens": 129,
+      "cost_usd": 0.0009712000000000001
+    },
+    {
+      "time": "2026-10-20T17:13:43+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2448,
+      "output_tokens": 370,
+      "cost_usd": 0.0015712
+    },
+    {
+      "time": "2026-10-20T17:13:49+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 556,
+      "output_tokens": 5,
+      "cost_usd": 0.00023040000000000002
+    },
+    {
+      "time": "2026-10-20T17:13:51+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 399,
+      "output_tokens": 70,
+      "cost_usd": 0.00027160000000000004
+    },
+    {
+      "time": "2026-10-20T17:13:54+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4604,
+      "output_tokens": 573,
+      "cost_usd": 0.0027584000000000003
+    },
+    {
+      "time": "2026-10-20T17:13:59+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5230,
+      "output_tokens": 614,
+      "cost_usd": 0.0030744
+    },
+    {
+      "time": "2026-10-20T17:14:11+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2444,
+      "output_tokens": 369,
+      "cost_usd": 0.001568
+    },
+    {
+      "time": "2026-10-20T17:14:38+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1390,
+      "output_tokens": 158,
+      "cost_usd": 0.0008087999999999999
+    },
+    {
+      "time": "2026-10-20T17:14:40+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1591,
+      "output_tokens": 159,
+      "cost_usd": 0.0008908000000000001
+    },
+    {
+      "time": "2026-10-20T17:14:48+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 471,
+      "output_tokens": 5,
+      "cost_usd": 0.0001964
+    },
+    {
+      "time": "2026-10-20T17:14:50+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2821,
+      "output_tokens": 124,
+      "cost_usd": 0.0013268000000000002
+    },
+    {
+      "time": "2026-10-20T17:14:54+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 402,
+      "output_tokens": 82,
+      "cost_usd": 0.000292
+    },
+    {
+      "time": "2026-10-20T17:15:06+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1387,
+      "output_tokens": 157,
+      "cost_usd": 0.0008060000000000001
+    },
+    {
+      "time": "2026-10-20T17:15:08+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1587,
+      "output_tokens": 201,
+      "cost_usd": 0.0009564
+    },
+    {
+      "time": "2026-10-20T17:15:10+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1826,
+      "output_tokens": 164,
+      "cost_usd": 0.0009928000000000003
+    },
+    {
+      "time": "2026-10-20T17:15:18+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 496,
+      "output_tokens": 5,
+      "cost_usd": 0.0002064
+    },
+    {
+      "time": "2026-10-20T17:15:21+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 645,
+      "output_tokens": 167,
+      "cost_usd": 0.0005252000000000001
+    },
+    {
+      "time": "2026-10-20T17:15:23+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 850,
+      "output_tokens": 167,
+      "cost_usd": 0.0006072
+    },
+    {
+      "time": "2026-10-20T17:15:25+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1055,
+      "output_tokens": 150,
+      "cost_usd": 0.000662
+    },
+    {
+      "time": "2026-10-20T17:15:25+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4870,
+      "output_tokens": 758,
+      "cost_usd": 0.0031608
+    },
+    {
+      "time": "2026-10-20T17:15:32+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5680,
+      "output_tokens": 782,
+      "cost_usd": 0.0035231999999999998
+    },
+    {
+      "time": "2026-10-20T17:15:33+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 496,
+      "output_tokens": 5,
+      "cost_usd": 0.0002064
+    },
+    {
+      "time": "2026-10-20T17:15:39+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4689,
+      "output_tokens": 767,
+      "cost_usd": 0.0031028
+    },
+    {
+      "time": "2026-10-20T17:15:45+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5508,
+      "output_tokens": 720,
+      "cost_usd": 0.0033552000000000005
+    },
+    {
+      "time": "2026-10-20T17:15:47+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2647,
+      "output_tokens": 574,
+      "cost_usd": 0.0019772
+    },
+    {
+      "time": "2026-10-20T17:15:59+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2434,
+      "output_tokens": 496,
+      "cost_usd": 0.0017672
+    },
+    {
+      "time": "2026-10-20T17:16:04+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2386,
+      "output_tokens": 459,
+      "cost_usd": 0.0016888000000000003
+    },
+    {
+      "time": "2026-10-20T17:16:07+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 406,
+      "output_tokens": 81,
+      "cost_usd": 0.000292
+    },
+    {
+      "time": "2026-10-20T17:16:20+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1447,
+      "output_tokens": 180,
+      "cost_usd": 0.0008668
+    },
+    {
+      "time": "2026-10-20T17:16:22+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1686,
+      "output_tokens": 166,
+      "cost_usd": 0.0009400000000000001
+    },
+    {
+      "time": "2026-10-20T17:16:31+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 504,
+      "output_tokens": 5,
+      "cost_usd": 0.00020960000000000003
+    },
+    {
+      "time": "2026-10-20T17:16:35+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3854,
+      "output_tokens": 409,
+      "cost_usd": 0.002196
+    },
+    {
+      "time": "2026-10-20T17:16:41+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1610,
+      "output_tokens": 169,
+      "cost_usd": 0.0009144000000000001
+    },
+    {
+      "time": "2026-10-20T17:16:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1832,
+      "output_tokens": 177,
+      "cost_usd": 0.001016
+    },
+    {
+      "time": "2026-10-20T17:16:52+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 396,
+      "output_tokens": 71,
+      "cost_usd": 0.000272
+    },
+    {
+      "time": "2026-10-20T17:16:56+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 548,
+      "output_tokens": 5,
+      "cost_usd": 0.00022720000000000002
+    },
+    {
+      "time": "2026-10-20T17:17:06+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 9519,
+      "output_tokens": 1227,
+      "cost_usd": 0.0057708
+    },
+    {
+      "time": "2026-10-20T17:17:17+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 10824,
+      "output_tokens": 1391,
+      "cost_usd": 0.006555200000000001
+    },
+    {
+      "time": "2026-10-20T17:17:19+00:00",
+      "category": "experiments",
+      "source": "compile/repair",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1257,
+      "output_tokens": 77,
+      "cost_usd": 0.000626
+    },
+    {
+      "time": "2026-10-20T17:17:21+00:00",
+      "category": "experiments",
+      "source": "compile/repair",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1159,
+      "output_tokens": 127,
+      "cost_usd": 0.0006668
+    },
+    {
+      "time": "2026-10-20T17:17:23+00:00",
+      "category": "experiments",
+      "source": "compile/repair",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1283,
+      "output_tokens": 99,
+      "cost_usd": 0.0006716000000000001
+    },
+    {
+      "time": "2026-10-20T17:17:50+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 400,
+      "output_tokens": 102,
+      "cost_usd": 0.00032320000000000005
+    },
+    {
+      "time": "2026-10-20T17:17:51+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1135,
+      "output_tokens": 164,
+      "cost_usd": 0.0007164000000000001
+    },
+    {
+      "time": "2026-10-20T17:17:53+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1347,
+      "output_tokens": 193,
+      "cost_usd": 0.0008476000000000001
+    },
+    {
+      "time": "2026-10-20T17:17:55+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1578,
+      "output_tokens": 173,
+      "cost_usd": 0.000908
+    },
+    {
+      "time": "2026-10-20T17:18:08+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 550,
+      "output_tokens": 5,
+      "cost_usd": 0.000228
+    },
+    {
+      "time": "2026-10-20T17:18:16+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 5559,
+      "output_tokens": 928,
+      "cost_usd": 0.0037084
+    },
+    {
+      "time": "2026-10-20T17:18:43+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1844,
+      "output_tokens": 148,
+      "cost_usd": 0.0009744
+    },
+    {
+      "time": "2026-10-20T17:18:51+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2693,
+      "output_tokens": 709,
+      "cost_usd": 0.0022116
+    },
+    {
+      "time": "2026-10-20T17:19:52+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1766,
+      "output_tokens": 166,
+      "cost_usd": 0.0009720000000000001
+    },
+    {
+      "time": "2026-10-20T17:19:54+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1980,
+      "output_tokens": 164,
+      "cost_usd": 0.0010544
+    },
+    {
+      "time": "2026-10-20T17:20:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1734,
+      "output_tokens": 146,
+      "cost_usd": 0.0009272000000000001
+    },
+    {
+      "time": "2026-10-20T17:20:46+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1138,
+      "output_tokens": 185,
+      "cost_usd": 0.0007512
+    },
+    {
+      "time": "2026-10-20T17:20:48+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1361,
+      "output_tokens": 153,
+      "cost_usd": 0.0007892
+    },
+    {
+      "time": "2026-10-20T17:21:32+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4510,
+      "output_tokens": 2779,
+      "cost_usd": 0.006250400000000001
+    },
+    {
+      "time": "2026-10-20T17:21:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 525,
+      "output_tokens": 111,
+      "cost_usd": 0.00038760000000000004
+    },
+    {
+      "time": "2026-10-20T17:22:04+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4940,
+      "output_tokens": 2687,
+      "cost_usd": 0.0062752
+    },
+    {
+      "time": "2026-10-20T17:22:40+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2845,
+      "output_tokens": 632,
+      "cost_usd": 0.0021492
+    },
+    {
+      "time": "2026-10-20T17:22:42+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1723,
+      "output_tokens": 145,
+      "cost_usd": 0.0009212000000000001
+    },
+    {
+      "time": "2026-10-20T17:23:34+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1637,
+      "output_tokens": 184,
+      "cost_usd": 0.0009492000000000001
+    },
+    {
+      "time": "2026-10-20T17:23:36+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1878,
+      "output_tokens": 169,
+      "cost_usd": 0.0010216000000000001
+    },
+    {
+      "time": "2026-10-20T17:23:38+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2085,
+      "output_tokens": 162,
+      "cost_usd": 0.0010932000000000001
+    },
+    {
+      "time": "2026-10-20T17:23:39+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2692,
+      "output_tokens": 640,
+      "cost_usd": 0.0021008000000000003
+    },
+    {
+      "time": "2026-10-20T17:24:34+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1676,
+      "output_tokens": 140,
+      "cost_usd": 0.0008944000000000001
+    },
+    {
+      "time": "2026-10-20T17:24:37+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1859,
+      "output_tokens": 158,
+      "cost_usd": 0.0009964000000000002
+    },
+    {
+      "time": "2026-10-20T17:25:07+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 528,
+      "output_tokens": 109,
+      "cost_usd": 0.00038560000000000005
+    },
+    {
+      "time": "2026-10-20T17:26:04+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2697,
+      "output_tokens": 574,
+      "cost_usd": 0.0019972
+    },
+    {
+      "time": "2026-10-20T17:26:26+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1460,
+      "output_tokens": 170,
+      "cost_usd": 0.000856
+    },
+    {
+      "time": "2026-10-20T17:26:31+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1673,
+      "output_tokens": 171,
+      "cost_usd": 0.0009428
+    },
+    {
+      "time": "2026-10-20T17:27:01+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1625,
+      "output_tokens": 148,
+      "cost_usd": 0.0008868
+    },
+    {
+      "time": "2026-10-20T17:27:03+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1816,
+      "output_tokens": 158,
+      "cost_usd": 0.0009792
+    },
+    {
+      "time": "2026-10-20T17:27:11+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 723,
+      "output_tokens": 151,
+      "cost_usd": 0.0005308
+    },
+    {
+      "time": "2026-10-20T17:27:13+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 917,
+      "output_tokens": 152,
+      "cost_usd": 0.00061
+    },
+    {
+      "time": "2026-10-20T17:28:01+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1282,
+      "output_tokens": 153,
+      "cost_usd": 0.0007576000000000001
+    },
+    {
+      "time": "2026-10-20T17:28:14+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1428,
+      "output_tokens": 166,
+      "cost_usd": 0.0008368000000000001
+    },
+    {
+      "time": "2026-10-20T17:29:09+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3484,
+      "output_tokens": 938,
+      "cost_usd": 0.0028944000000000005
+    },
+    {
+      "time": "2026-10-20T17:30:09+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1681,
+      "output_tokens": 132,
+      "cost_usd": 0.0008836000000000001
+    },
+    {
+      "time": "2026-10-20T17:30:14+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1878,
+      "output_tokens": 128,
+      "cost_usd": 0.000956
+    },
+    {
+      "time": "2026-10-20T17:31:23+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 638,
+      "output_tokens": 114,
+      "cost_usd": 0.0004376
+    },
+    {
+      "time": "2026-10-20T17:31:26+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 795,
+      "output_tokens": 115,
+      "cost_usd": 0.000502
+    },
+    {
+      "time": "2026-10-20T17:32:12+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1914,
+      "output_tokens": 125,
+      "cost_usd": 0.0009656
+    },
+    {
+      "time": "2026-10-20T17:33:12+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1375,
+      "output_tokens": 141,
+      "cost_usd": 0.0007756
+    },
+    {
+      "time": "2026-10-20T17:33:14+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1559,
+      "output_tokens": 142,
+      "cost_usd": 0.0008508000000000001
+    },
+    {
+      "time": "2026-10-20T17:34:00+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 631,
+      "output_tokens": 135,
+      "cost_usd": 0.0004684
+    },
+    {
+      "time": "2026-10-20T17:34:01+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1373,
+      "output_tokens": 135,
+      "cost_usd": 0.0007652000000000001
+    },
+    {
+      "time": "2026-10-20T17:34:02+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1551,
+      "output_tokens": 135,
+      "cost_usd": 0.0008364000000000001
+    },
+    {
+      "time": "2026-10-20T17:35:00+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1435,
+      "output_tokens": 169,
+      "cost_usd": 0.0008444000000000001
+    },
+    {
+      "time": "2026-10-20T17:35:03+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1652,
+      "output_tokens": 169,
+      "cost_usd": 0.0009312000000000001
+    },
+    {
+      "time": "2026-10-20T17:35:11+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1597,
+      "output_tokens": 160,
+      "cost_usd": 0.0008948000000000001
+    },
+    {
+      "time": "2026-10-20T17:35:13+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1814,
+      "output_tokens": 145,
+      "cost_usd": 0.0009576000000000001
+    },
+    {
+      "time": "2026-10-20T17:36:22+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3001,
+      "output_tokens": 929,
+      "cost_usd": 0.0026868
+    },
+    {
+      "time": "2026-10-20T17:36:52+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1126,
+      "output_tokens": 160,
+      "cost_usd": 0.0007064
+    },
+    {
+      "time": "2026-10-20T17:36:54+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1329,
+      "output_tokens": 177,
+      "cost_usd": 0.0008148
+    },
+    {
+      "time": "2026-10-20T17:36:56+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1544,
+      "output_tokens": 153,
+      "cost_usd": 0.0008624
+    },
+    {
+      "time": "2026-10-20T17:37:22+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1847,
+      "output_tokens": 140,
+      "cost_usd": 0.0009628000000000001
+    },
+    {
+      "time": "2026-10-20T17:38:55+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1745,
+      "output_tokens": 159,
+      "cost_usd": 0.0009524
+    },
+    {
+      "time": "2026-10-20T17:38:57+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1952,
+      "output_tokens": 197,
+      "cost_usd": 0.001096
+    },
+    {
+      "time": "2026-10-20T17:38:59+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2187,
+      "output_tokens": 154,
+      "cost_usd": 0.0011212000000000001
+    },
+    {
+      "time": "2026-10-20T17:39:19+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 540,
+      "output_tokens": 31,
+      "cost_usd": 0.0002656
+    },
+    {
+      "time": "2026-10-20T17:39:19+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 822,
+      "output_tokens": 41,
+      "cost_usd": 0.00039440000000000005
+    },
+    {
+      "time": "2026-10-20T17:39:20+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2857,
+      "output_tokens": 80,
+      "cost_usd": 0.0012707999999999999
+    },
+    {
+      "time": "2026-10-20T17:39:22+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4223,
+      "output_tokens": 401,
+      "cost_usd": 0.0023308
+    },
+    {
+      "time": "2026-10-20T17:39:24+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 423,
+      "output_tokens": 73,
+      "cost_usd": 0.000286
+    },
+    {
+      "time": "2026-10-20T17:39:35+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2162,
+      "output_tokens": 245,
+      "cost_usd": 0.0012568000000000002
+    },
+    {
+      "time": "2026-10-20T17:39:41+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 426,
+      "output_tokens": 66,
+      "cost_usd": 0.000276
+    },
+    {
+      "time": "2026-10-20T17:40:31+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 638,
+      "output_tokens": 150,
+      "cost_usd": 0.0004952
+    },
+    {
+      "time": "2026-10-20T17:40:37+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1243,
+      "output_tokens": 158,
+      "cost_usd": 0.00075
+    },
+    {
+      "time": "2026-10-20T17:40:40+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1449,
+      "output_tokens": 210,
+      "cost_usd": 0.0009156
+    },
+    {
+      "time": "2026-10-20T17:40:40+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 485,
+      "output_tokens": 36,
+      "cost_usd": 0.0002516
+    },
+    {
+      "time": "2026-10-20T17:40:42+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1697,
+      "output_tokens": 172,
+      "cost_usd": 0.000954
+    },
+    {
+      "time": "2026-10-20T17:40:42+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2960,
+      "output_tokens": 214,
+      "cost_usd": 0.0015264
+    },
+    {
+      "time": "2026-10-20T17:40:48+00:00",
+      "category": "experiments",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1792,
+      "output_tokens": 95,
+      "cost_usd": 0.0008688000000000001
+    },
+    {
+      "time": "2026-10-20T17:40:50+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 542,
+      "output_tokens": 5,
+      "cost_usd": 0.00022480000000000002
+    },
+    {
+      "time": "2026-10-20T17:40:51+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3165,
+      "output_tokens": 57,
+      "cost_usd": 0.0013572
+    },
+    {
+      "time": "2026-10-20T17:40:52+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 419,
+      "output_tokens": 66,
+      "cost_usd": 0.0002732
+    },
+    {
+      "time": "2026-10-20T17:40:54+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 395,
+      "output_tokens": 74,
+      "cost_usd": 0.0002764
+    },
+    {
+      "time": "2026-10-20T17:41:27+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 834,
+      "output_tokens": 168,
+      "cost_usd": 0.0006024000000000001
+    },
+    {
+      "time": "2026-10-20T17:41:29+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1045,
+      "output_tokens": 196,
+      "cost_usd": 0.0007316
+    },
+    {
+      "time": "2026-10-20T17:41:32+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1279,
+      "output_tokens": 164,
+      "cost_usd": 0.000774
+    },
+    {
+      "time": "2026-10-20T17:41:40+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 432,
+      "output_tokens": 5,
+      "cost_usd": 0.0001808
+    },
+    {
+      "time": "2026-10-20T17:41:41+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2455,
+      "output_tokens": 43,
+      "cost_usd": 0.0010508
+    },
+    {
+      "time": "2026-10-20T17:41:43+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 406,
+      "output_tokens": 66,
+      "cost_usd": 0.000268
+    },
+    {
+      "time": "2026-10-20T17:41:44+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 533,
+      "output_tokens": 162,
+      "cost_usd": 0.0004724
+    },
+    {
+      "time": "2026-10-20T17:42:49+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 527,
+      "output_tokens": 147,
+      "cost_usd": 0.000446
+    },
+    {
+      "time": "2026-10-20T17:42:51+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 717,
+      "output_tokens": 152,
+      "cost_usd": 0.00053
+    },
+    {
+      "time": "2026-10-20T17:49:21+00:00",
+      "category": "experiments",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 7742,
+      "output_tokens": 4026,
+      "cost_usd": 0.0095384
+    },
+    {
+      "time": "2026-10-20T17:49:37+00:00",
+      "category": "experiments",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 6216,
+      "output_tokens": 6507,
+      "cost_usd": 0.0128976
+    },
+    {
+      "time": "2026-10-20T17:50:48+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 863,
+      "output_tokens": 139,
+      "cost_usd": 0.0005676
+    },
+    {
+      "time": "2026-10-20T17:50:50+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1045,
+      "output_tokens": 146,
+      "cost_usd": 0.0006516
+    },
+    {
+      "time": "2026-10-20T17:50:58+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1692,
+      "output_tokens": 130,
+      "cost_usd": 0.0008848
+    },
+    {
+      "time": "2026-10-20T17:51:12+00:00",
+      "category": "experiments",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2626,
+      "output_tokens": 1655,
+      "cost_usd": 0.0036984
+    },
+    {
+      "time": "2026-10-20T17:51:30+00:00",
+      "category": "experiments",
+      "source": "plan/freecode",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3075,
+      "output_tokens": 1796,
+      "cost_usd": 0.004103600000000001
+    },
+    {
+      "time": "2026-10-20T17:52:17+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 855,
+      "output_tokens": 144,
+      "cost_usd": 0.0005723999999999999
+    },
+    {
+      "time": "2026-10-20T17:52:19+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1042,
+      "output_tokens": 145,
+      "cost_usd": 0.0006487999999999999
+    },
+    {
+      "time": "2026-10-20T17:52:49+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 878,
+      "output_tokens": 146,
+      "cost_usd": 0.0005848000000000001
+    },
+    {
+      "time": "2026-10-20T17:52:51+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1072,
+      "output_tokens": 154,
+      "cost_usd": 0.0006752
+    },
+    {
+      "time": "2026-10-20T17:53:45+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1585,
+      "output_tokens": 160,
+      "cost_usd": 0.00089
+    },
+    {
+      "time": "2026-10-20T17:53:47+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1788,
+      "output_tokens": 161,
+      "cost_usd": 0.0009728000000000001
+    },
+    {
+      "time": "2026-10-20T17:54:38+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1914,
+      "output_tokens": 135,
+      "cost_usd": 0.0009816
+    },
+    {
+      "time": "2026-10-20T17:55:04+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1423,
+      "output_tokens": 138,
+      "cost_usd": 0.00079
+    },
+    {
+      "time": "2026-10-20T17:55:06+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1604,
+      "output_tokens": 139,
+      "cost_usd": 0.000864
+    },
+    {
+      "time": "2026-10-20T17:56:24+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1680,
+      "output_tokens": 151,
+      "cost_usd": 0.0009136
+    },
+    {
+      "time": "2026-10-20T17:56:27+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1876,
+      "output_tokens": 156,
+      "cost_usd": 0.001
+    },
+    {
+      "time": "2026-10-20T17:56:41+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 558,
+      "output_tokens": 5,
+      "cost_usd": 0.0002312
+    },
+    {
+      "time": "2026-10-20T17:56:44+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 795,
+      "output_tokens": 5,
+      "cost_usd": 0.000326
+    },
+    {
+      "time": "2026-10-20T17:56:46+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4767,
+      "output_tokens": 462,
+      "cost_usd": 0.002646
+    },
+    {
+      "time": "2026-10-20T17:56:48+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 4553,
+      "output_tokens": 303,
+      "cost_usd": 0.002306
+    },
+    {
+      "time": "2026-10-20T17:57:18+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 416,
+      "output_tokens": 69,
+      "cost_usd": 0.0002768
+    },
+    {
+      "time": "2026-10-20T17:57:26+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 413,
+      "output_tokens": 63,
+      "cost_usd": 0.000266
+    },
+    {
+      "time": "2026-10-20T17:58:19+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1331,
+      "output_tokens": 168,
+      "cost_usd": 0.0008012000000000001
+    },
+    {
+      "time": "2026-10-20T17:58:20+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1495,
+      "output_tokens": 194,
+      "cost_usd": 0.0009084000000000001
+    },
+    {
+      "time": "2026-10-20T17:58:21+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1542,
+      "output_tokens": 175,
+      "cost_usd": 0.0008968000000000001
+    },
+    {
+      "time": "2026-10-20T17:58:22+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1746,
+      "output_tokens": 178,
+      "cost_usd": 0.0009832
+    },
+    {
+      "time": "2026-10-20T17:58:31+00:00",
+      "category": "experiments",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 875,
+      "output_tokens": 5,
+      "cost_usd": 0.000358
+    },
+    {
+      "time": "2026-10-20T17:59:02+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 9535,
+      "output_tokens": 2783,
+      "cost_usd": 0.0082668
+    },
+    {
+      "time": "2026-10-20T17:59:25+00:00",
+      "category": "experiments",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 12447,
+      "output_tokens": 2615,
+      "cost_usd": 0.009162799999999999
+    },
+    {
+      "time": "2026-10-20T17:59:36+00:00",
+      "category": "experiments",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 413,
+      "output_tokens": 72,
+      "cost_usd": 0.00028040000000000004
+    },
+    {
+      "time": "2026-10-20T18:00:20+00:00",
+      "category": "experiments",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1883,
+      "output_tokens": 144,
+      "cost_usd": 0.0009836
     }
   ]
 }
