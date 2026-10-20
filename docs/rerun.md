@@ -11,7 +11,7 @@ and the $5 hard cap.
 
 | Chunk | What | Cells | LLM cells | Planned time | Status |
 |---|---|---|---|---|---|
-| 0 | Test suite (fast and slow, no real LLM), then the smoke grid | 208 tests, 36 cells | 8 | ~35 min | to do |
+| 0 | Test suite (fast and slow, no real LLM), then the smoke grid | 208 tests, 36 cells | 8 | ~35 min | done |
 | 1 | `pilot-main`: dummy, lightgbm, skrub, flaml | 96 | 0 | ~45 min | to do |
 | 2 | `pilot-main`: autogluon, generic | 48 | 0 | ~55 min | to do |
 | 3 | `pilot-main`: rules, full | 48 | 24 | ~55 min | to do |
@@ -36,4 +36,4 @@ uv run python -m benchmark.resultsdoc
 
 ## Log
 
-(filled in after each chunk: time, rows, failures, LLM cost)
+- **Chunk 0** (12:38 to 13:18 UTC, 40 min): 207 passed, 1 deselected (the real-LLM test) in 23 min. Smoke grid: 36 of 36 cells ok in 17 min; 48 LLM calls (`gpt-4.1-nano`), $0.0103. The slowest `full` cell took 131 s on a 60 s budget (time-out 135 s): the stage limits are not enforced from outside (known weakness).
