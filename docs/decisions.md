@@ -1270,3 +1270,13 @@ Findings from the decision logs of the worst cells:
   deleted p7 grids (683 MB) and the logs of edatool, edabench and removed environments. Kept:
   `cache/benchmark/outputs/`, the run folders behind `runs-before-p14.csv`.
 - Check: fast suite 183 passed (the layout test is gone), `ruff check --select F` clean.
+
+## P15 Re-run of the pilot (2026-10-20)
+
+- The re-run uses the same pilot grids, models and budgets as before P14 (`gpt-4.1-mini`, 120 s),
+  so the old and new numbers can be compared. The runs went in chunks, one after the other, so no
+  two grids competed for the CPU.
+- The leak-recall drop (5 of 5 to 3 of 5) is reported as it is and not fixed: a change of the leak
+  review prompt or of the G01 thresholds is a method change, so it needs the user's agreement and an
+  entry in `docs/deviations.md`, and the 5 leak cells would have to run again.
+- `docs/showcase.md` keeps its pre-P14 run with the out-of-date note; it was not part of the re-run.

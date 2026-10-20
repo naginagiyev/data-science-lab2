@@ -185,31 +185,24 @@ Every pipeline package is now between about 250 and 1,600 lines, and the audit (
 the operations it feeds (1,603).
 
 
-### Re-run of the pilot with the P14 code (for the user, not run yet)
+### Re-run of the pilot with the P14 code (done 2026-10-20)
 
-The old pilot rows are in `benchmark/results/runs-before-p14.csv`; `runs.csv` starts empty, so the
-runner runs every cell again. `docs/results.md`, `tables.md` and the figures keep the old numbers
-until step 4.
+- [x] P15.0 Re-run plan · 2026-10-20 · ce426d9 · `docs/rerun.md` (6 chunks); experiments cap raised from $2.75 to $3.60 (asked by the user)
+- [x] P15.1 Chunk 0 · 2026-10-20 · 6ca4e7d · 207 passed, 1 deselected (real LLM); smoke grid 36 of 36 ok, $0.0103
+- [x] P15.2 Chunk 1, part 1 · 2026-10-20 · b52d2eb · 48 of 96 cells, stopped by the user
+- [x] P15.3 Chunks 1 to 5 · 2026-10-20 · 18f283c · all 256 pilot cells ok; 246 LLM calls, $0.40; figures, `tables.md` and `docs/results.md` regenerated
 
-1. `uv run python -m benchmark.reproduce --grid smoke` (36 cells on dev samples, `gpt-4.1-nano`, a few
-   cents at most): checks that every system starts.
-2. `uv run python -m benchmark.runner --grid pilot-main --check` (and the same for `pilot-leaks`,
-   `pilot-ablations`, `pilot-natural`): files and systems are in place.
-3. `uv run python -m benchmark.reproduce --grid pilot` (256 cells, 2 workers, 120 s each; about 4 to 5
-   hours by the old pilot's pace). 64 of the cells call the LLM (`gpt-4.1-mini`): `full` and `full+ag`
-   in `pilot-main` (48), `full` in `pilot-leaks` (5), `freecode` and `full-nogate` in
-   `pilot-ablations` (8), `full` in `pilot-natural` (3).
-4. `reproduce --grid pilot` ends with `benchmark.figures` and `benchmark.resultsdoc`; remove the
-   "Out of date" note at the top of `docs/results.md` if it is still there, and record the run in
-   this file.
+Results (`docs/results.md`, log in `docs/rerun.md`; 8 datasets, one seed, 120 s per run):
+- RQ1 supported in the pilot: `full` beats every baseline at levels 2 and 3 (Holm p <= 0.001);
+  `full` vs AutoGluon +0.153, bootstrap interval [0.044, 0.327] (before P14 it crossed 0).
+- RQ2 not shown: `full` vs `generic` at level 0 is -0.032 [-0.087, 0.006], outside the 0.02 margin.
+- RQ3 weaker than before P14: 3 of 5 leaks found, no false drop (before: 5 of 5). See open problems.
+- RQ4: 100% success for every system (the two pre-P14 time-outs did not come back); `full` $0.009
+  per run.
+- RQ5: `full` 0.983 > `full-nogate` 0.947 > `freecode` 0.898 at level 3; `rules` 0.998.
+- Plug-in: `full+ag` vs AutoGluon p = 0.005, interval [0.023, 0.305]. E10: no gain.
 
-> **Spend.** The ledger stands at $2.02 (dev $0.40, experiments $1.62). The experiments cap is $2.75,
-> so only $1.13 is left for experiments, and the runner marks LLM cells `skipped-spend` once the cap
-> is reached. The old `full` cost about $0.026 per run with `gpt-4.1-mini`; the new `full` has no
-> agent sessions but two new calls (leak review, modeller), so 64 LLM runs should cost roughly $1 to
-> $2. If you want the whole pilot inside the caps, raise `spend.experiments_cap_usd` in
-> `configuration/settings.json` (for example to 3.6, which keeps the total under the $4
-> optional-stop level and the $5 hard cap) before step 3.
+> **Spend.** The ledger stands at $2.43 (dev $0.40, experiments $2.03 of the $3.60 cap).
 
 P14 summary (2026-10-19). Created: `audit/` (`context.py`, `structure.py`, `formats.py`,
 `values.py`, `target.py`, `core.py`), `tools/columntypes.py`, `operations/rules.py`,
@@ -300,6 +293,7 @@ re-check the projection; add AIDE if time allows; write the thesis from the gene
 - Solved in P8.3: large-file overruns (verify sample, refit estimate, finish reserve).
 - Found in P9.5 (not fixed, frozen method): stages still do their work when their time limit is already 0, so a run with a slow audit can overrun its budget (1 time-out in 22 full runs). Fix before a full benchmark.
 - Found in P9.8 (not fixed, frozen method): a regression target with decimal commas (layout files) is not converted, so the run stops with 0 labeled rows.
+- Found in P15.3 (not fixed): the leak review missed the two moderate regression leaks (`measured_strength_28d`, `claim_paid_amount`). G01 gives no signal below R2 0.95, and the single review call answered that nothing leaks; the old edatool session reviewed every column name. Recall 3 of 5 instead of 5 of 5.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,
