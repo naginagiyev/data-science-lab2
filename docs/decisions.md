@@ -1271,7 +1271,7 @@ Findings from the decision logs of the worst cells:
   `cache/benchmark/outputs/`, the run folders behind `runs-before-p14.csv`.
 - Check: fast suite 183 passed (the layout test is gone), `ruff check --select F` clean.
 
-## P15 Re-run of the pilot (2026-10-20)
+## 2026-10-20 · P15 · Re-run of the pilot
 
 - The re-run uses the same pilot grids, models and budgets as before P14 (`gpt-4.1-mini`, 120 s),
   so the old and new numbers can be compared. The runs went in chunks, one after the other, so no
