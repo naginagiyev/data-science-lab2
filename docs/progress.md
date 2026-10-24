@@ -224,6 +224,9 @@ figures, resultsdoc, datasets, datacards, scoring, systems registry, grids), man
 `benchmark/results/runs.csv` to `runs-before-p14.csv`. LLM spend in P14: $0.0021 (two real summary
 calls of an old test, five calls of the grid checks). Not done: the pilot re-run (the user runs it).
 
+## P16. Next steps from the supervisor meeting
+- [~] P16.1 Natural mess and leaks: research · 2026-10-24 · (this commit) · `docs/natural-data.md`: 7 datasets in 3 tiers (2 with a clean version, 4 with documented leaks, 1 with documented mess), measures M1-M4 and L-truth/strength/inflation with reliability; downloads wait for the user's approval
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)
