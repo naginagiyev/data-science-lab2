@@ -14,7 +14,7 @@
 - LLM spend: target about $4, hard maximum $5 for the whole plan (`configuration/settings.json` → `spend`; the
   client enforces it). Use `gpt-4.1-nano` while developing. Never start the full benchmark grids.
 - Commit after every task: `P<phase>.<task>: <what changed>`, then push it:
-  `git push origin V2` (remote `https://github.com/naginagiyev/data-science-lab2.git`). Do not push
+  `git push origin V2-Slim` (remote `https://github.com/naginagiyev/data-science-lab2.git`). Do not push
   tags. Commits show only the user: no Claude or Claude Code co-author, trailer or other attribution.
 
 <!-- code-study -->
