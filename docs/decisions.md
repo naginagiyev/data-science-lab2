@@ -1280,3 +1280,26 @@ Findings from the decision logs of the worst cells:
   review prompt or of the G01 thresholds is a method change, so it needs the user's agreement and an
   entry in `docs/deviations.md`, and the 5 leak cells would have to run again.
 - `docs/showcase.md` keeps its pre-P14 run with the out-of-date note; it was not part of the re-run.
+
+## 2026-10-26 · P16.2 · Natural datasets: choice, files and leak labels
+
+- Decision: 9 datasets, 3 per kind: mess (beers, coupon, hr-analytics), leak (bank-additional,
+  titanic, student-performance), both (diabetes130, hotels, airbnb-austin). Every one has a free
+  licence (CC BY 4.0, CC0, ODbL/DbCL or OpenML public) and downloads without a login.
+- Reason: the user asked for the same number of datasets of each kind and no licence problems.
+  Airbnb was planned as mess only, but its `estimated_revenue_l365d` equals price x
+  `estimated_occupancy_l365d` in all 7,464 rows that have them, so it moved to "both" and coupon
+  and hr-analytics (mess) and student-performance (leak) were added to keep 3/3/3.
+- Files: UCI `bank-additional-full.csv`, not `bank-full.csv`: the leak note on `duration` is only
+  in `bank-additional-names.txt`. Hotels from the article supplement (Europe PMC), not the
+  TidyTuesday copy, so the values are the published ones. Airbnb Austin snapshot 2026-09-17 (an
+  11,111-row US city; prices in dollars). Titanic and hr-analytics are exported from the OpenML
+  cache. Movies (Raha) dropped: licence unclear.
+- Leak labels have three levels: documented (provider or paper), proven (exact identity with the
+  target in the data), suspected (strong, neither). Only documented and proven count as ground
+  truth. Suspected: hotels `Country`, airbnb `price_quote_price_per_night`.
+- Research notes (literature, reliability of the measures) live in `DS LAB II/RESEARCH/`
+  (`Topics/natural-data.md` and one note per paper), outside git; `docs/natural-data.md` keeps the
+  practical part.
+- Alternatives: 2/2/2 with Airbnb as mess (wrong: it has a proven leak); keep Movies (licence risk);
+  TidyTuesday hotels (a re-export).

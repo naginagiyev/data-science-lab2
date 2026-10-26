@@ -1,0 +1,240 @@
+{
+ "beers": {
+  "kind": "mess",
+  "task": "regression",
+  "target": "abv",
+  "licence": "ODbL 1.0 (database) and DbCL 1.0 (contents)",
+  "licence_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "source": "https://github.com/BigDaMa/raha/tree/master/datasets/beers",
+  "citation": "J.-N. Hould, Craft Beers Dataset (Kaggle, 2017); dirty and clean versions from Mahdavi et al., Raha, SIGMOD 2019",
+  "files": {
+   "dirty.csv": {
+    "url": "https://raw.githubusercontent.com/BigDaMa/raha/master/datasets/beers/dirty.csv",
+    "sha256": "7110bf4931a9445a1675e544d6c996817c739136239f8a2b02e088c7ec0a1f68",
+    "bytes": 255295,
+    "rows": 2410,
+    "columns": 11
+   },
+   "clean.csv": {
+    "url": "https://raw.githubusercontent.com/BigDaMa/raha/master/datasets/beers/clean.csv",
+    "sha256": "373227df59ad197e154dd5149125789e415019535c7223355e9486ee1b3b93de",
+    "bytes": 233019,
+    "rows": 2410,
+    "columns": 11
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "airbnb-austin": {
+  "kind": "both",
+  "task": "regression",
+  "target": "price",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://insideairbnb.com/get-the-data/",
+  "citation": "Inside Airbnb, Austin, snapshot 2026-09-17",
+  "files": {
+   "listings.csv": {
+    "url": "https://data.insideairbnb.com/united-states/tx/austin/2026-09-17/data/listings.csv.gz",
+    "gzip": true,
+    "sha256": "cb59d2bc41947ca848260ff7f24cd8b5e577222b955d597c2bbc3c2caa5c16a1",
+    "bytes": 34969828,
+    "rows": 11111,
+    "columns": 90
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "bank-additional": {
+  "kind": "leak",
+  "task": "binary-classification",
+  "target": "y",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://archive.ics.uci.edu/dataset/222/bank+marketing",
+  "citation": "S. Moro, P. Cortez, P. Rita, Decision Support Systems 62, 2014; UCI, doi:10.24432/C5K306",
+  "files": {
+   "bank-additional-full.csv": {
+    "url": "https://archive.ics.uci.edu/static/public/222/bank+marketing.zip",
+    "members": [
+     "bank-additional.zip",
+     "bank-additional/bank-additional-full.csv"
+    ],
+    "sep": ";",
+    "sha256": "74adfc578bf77a7ff4bb1ba4a9f8709d9e3c6907342959c2c8416847e0afb4d8",
+    "bytes": 5834924,
+    "rows": 41188,
+    "columns": 21
+   },
+   "bank-additional-names.txt": {
+    "url": "https://archive.ics.uci.edu/static/public/222/bank+marketing.zip",
+    "members": [
+     "bank-additional.zip",
+     "bank-additional/bank-additional-names.txt"
+    ],
+    "sha256": "10045462a4c026f858dffa159370c4270510230c1fc63c6c91ca51bba4b3df26",
+    "bytes": 5458
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "titanic": {
+  "kind": "leak",
+  "task": "binary-classification",
+  "target": "survived",
+  "licence": "Public (OpenML)",
+  "licence_url": "https://www.openml.org/d/40945",
+  "source": "https://www.openml.org/d/40945",
+  "citation": "F. E. Harrell Jr., titanic3 (Vanderbilt Biostatistics); OpenML 40945",
+  "files": {
+   "titanic.csv": {
+    "openml": "Titanic",
+    "sha256": "122d3ac0397117d23e530584331111d076718c5ee90b9719c49781c991de1a33",
+    "bytes": 106780,
+    "rows": 1309,
+    "columns": 14
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "diabetes130": {
+  "kind": "both",
+  "task": "binary-classification",
+  "target": "readmitted",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://archive.ics.uci.edu/dataset/296/diabetes+130-us+hospitals+for+years+1999-2008",
+  "citation": "B. Strack et al., BioMed Research International, 2014; UCI, doi:10.24432/C5230J",
+  "files": {
+   "diabetic_data.csv": {
+    "url": "https://archive.ics.uci.edu/static/public/296/diabetes+130-us+hospitals+for+years+1999-2008.zip",
+    "members": [
+     "diabetic_data.csv"
+    ],
+    "sha256": "0689e7ec031237dc63031b938805c48377748761a3b26acab621567afa24df97",
+    "bytes": 19159383,
+    "rows": 101766,
+    "columns": 50
+   },
+   "IDS_mapping.csv": {
+    "url": "https://archive.ics.uci.edu/static/public/296/diabetes+130-us+hospitals+for+years+1999-2008.zip",
+    "members": [
+     "IDS_mapping.csv"
+    ],
+    "sha256": "f1bb82b471cb34649352597572c9b1fb00bd27f77b9f5a22a03dc3eb1039749e",
+    "bytes": 2547,
+    "rows": 67,
+    "columns": 2
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "hotels": {
+  "kind": "both",
+  "task": "binary-classification",
+  "target": "IsCanceled",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://doi.org/10.1016/j.dib.2018.11.126",
+  "citation": "N. Antonio, A. de Almeida, L. Nunes, Hotel booking demand datasets, Data in Brief 22, 2019",
+  "files": {
+   "H1.csv": {
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6297060/supplementaryFiles",
+    "members": [
+     "mmc2.zip",
+     "H1.csv"
+    ],
+    "sha256": "6f38fda13794fd6cf6547d2432ffb79666200000eb45fd09e4b97fe49519a6ab",
+    "bytes": 8060044,
+    "rows": 40060,
+    "columns": 31
+   },
+   "H2.csv": {
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6297060/supplementaryFiles",
+    "members": [
+     "mmc2.zip",
+     "H2.csv"
+    ],
+    "sha256": "5107090ffdc5585a9e18299801e9d85c3b459c235542882183a502a73ef63c4d",
+    "bytes": 15983819,
+    "rows": 79330,
+    "columns": 31
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "coupon": {
+  "kind": "mess",
+  "task": "binary-classification",
+  "target": "Y",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://archive.ics.uci.edu/dataset/603/in+vehicle+coupon+recommendation",
+  "citation": "T. Wang et al., A Bayesian framework for learning rule sets for interpretable classification, JMLR 18, 2017",
+  "files": {
+   "in-vehicle-coupon-recommendation.csv": {
+    "url": "https://archive.ics.uci.edu/static/public/603/in+vehicle+coupon+recommendation.zip",
+    "members": [
+     "in-vehicle-coupon-recommendation.csv"
+    ],
+    "sha256": "d47897367f5a12a31dece0f4e42d7bd9da76d7016b568da511b50335d08dcb43",
+    "bytes": 2163456,
+    "rows": 12684,
+    "columns": 26
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "hr-analytics": {
+  "kind": "mess",
+  "task": "binary-classification",
+  "target": "LookingForJobChange",
+  "licence": "CC0 (OpenML)",
+  "licence_url": "https://www.openml.org/d/46935",
+  "source": "https://www.openml.org/d/46935",
+  "citation": "HR Analytics: Job Change of Data Scientists; OpenML 46935 (TabArena)",
+  "files": {
+   "hr-analytics.csv": {
+    "openml": "HR_Analytics_Job_Change_of_Data_Scientists",
+    "sha256": "bb61e0d45e93c1917cd1c853374295685287008c6c679c091cca6b8c629650f0",
+    "bytes": 1870524,
+    "rows": 19158,
+    "columns": 13
+   }
+  },
+  "checked": "2026-10-26"
+ },
+ "student-performance": {
+  "kind": "leak",
+  "task": "regression",
+  "target": "G3",
+  "licence": "CC BY 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source": "https://archive.ics.uci.edu/dataset/320/student+performance",
+  "citation": "P. Cortez, A. Silva, Using data mining to predict secondary school student performance, FUBUTEC 2008; UCI, doi:10.24432/C5TG7T",
+  "files": {
+   "student-por.csv": {
+    "url": "https://archive.ics.uci.edu/static/public/320/student+performance.zip",
+    "members": [
+     "student.zip",
+     "student-por.csv"
+    ],
+    "sep": ";",
+    "sha256": "a7594a11d7771c0efe1a740824e0e833da9c4cad07c39a9766a874575563fb3f",
+    "bytes": 93220,
+    "rows": 649,
+    "columns": 33
+   },
+   "student.txt": {
+    "url": "https://archive.ics.uci.edu/static/public/320/student+performance.zip",
+    "members": [
+     "student.zip",
+     "student.txt"
+    ],
+    "sha256": "f8d3e734e237071312790ca667330c66d75e706317f8d5e2125c479d70e962c1",
+    "bytes": 3206
+   }
+  },
+  "checked": "2026-10-26"
+ }
+}

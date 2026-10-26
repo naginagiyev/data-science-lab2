@@ -225,7 +225,9 @@ figures, resultsdoc, datasets, datacards, scoring, systems registry, grids), man
 calls of an old test, five calls of the grid checks). Not done: the pilot re-run (the user runs it).
 
 ## P16. Next steps from the supervisor meeting
-- [~] P16.1 Natural mess and leaks: research · 2026-10-24 · (this commit) · `docs/natural-data.md`: 7 datasets in 3 tiers (2 with a clean version, 4 with documented leaks, 1 with documented mess), measures M1-M4 and L-truth/strength/inflation with reliability; downloads wait for the user's approval
+- [x] P16.1 Natural mess and leaks: research · 2026-10-24 · 27d2efd · first proposal (7 datasets in 3 tiers, measures M1-M4 and leak measures with reliability)
+- [x] P16.2 Natural datasets downloaded and checked · 2026-10-26 · (this commit) · `benchmark/natural.py` downloads 9 datasets (3 mess, 3 leak, 3 both; free licences, no login) to `cache/natural/`, manifest `benchmark/results/natural.json`; documented mess and leaks checked on the files (beers 16.45% erroneous cells, published 16%); leak labels documented/proven/suspected; `docs/natural-data.md` rewritten as the practical reference, research notes moved to `DS LAB II/RESEARCH/`
+- [ ] P16.3 Natural data measures · M1, M2, M4, leak strength and inflation in a script independent of `audit/`
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
@@ -297,6 +299,8 @@ re-check the projection; add AIDE if time allows; write the thesis from the gene
 - Found in P9.5 (not fixed, frozen method): stages still do their work when their time limit is already 0, so a run with a slow audit can overrun its budget (1 time-out in 22 full runs). Fix before a full benchmark.
 - Found in P9.8 (not fixed, frozen method): a regression target with decimal commas (layout files) is not converted, so the run stops with 0 labeled rows.
 - Found in P15.3 (not fixed): the leak review missed the two moderate regression leaks (`measured_strength_28d`, `claim_paid_amount`). G01 gives no signal below R2 0.95, and the single review call answered that nothing leaks; the old edatool session reviewed every column name. Recall 3 of 5 instead of 5 of 5.
+
+- Found in P16.2 (not fixed): Group C `employee_salaries` has `2016_gross_pay_received` and `2016_overtime_pay` next to the target `current_annual_salary` (r = 0.889), a suspected natural leak. It is in no pilot grid.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,
