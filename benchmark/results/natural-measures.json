@@ -1,0 +1,273 @@
+{
+ "beers": {
+  "kind": "mess",
+  "task": "regression",
+  "profile": {
+   "rows": 2410,
+   "columns": 11,
+   "source": "the owner's clean file writes N/A as empty",
+   "completeness": 0.9548,
+   "hidden_missing_cells": 1005,
+   "empty_columns": 0,
+   "columns_over_half_missing": 0,
+   "not_applicable_cells": 0,
+   "uniqueness": 1.0,
+   "duplicate_rows": 0,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  },
+  "cell_errors": {
+   "cells": 26510,
+   "erroneous_cells": 4362,
+   "error_rate": 0.1645,
+   "per_column": {
+    "ounces": 2410,
+    "abv": 693,
+    "ibu": 1005,
+    "city": 127,
+    "state": 127
+   },
+   "per_type": {
+    "format_or_unit": 2961,
+    "missing_token": 1005,
+    "wrong_value": 142,
+    "packed": 127,
+    "missing_value": 127
+   }
+  },
+  "cleaning_impact": {
+   "mean": 0.0019,
+   "sd": 0.0004,
+   "ci95": [
+    0.0017,
+    0.0021
+   ],
+   "n": 20,
+   "p_value": 0.0,
+   "metric": "rmse (difference = dirty rmse - clean rmse; positive means cleaning helps)"
+  }
+ },
+ "titanic": {
+  "kind": "leak",
+  "task": "binary-classification",
+  "profile": {
+   "rows": 1309,
+   "columns": 14,
+   "source": "titanic3: empty cells are missing",
+   "completeness": 0.7896,
+   "hidden_missing_cells": 0,
+   "empty_columns": 0,
+   "columns_over_half_missing": 3,
+   "not_applicable_cells": 0,
+   "uniqueness": 1.0,
+   "duplicate_rows": 0,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  },
+  "leak_strength": {
+   "boat": 0.9752,
+   "body": 0.5748
+  },
+  "leak_inflation": {
+   "mean": 0.1425,
+   "sd": 0.0176,
+   "ci95": [
+    0.1207,
+    0.1643
+   ],
+   "n": 5
+  }
+ },
+ "student-performance": {
+  "kind": "leak",
+  "task": "regression",
+  "profile": {
+   "rows": 649,
+   "columns": 33,
+   "source": "UCI 320: no missing values",
+   "completeness": 1.0,
+   "hidden_missing_cells": 0,
+   "empty_columns": 0,
+   "columns_over_half_missing": 0,
+   "not_applicable_cells": 0,
+   "uniqueness": 1.0,
+   "duplicate_rows": 0,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  },
+  "leak_strength": {
+   "G1": 0.6764,
+   "G2": 0.8097
+  },
+  "leak_inflation": {
+   "mean": 1.458,
+   "sd": 0.2262,
+   "ci95": [
+    1.1771,
+    1.7389
+   ],
+   "n": 5
+  }
+ },
+ "coupon": {
+  "kind": "mess",
+  "task": "binary-classification",
+  "profile": {
+   "rows": 12684,
+   "columns": 26,
+   "source": "UCI 603: has missing values (empty cells)",
+   "completeness": 0.9595,
+   "hidden_missing_cells": 0,
+   "empty_columns": 0,
+   "columns_over_half_missing": 1,
+   "not_applicable_cells": 0,
+   "uniqueness": 0.9942,
+   "duplicate_rows": 74,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  }
+ },
+ "hr-analytics": {
+  "kind": "mess",
+  "task": "binary-classification",
+  "profile": {
+   "rows": 19158,
+   "columns": 13,
+   "source": "no documentation; 'nan' is the text of a missing value (observed)",
+   "completeness": 0.9168,
+   "hidden_missing_cells": 20668,
+   "empty_columns": 0,
+   "columns_over_half_missing": 0,
+   "not_applicable_cells": 0,
+   "uniqueness": 0.9974,
+   "duplicate_rows": 49,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  }
+ },
+ "bank-additional": {
+  "kind": "leak",
+  "task": "binary-classification",
+  "profile": {
+   "rows": 41188,
+   "columns": 21,
+   "source": "bank-additional-names.txt: missing values are coded 'unknown'; pdays 999 = not contacted (a code, not missing)",
+   "completeness": 0.9853,
+   "hidden_missing_cells": 12718,
+   "empty_columns": 0,
+   "columns_over_half_missing": 0,
+   "not_applicable_cells": 0,
+   "uniqueness": 0.9997,
+   "duplicate_rows": 12,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  },
+  "leak_strength": {
+   "duration": 0.8033
+  },
+  "leak_inflation": {
+   "mean": 0.1473,
+   "sd": 0.0096,
+   "ci95": [
+    0.1354,
+    0.1592
+   ],
+   "n": 5
+  }
+ },
+ "diabetes130": {
+  "kind": "both",
+  "task": "multi-class-classification",
+  "profile": {
+   "rows": 101766,
+   "columns": 50,
+   "source": "UCI 296 file and Strack et al. 2014 (missing shares); gender 'Unknown/Invalid' is an invalid value",
+   "completeness": 0.9621,
+   "hidden_missing_cells": 192849,
+   "empty_columns": 0,
+   "columns_over_half_missing": 1,
+   "not_applicable_cells": 0,
+   "uniqueness": 1.0,
+   "duplicate_rows": 0,
+   "invalid_values": 3,
+   "entity_rows_repeated": 47021,
+   "entities": 71518,
+   "label_synonym_cells": {}
+  },
+  "leak_inflation": {
+   "mean": 0.0052,
+   "sd": 0.0143,
+   "ci95": [
+    -0.0126,
+    0.0229
+   ],
+   "n": 5
+  }
+ },
+ "hotels": {
+  "kind": "both",
+  "task": "binary-classification",
+  "profile": {
+   "rows": 79330,
+   "columns": 31,
+   "source": "Antonio et al. 2019: NULL means 'not applicable'; Meal 'Undefined/SC - no meal package'; ADR is a price, a booking has guests",
+   "completeness": 1.0,
+   "hidden_missing_cells": 4,
+   "empty_columns": 0,
+   "columns_over_half_missing": 0,
+   "not_applicable_cells": 83796,
+   "uniqueness": 0.6735,
+   "duplicate_rows": 25902,
+   "negative_rate_rows": 0,
+   "zero_guest_rows": 167,
+   "invalid_values": 167,
+   "label_synonym_cells": {
+    "Meal: Undefined = SC": 0
+   }
+  },
+  "leak_strength": {
+   "ReservationStatus": 1.0,
+   "ReservationStatusDate": 0.6282
+  },
+  "leak_inflation": {
+   "mean": 0.0551,
+   "sd": 0.0012,
+   "ci95": [
+    0.0535,
+    0.0566
+   ],
+   "n": 5
+  }
+ },
+ "airbnb-austin": {
+  "kind": "both",
+  "task": "regression",
+  "profile": {
+   "rows": 11111,
+   "columns": 90,
+   "source": "Inside Airbnb data dictionary: price is the daily price; no missing tokens documented",
+   "completeness": 0.8059,
+   "hidden_missing_cells": 0,
+   "empty_columns": 13,
+   "columns_over_half_missing": 15,
+   "not_applicable_cells": 0,
+   "uniqueness": 1.0,
+   "duplicate_rows": 0,
+   "invalid_values": 0,
+   "label_synonym_cells": {}
+  },
+  "leak_strength": {
+   "estimated_revenue_l365d": 0.061,
+   "estimated_revenue_l365d + estimated_occupancy_l365d": 0.1372
+  },
+  "leak_inflation": {
+   "mean": -1.0248,
+   "sd": 1.4692,
+   "ci95": [
+    -2.8491,
+    0.7995
+   ],
+   "n": 5
+  }
+ }
+}
