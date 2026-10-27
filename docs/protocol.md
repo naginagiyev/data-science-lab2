@@ -91,3 +91,40 @@ On the pilot these are indications only; the full grids are needed for a confirm
 - A run that fails because of a harness bug (not the system) is re-run after the fix, with an entry
   in `docs/deviations.md`.
 - No dataset is removed after the re-run starts.
+
+## 7. Agentic comparison and natural data (E11, E12; written 2026-10-27, before the runs)
+
+The supervisor asked for a comparison with LLM-powered AutoML tools (next step 2) and for naturally
+messy and leaky data (next step 1, `docs/natural-data.md`). Both run in one set of grids, so no
+cell runs twice.
+
+- **Systems:** `dummy`, `lightgbm`, `autogluon`, `full`, `aide` (AIDE 0.2.2, MIT) and `mlzero`
+  (AutoGluon Assistant 1.1.0, Apache-2.0), adapters in `benchmark/systems/`.
+- **One platform for every system:** native Linux on ARM (WSL Ubuntu), from a clone of the
+  repository with the same lock file. On Windows the project runs as emulated x86, which made the
+  same LightGBM fit 2.9 times slower (1.88 s vs 0.65 s); running the agentic tools in WSL and the
+  rest on Windows would have given them about three times the compute.
+- **Same budget, threads, model and accounting:** 300 s wall clock per run for every system, 4
+  threads (the agentic tools are pinned to 4 cores), at most 2 runs in parallel, seed 0. Every LLM
+  call uses `gpt-4.1-mini`. The agentic tools reach OpenAI only through `benchmark/llmproxy.py`
+  (loopback only), which refuses other models, counts the tokens from OpenAI's usage records and
+  writes them to the same ledger as `full`. Same price for every call (0.40 / 1.60 dollars per
+  million input / output tokens).
+- **Same information:** both agentic tools get `train.csv`, `test.csv`, `sample_submission.csv`
+  and one task text (target, task, metric, output format, time limit). They predict the deployment
+  test file only, so they have no naive leak score.
+- **Grids:** `agentic-main` (the 8 pilot datasets, levels 0 and 3), `agentic-leaks` (the 5 Group D
+  datasets), `agentic-natural` (the 9 natural datasets, group N: leak columns empty in the test
+  file, diabetes130 split by patient). 30 cells per system, 180 runs.
+- **Analysis:** normalized scores, average ranks and win/tie/loss as in §4, per grid; success rate,
+  median seconds, mean tokens and dollars per system (next step 2, part 3).
+- **Hypotheses (not results):**
+  - **H6** `full` has a higher mean normalized score than `aide` and `mlzero` at level 3 and on the
+    natural datasets (bootstrap 95% interval of the difference above 0).
+  - **H7** `full` succeeds more often than both agentic tools and costs less per run.
+  - **H8** on the natural leak datasets, the deployment score of `full` is at least as good as that
+    of `autogluon`.
+- **Known limits written before the runs:** one seed; 300 s is short for agentic tools that call an
+  LLM at every step; in 3 test runs MLZero's generated environment script failed (`pip install
+  --prerelease`, an option only `uv pip` has) and MLZero judged the run a success; this is kept as
+  the tool's behaviour.

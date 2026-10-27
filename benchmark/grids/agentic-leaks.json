@@ -1,0 +1,11 @@
+{
+  "name": "agentic-leaks",
+  "systems": ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"],
+  "datasets": ["credit-g", "Bank_Customer_Churn", "maternal_health_risk", "concrete_compressive_strength", "healthcare_insurance_expenses"],
+  "group": "D",
+  "levels": [0],
+  "seeds": [0],
+  "budget": 300,
+  "workers": 2,
+  "settings": ["spend.category=experiments", "llm.model=gpt-4.1-mini"]
+}

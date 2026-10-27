@@ -1,0 +1,11 @@
+{
+  "name": "agentic-natural",
+  "systems": ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"],
+  "datasets": ["beers", "coupon", "hr-analytics", "bank-additional", "titanic", "student-performance", "diabetes130", "hotels", "airbnb-austin"],
+  "group": "N",
+  "levels": [0],
+  "seeds": [0],
+  "budget": 300,
+  "workers": 2,
+  "settings": ["spend.category=experiments", "llm.model=gpt-4.1-mini"]
+}
