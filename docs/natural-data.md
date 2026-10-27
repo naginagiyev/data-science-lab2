@@ -71,9 +71,44 @@ no participant id, so this dependence cannot be split on.
 | hotels | `NULL` (documented as "not applicable", not missing) in Agent and Company; Country `NULL` (464, 24); `Undefined` in Meal (1,169), DistributionChannel, MarketSegment; values padded with spaces (Agent, Company, Meal); ADR -6.38 (1 row) and 5,400 (H2); zero guests (13, 167); Children `NA` (4); duplicate rows (6,092, 25,902) |
 | airbnb-austin | price as text (`$79.74`), 10% empty; 13 columns completely empty in this snapshot (host response, host since, bathrooms, ...); `t`/`f` booleans; `1.5 shared baths`; amenities as JSON lists |
 
-These are checks of what the documentation says, not yet the measures. The measures (next task)
-are computed by a separate script with no import from `audit/`, so the system never measures its
-own work:
+## Measures (P16.3, 2026-10-27)
+
+`uv run python -m benchmark.messmeasures` writes `benchmark/results/natural-measures.json`. The
+script imports nothing from `audit/`, so the system never measures its own work. Reference model:
+the `lightgbm` baseline (default LightGBM on `pd.read_csv`-style types).
+
+| Dataset | Completeness | Hidden missing cells | Uniqueness | Other documented issues |
+|---|---|---|---|---|
+| beers | 0.955 | 1,005 (`N/A`) | 1.000 | M1: 16.45% erroneous cells (below) |
+| coupon | 0.960 | 0 | 0.994 | 1 column over half empty |
+| hr-analytics | 0.917 | 20,668 (`nan`) | 0.997 | |
+| bank-additional | 0.985 | 12,718 (`unknown`) | 0.9997 | |
+| titanic | 0.790 | 0 | 1.000 | 3 columns over half empty |
+| student-performance | 1.000 | 0 | 1.000 | |
+| diabetes130 | 0.962 | 192,849 (`?`) | 1.000 | 3 invalid genders; 47,021 rows of repeated patients (71,518 patients) |
+| hotels (H2) | 1.000 | 4 (`NA`) | 0.674 | 83,796 `NULL` = not applicable; 167 bookings with no guests |
+| airbnb-austin | 0.806 | 0 | 1.000 | 13 empty columns, 15 over half empty |
+
+M1 (beers): 4,362 of 26,510 cells differ from the clean file: 2,961 format or unit, 1,005 missing
+token, 142 wrong value, 127 packed value, 127 missing value. M4 (beers, 20 splits): training on the
+clean instead of the dirty features lowers the reference RMSE by 0.0019 ABV points (95% interval
+[0.0017, 0.0021], p < 0.001): a tiny but consistent effect.
+
+| Leak | Strength alone (5-fold CV) | Inflation of the reference score (5 splits, 95% interval) |
+|---|---|---|
+| bank `duration` | AUC 0.803 | +0.147 AUC [0.135, 0.159] |
+| titanic `boat`, `body` | AUC 0.975, 0.575 | +0.143 AUC [0.121, 0.164] |
+| student `G1`, `G2` | R2 0.676, 0.810 | RMSE 1.458 lower with the leak [1.177, 1.739] |
+| hotels `ReservationStatus`, `ReservationStatusDate` | AUC 1.000, 0.628 | +0.055 AUC [0.054, 0.057] |
+| diabetes130 repeated patients | - | log loss 0.005 lower with a random split than a patient split [-0.013, 0.023] (not significant) |
+| airbnb `estimated_revenue_l365d` | R2 0.061 (0.137 with occupancy) | RMSE 1.02 higher with the leak [-0.80, 2.85] (not significant) |
+
+Two documented or proven leaks barely move the reference model: the repeated diabetes patients
+and the Airbnb revenue column (the price is a ratio, revenue / occupancy, which trees do not
+learn). Leak strength alone also misses partial leaks (titanic `body` covers few rows). These are
+limits of the measures, reported as such.
+
+The measures in short:
 
 - **M1 cell error rate** (beers): erroneous cells / all cells against the clean file, per column
   and per error type.

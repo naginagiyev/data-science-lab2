@@ -67,6 +67,7 @@ def run_adapter(fit_predict, extra=None):
         meta.update(result.get("meta", {}))
         meta["ok"] = True
     except Exception as error:
+        meta.update(getattr(error, "meta", {}))
         meta["error"] = f"{type(error).__name__}: {error}"
         traceback.print_exc()
     meta["seconds"] = round(time.perf_counter() - start, 3)

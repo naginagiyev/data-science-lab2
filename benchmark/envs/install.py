@@ -1,13 +1,14 @@
+import os
 import sys
 import argparse
 import subprocess
 from paths import envs_dir
 
-PYTHON = "cpython-3.12-windows-x86_64-none"
+PYTHON = "cpython-3.12-windows-x86_64-none" if os.name == "nt" else "3.12"
 
-# the python executable of a baseline environment
+# the python executable of a baseline environment (Windows or Linux layout)
 def env_python(name):
-    return envs_dir / name / ".venv" / "Scripts" / "python.exe"
+    return envs_dir / name / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
 # creates benchmark/envs/<name>/.venv with uv and installs <name>.txt into it
 def install(name):

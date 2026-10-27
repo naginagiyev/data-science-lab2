@@ -1,7 +1,7 @@
 {
   "totals": {
-    "dev": 0.3984175000000002,
-    "experiments": 2.0309720999999965
+    "dev": 0.4037259000000002,
+    "experiments": 2.225700899999996
   },
   "calls": [
     {
@@ -14493,6 +14493,339 @@
       "input_tokens": 1883,
       "output_tokens": 144,
       "cost_usd": 0.0009836
+    },
+    {
+      "time": "2026-10-21T07:30:26+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1059,
+      "output_tokens": 56,
+      "cost_usd": 0.0001283
+    },
+    {
+      "time": "2026-10-21T07:30:32+00:00",
+      "category": "dev",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 693,
+      "output_tokens": 5,
+      "cost_usd": 7.13e-05
+    },
+    {
+      "time": "2026-10-21T07:30:38+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 3632,
+      "output_tokens": 1284,
+      "cost_usd": 0.0008768000000000001
+    },
+    {
+      "time": "2026-10-21T07:30:41+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1158,
+      "output_tokens": 54,
+      "cost_usd": 0.0001374
+    },
+    {
+      "time": "2026-10-21T07:30:43+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 107,
+      "cost_usd": 0.00014220000000000001
+    },
+    {
+      "time": "2026-10-21T07:30:44+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 104,
+      "cost_usd": 0.000141
+    },
+    {
+      "time": "2026-10-21T07:30:45+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 107,
+      "cost_usd": 0.00014220000000000001
+    },
+    {
+      "time": "2026-10-21T07:30:47+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 97,
+      "cost_usd": 0.00013820000000000003
+    },
+    {
+      "time": "2026-10-21T07:30:48+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 91,
+      "cost_usd": 0.00013580000000000002
+    },
+    {
+      "time": "2026-10-21T07:30:49+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 994,
+      "output_tokens": 95,
+      "cost_usd": 0.0001374
+    },
+    {
+      "time": "2026-10-21T07:30:51+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1031,
+      "output_tokens": 107,
+      "cost_usd": 0.0001459
+    },
+    {
+      "time": "2026-10-21T07:30:52+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1028,
+      "output_tokens": 187,
+      "cost_usd": 0.00017760000000000003
+    },
+    {
+      "time": "2026-10-21T07:30:54+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1257,
+      "output_tokens": 198,
+      "cost_usd": 0.0002049
+    },
+    {
+      "time": "2026-10-21T07:30:55+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1031,
+      "output_tokens": 117,
+      "cost_usd": 0.0001499
+    },
+    {
+      "time": "2026-10-21T07:30:57+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1195,
+      "output_tokens": 122,
+      "cost_usd": 0.0001683
+    },
+    {
+      "time": "2026-10-21T07:30:58+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1362,
+      "output_tokens": 106,
+      "cost_usd": 0.00017860000000000003
+    },
+    {
+      "time": "2026-10-21T07:30:59+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1021,
+      "output_tokens": 110,
+      "cost_usd": 0.00014610000000000003
+    },
+    {
+      "time": "2026-10-21T07:31:00+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1177,
+      "output_tokens": 106,
+      "cost_usd": 0.00016010000000000002
+    },
+    {
+      "time": "2026-10-21T07:31:01+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1329,
+      "output_tokens": 110,
+      "cost_usd": 0.00017690000000000002
+    },
+    {
+      "time": "2026-10-21T07:31:02+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1015,
+      "output_tokens": 71,
+      "cost_usd": 0.0001299
+    },
+    {
+      "time": "2026-10-21T07:31:03+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1019,
+      "output_tokens": 72,
+      "cost_usd": 0.0001307
+    },
+    {
+      "time": "2026-10-21T07:31:06+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1030,
+      "output_tokens": 71,
+      "cost_usd": 0.0001314
+    },
+    {
+      "time": "2026-10-21T07:31:07+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1149,
+      "output_tokens": 71,
+      "cost_usd": 0.00014330000000000001
+    },
+    {
+      "time": "2026-10-21T07:31:08+00:00",
+      "category": "dev",
+      "source": "compile/repair",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1268,
+      "output_tokens": 80,
+      "cost_usd": 0.0001588
+    },
+    {
+      "time": "2026-10-21T07:31:19+00:00",
+      "category": "dev",
+      "source": "gate/refine",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 2699,
+      "output_tokens": 1042,
+      "cost_usd": 0.0006867
+    },
+    {
+      "time": "2026-10-21T07:31:31+00:00",
+      "category": "dev",
+      "source": "model/modeller",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 421,
+      "output_tokens": 74,
+      "cost_usd": 7.170000000000001e-05
+    },
+    {
+      "time": "2026-10-21T07:31:32+00:00",
+      "category": "dev",
+      "source": "model/modeller",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 528,
+      "output_tokens": 81,
+      "cost_usd": 8.52e-05
+    },
+    {
+      "time": "2026-10-21T08:42:56+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-nano",
+      "input_tokens": 1438,
+      "output_tokens": 134,
+      "cost_usd": 0.0001974
+    },
+    {
+      "time": "2026-10-27T11:01:40+00:00",
+      "category": "dev",
+      "source": "P16.4 proxy test",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 20,
+      "output_tokens": 4,
+      "cost_usd": 1.44e-05
+    },
+    {
+      "time": "2026-10-27T11:10:59+00:00",
+      "category": "experiments",
+      "source": "mlzero C:\\Users\\ASUS\\Desktop\\DS LAB II\\CODING\\V2-Slim\\cache\\benchmark\\outputs\\agentic-probe\\mlzero-credit-g-l3-s0-b600",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 92718,
+      "output_tokens": 6873,
+      "cost_usd": 0.048084
+    },
+    {
+      "time": "2026-10-27T11:15:15+00:00",
+      "category": "experiments",
+      "source": "mlzero C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-mlzero/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 22625,
+      "output_tokens": 3629,
+      "cost_usd": 0.0148564
+    },
+    {
+      "time": "2026-10-27T11:16:24+00:00",
+      "category": "experiments",
+      "source": "aide C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-aide/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 32277,
+      "output_tokens": 10602,
+      "cost_usd": 0.029874000000000005
+    },
+    {
+      "time": "2026-10-27T11:22:45+00:00",
+      "category": "experiments",
+      "source": "aide C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-aide/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 34721,
+      "output_tokens": 11070,
+      "cost_usd": 0.031600399999999994
+    },
+    {
+      "time": "2026-10-27T11:26:47+00:00",
+      "category": "experiments",
+      "source": "aide C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-aide2/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 24536,
+      "output_tokens": 8872,
+      "cost_usd": 0.024009600000000002
+    },
+    {
+      "time": "2026-10-27T11:56:24+00:00",
+      "category": "experiments",
+      "source": "mlzero C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-mlz2/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 23417,
+      "output_tokens": 3796,
+      "cost_usd": 0.015440400000000002
+    },
+    {
+      "time": "2026-10-27T12:13:13+00:00",
+      "category": "experiments",
+      "source": "mlzero C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-mlz3/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 23336,
+      "output_tokens": 3553,
+      "cost_usd": 0.015019200000000003
+    },
+    {
+      "time": "2026-10-27T12:19:41+00:00",
+      "category": "experiments",
+      "source": "mlzero C:/Users/ASUS/AppData/Local/Temp/claude/c--Users-ASUS-Desktop-DS-LAB-II-CODING-V2-Slim/f72472ae-71f2-4507-8945-e72729b7a9c5/scratchpad/dbg-mlz5/out",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 25348,
+      "output_tokens": 3566,
+      "cost_usd": 0.0158448
     }
   ]
 }

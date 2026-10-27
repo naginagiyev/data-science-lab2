@@ -9,5 +9,7 @@
   "full": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full"], "llm": true, "settings": true, "variant": "full"},
   "full-nogate": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full-nogate"], "llm": true, "settings": true, "variant": "full-nogate"},
   "freecode": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "freecode"], "llm": true, "settings": true, "variant": "freecode"},
-  "full+ag": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full+ag"], "llm": true, "settings": true, "variant": "full+ag"}
+  "full+ag": {"python": "main", "module": "benchmark.systems.v2", "args": ["--variant", "full+ag"], "llm": true, "settings": true, "variant": "full+ag"},
+  "aide": {"python": "main", "module": "benchmark.systems.aide", "llm": true},
+  "mlzero": {"python": "main", "module": "benchmark.systems.mlzero", "llm": true}
 }

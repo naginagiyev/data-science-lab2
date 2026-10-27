@@ -5,8 +5,8 @@ import argparse
 import numpy as np
 import pandas as pd
 from scipy import stats
-from paths import natural_cache_dir, results_dir
 from benchmark.systems.lightgbm import prepare
+from paths import natural_cache_dir, results_dir
 from lightgbm import LGBMClassifier, LGBMRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.metrics import log_loss, mean_squared_error, roc_auc_score

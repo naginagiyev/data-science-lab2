@@ -1,0 +1,23 @@
+{
+  "name": "agentic-probe",
+  "systems": [
+    "aide",
+    "mlzero"
+  ],
+  "datasets": [
+    "credit-g"
+  ],
+  "group": "A",
+  "levels": [
+    3
+  ],
+  "seeds": [
+    0
+  ],
+  "budget": 600,
+  "workers": 2,
+  "settings": [
+    "spend.category=experiments",
+    "llm.model=gpt-4.1-mini"
+  ]
+}

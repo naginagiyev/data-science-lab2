@@ -19,7 +19,7 @@
     "max_cost_per_run_usd": 0.1,
     "prices_per_million_tokens": {"gpt-4.1-mini": {"input": 0.4, "output": 1.6}, "gpt-4.1-nano": {"input": 0.1, "output": 0.4}}
   },
-  "spend": {"category": "dev", "dev_cap_usd": 1.5, "experiments_cap_usd": 3.6, "stop_optional_usd": 4.0, "total_cap_usd": 5.0},
+  "spend": {"category": "dev", "dev_cap_usd": 1.5, "experiments_cap_usd": 5.33, "stop_optional_usd": 5.73, "total_cap_usd": 5.73},
   "framer": {"candidates": 5, "min_confidence": 0.6, "max_target_levels": 20, "name_hints": ["target", "label", "class", "y", "outcome", "result", "churn", "price", "survived", "fraud", "default", "status", "score", "quality", "response", "diagnosis", "risk", "rating", "grade", "salary", "income", "sales", "revenue", "cost", "charges", "strength", "value", "amount", "attrition", "approved", "dropout", "won", "success"]},
   "audit": {"sample_rows": 50000, "n_jobs": 4},
   "leakage": {"drop_semantic_only": true},

@@ -94,6 +94,7 @@ def system_environment(threads=4):
 # arguments (§4.4)
 def cell_command(entry, cell, files, truth, workdir, out, extra_arguments):
     python = sys.executable if entry["python"] == "main" else str(root_dir / entry["python"])
+    python = python if os.name == "nt" else python.replace("Scripts/python.exe", "bin/python")
     names = ["test_features.csv"] + (["test_features_naive.csv"] if (files / "test_features_naive.csv").exists() else [])
     tests = [str(files / name) for name in names]
     return [
@@ -154,7 +155,7 @@ def run_cell(cell, grid, registry, results_file, lock, log_dir):
         input_tokens=meta.get("input_tokens", 0), output_tokens=meta.get("output_tokens", 0), cost_usd=meta.get("cost_usd", 0.0),
         run_dir=meta.get("run_dir", ""), settings_hash=meta.get("settings_hash", ""),
     )
-    if (files / "test_features_naive.csv").exists():
+    if (files / "test_features_naive.csv").exists() and (out / "predictions1.csv").exists():
         naive = score_cell(truth["task"], files / "train.csv", files / "test_labels.csv", out / "predictions1.csv", truth["target"])
         row["secondary"] = json.dumps(dict(result["secondary"], naive_score=naive["score"]))
     append_result(results_file, row, lock)
