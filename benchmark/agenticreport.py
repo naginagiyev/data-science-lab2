@@ -2,8 +2,8 @@ import sys
 import json
 import pandas as pd
 from benchmark import analysis
-from paths import docs_dir, results_dir
 from benchmark.resultsdoc import markdown
+from paths import benchmark_outputs_dir, docs_dir, results_dir
 
 GRIDS = ["agentic-main", "agentic-leaks", "agentic-natural"]
 AGENTIC = ["aide", "mlzero"]
@@ -36,22 +36,45 @@ def differences(frame, levels, label, baselines):
         if baseline in set(frame["system"]):
             value = analysis.bootstrap_difference(frame, "full", baseline, levels)
             rows.append({"cells": label, "comparison": f"full vs {baseline}", "mean": value["mean"], "low": value["low"], "high": value["high"], "datasets": value["datasets"]})
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows).round(3)
 
-# the failure messages of the agentic tools, counted
+# the cause of one failed agentic run, read from the tool files kept next to...
+# its predictions (stderr of MLZero's scripts, AIDE's journal)
+def failure_cause(row):
+    cell = f"{row['system']}-{row['dataset']}-l{row['level']}-s{row['seed']}-b{int(row['budget_s'])}"
+    folder = benchmark_outputs_dir / row["grid"] / cell / "tool" / "output"
+    if row["system"] == "mlzero":
+        errors = " ".join(path.read_text(encoding="utf-8", errors="replace") for path in (folder / "code").glob("*stderr_*.txt")) if folder.exists() else ""
+        if "--prerelease" in errors or "No module named" in errors:
+            return "its environment script failed (pip install --prerelease or packages not installed)"
+        return "time limit reached before any model code ran" if folder.exists() else "no tool files"
+    journal = folder / "journal.json"
+    if not journal.exists():
+        return "no journal"
+    nodes = json.loads(journal.read_text(encoding="utf-8")).get("nodes", [])
+    crashed = [node for node in nodes if node.get("is_buggy")]
+    if len(crashed) == len(nodes):
+        kinds = pd.Series([node.get("exc_type") or "error" for node in crashed]).value_counts()
+        return f"every script crashed (most often {kinds.index[0]})" if len(kinds) else "no script finished"
+    return "scripts finished but wrote no submission (scores given without output)"
+
+# the failed agentic runs, counted by cause
 def failures(frame):
     failed = frame[frame["system"].isin(AGENTIC) & ~frame["status"].eq("ok")]
     if failed.empty:
         return pd.DataFrame()
-    reason = failed["error"].fillna("").str.replace(r"\(.*", "", regex=True).str.slice(0, 90)
-    return failed.assign(reason=reason).groupby(["system", "reason"]).size().rename("runs").reset_index()
+    return failed.assign(cause=failed.apply(failure_cause, axis=1)).groupby(["system", "cause"]).size().rename("runs").reset_index()
 
 # the naive (leak kept) and deployment (leak empty) scores of the Group D and...
 # natural leak cells, for the systems that predict both files
 def leak_scores(frame):
     data = frame[(frame["grid"] == "agentic-leaks") | frame["dataset"].isin(NATURAL_LEAKS)].copy()
     data["naive_score"] = data["secondary"].map(lambda text: json.loads(text).get("naive_score") if isinstance(text, str) and text.startswith("{") else None)
-    return data.pivot_table(index=["grid", "dataset", "metric"], columns="system", values=["score", "naive_score"], aggfunc="first")
+    table = data.pivot_table(index=["dataset", "metric"], columns="system", values=["score", "naive_score"], aggfunc="first")
+    table.columns = [f"{system} {'naive' if kind == 'naive_score' else 'deploy'}" for kind, system in table.columns]
+    table.index = [f"{dataset} ({metric})" for dataset, metric in table.index]
+    order = [f"{system} {kind}" for system in SYSTEMS if system != "dummy" for kind in ("deploy", "naive")]
+    return table[[column for column in order if column in table.columns]].astype(float).round(3)
 
 # writes docs/agentic.md from the agentic grids in runs.csv
 def build():

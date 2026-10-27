@@ -230,14 +230,13 @@ calls of an old test, five calls of the grid checks). Not done: the pilot re-run
 - [x] P16.3 Natural data measures · 2026-10-27 · 36b7e20 · `benchmark/messmeasures.py`, `benchmark/results/natural-measures.json`, table in `docs/natural-data.md`
 - [x] P16.4 Agentic adapters · 2026-10-27 · 068291e · AIDE and MLZero adapters, loopback LLM proxy (`benchmark/llmproxy.py`), Linux paths
 - [x] P16.5 Protocol section 7 and grids · 2026-10-27 · 38169af · `agentic-main`, `agentic-leaks`, `agentic-natural` (300 s, `gpt-4.1-mini`, all systems in WSL)
-- [~] P16.6 Agentic comparison run · 2026-10-27 · (this commit) · paused by the user. Done: `agentic-main` dummy, lightgbm, autogluon, full 16/16 ok each, aide 16 (4 ok), mlzero 3 (0 ok); `agentic-leaks` dummy 3, lightgbm 5. Ledger $3.07 of $5.73.
+- [~] P16.6 Agentic comparison run · 2026-10-27 · (this commit) · paused by the user a second time. Done: `agentic-main` and `agentic-leaks` complete (the 11 pre-fix AIDE cells were re-run); `agentic-natural` dummy, lightgbm, autogluon, full 9/9 ok each, aide 3/9 (3 ok); missing: aide 6, mlzero 9. Ledger $4.33 of $5.73.
 
   Resume (P16.6): the run lives in the WSL clone `~/bench/repo` (Linux env, cell files, `.env` link).
-  1. Delete the `aide` rows of `agentic-main` that started before 2026-10-27T13:17:56 UTC (AIDE env
-     got catboost and xgboost then; deviation) from `~/bench/repo/benchmark/results/runs.csv`.
-  2. In WSL: `cd ~/bench/repo && UV_PYTHON=3.12 PATH=$HOME/bench/bin:$PATH uv run python -m benchmark.runner --grid <g>`
-     for `agentic-main`, `agentic-leaks`, `agentic-natural` (finished cells are skipped).
-  3. Copy `runs.csv` and `spend.json` back to this repo, run `uv run python -m benchmark.agenticreport`.
+  1. In WSL: `cd ~/bench/repo && UV_PYTHON=3.12 PATH=$HOME/bench/bin:$PATH uv run python -m benchmark.runner --grid agentic-natural`
+     (finished cells are skipped).
+  2. Copy `runs.csv`, `spend.json` and `cache/benchmark/outputs/agentic-*` back to this repo, run
+     `uv run python -m benchmark.agenticreport`, then write the findings (docs, RESEARCH notes).
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
