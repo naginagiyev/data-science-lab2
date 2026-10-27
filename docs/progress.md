@@ -230,13 +230,19 @@ calls of an old test, five calls of the grid checks). Not done: the pilot re-run
 - [x] P16.3 Natural data measures · 2026-10-27 · 36b7e20 · `benchmark/messmeasures.py`, `benchmark/results/natural-measures.json`, table in `docs/natural-data.md`
 - [x] P16.4 Agentic adapters · 2026-10-27 · 068291e · AIDE and MLZero adapters, loopback LLM proxy (`benchmark/llmproxy.py`), Linux paths
 - [x] P16.5 Protocol section 7 and grids · 2026-10-27 · 38169af · `agentic-main`, `agentic-leaks`, `agentic-natural` (300 s, `gpt-4.1-mini`, all systems in WSL)
-- [~] P16.6 Agentic comparison run · 2026-10-27 · (this commit) · paused by the user a second time. Done: `agentic-main` and `agentic-leaks` complete (the 11 pre-fix AIDE cells were re-run); `agentic-natural` dummy, lightgbm, autogluon, full 9/9 ok each, aide 3/9 (3 ok); missing: aide 6, mlzero 9. Ledger $4.33 of $5.73.
+- [x] P16.6 Agentic comparison run · 2026-10-27 · (this commit) · 180 runs on Linux (WSL), 300 s, `gpt-4.1-mini`; report `docs/agentic.md` (`python -m benchmark.agenticreport`); ledger $4.46 of $5.73
 
-  Resume (P16.6): the run lives in the WSL clone `~/bench/repo` (Linux env, cell files, `.env` link).
-  1. In WSL: `cd ~/bench/repo && UV_PYTHON=3.12 PATH=$HOME/bench/bin:$PATH uv run python -m benchmark.runner --grid agentic-natural`
-     (finished cells are skipped).
-  2. Copy `runs.csv`, `spend.json` and `cache/benchmark/outputs/agentic-*` back to this repo, run
-     `uv run python -m benchmark.agenticreport`, then write the findings (docs, RESEARCH notes).
+P16 results (`docs/agentic.md`, one seed):
+- Messy files (`agentic-main` level 3): mean normalized `full` 0.998, AutoGluon 0.853, AIDE 0.362,
+  MLZero 0.000; `full` vs AIDE +0.635 [0.275, 0.886], vs AutoGluon +0.144 [0.027, 0.336].
+- Clean files (level 0): `full` 0.976, AutoGluon 0.986 (difference -0.011 [-0.048, 0.011]), AIDE 0.604.
+- Group D leaks: `full` 0.961, AIDE 0.796, AutoGluon 0.763; `full` dropped 3 of 5 leaks again.
+- Natural data: AutoGluon 0.980, `full` -3.727 (0.739 without diabetes130, see open problems).
+- Cost per run: `full` $0.009, 100% success, 16.8k tokens, median 174 s; AIDE $0.033, 60%, 48.8k
+  tokens, 190 s; MLZero $0.012, 0%, 22.1k tokens, 131 s.
+- Failures: AIDE 12 (mostly removed library options such as `early_stopping_rounds`, and scripts
+  scored without output); MLZero 30 (18 its own environment script, 12 time limit before any model
+  code).
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
@@ -310,6 +316,9 @@ re-check the projection; add AIDE if time allows; write the thesis from the gene
 - Found in P15.3 (not fixed): the leak review missed the two moderate regression leaks (`measured_strength_28d`, `claim_paid_amount`). G01 gives no signal below R2 0.95, and the single review call answered that nothing leaks; the old edatool session reviewed every column name. Recall 3 of 5 instead of 5 of 5.
 
 - Found in P16.2 (not fixed): Group C `employee_salaries` has `2016_gross_pay_received` and `2016_overtime_pay` next to the target `current_annual_salary` (r = 0.889), a suspected natural leak. It is in no pilot grid.
+
+- Found in P16.6 (not fixed, method change): audit check F03 took the diabetes130 classes `<30` and `>30` for one class written two ways; the protected `map_target_labels` step merged them and `full` lost a class (log loss 4.66). Possible fix: F03 must not pair labels that differ in a comparison sign or number.
+- Found in P16.6 (not fixed): the leak review missed the documented natural leaks bank `duration`, hotels `ReservationStatus` and student `G1`/`G2` (deployment scores collapse); only titanic `boat`/`body` were dropped.
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,

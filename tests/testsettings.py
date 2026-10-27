@@ -7,7 +7,7 @@ from settings import apply_dotted, load_settings, settings_hash
 def test_defaults_load():
     settings = load_settings()
     assert settings.llm.model == "gpt-4.1-nano"
-    assert settings.spend.total_cap_usd == 5.0
+    assert settings.spend.total_cap_usd == 5.73
     assert settings.gate.tolerance["roc_auc"]["absolute"] == 0.002
     assert settings.budget.stage_seconds["audit"] == 90
 

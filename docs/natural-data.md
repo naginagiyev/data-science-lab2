@@ -126,3 +126,20 @@ The measures in short:
 `2016_overtime_pay` next to the target `current_annual_salary` (gross pay vs salary: r = 0.889 on
 9,128 rows). No source documents this, so it is a suspected leak. No reported result uses this
 dataset.
+
+## Benchmark results on the natural data (E12, 2026-10-27)
+
+Full tables: `docs/agentic.md` (grid `agentic-natural`; 300 s, one seed, every system on Linux in WSL).
+Mean normalized score: AutoGluon 0.980, LightGBM 0.746, AIDE 0.466, MLZero 0.000, `full` -3.727.
+
+- `full` is best or near best on the mess datasets (beers 1.000, coupon 1.000, hr-analytics 0.998).
+- **diabetes130 (`full` log loss 4.66 vs dummy 0.96):** a bug in the system. Audit check F03
+  ("inconsistent class labels") took `<30` and `>30` for two spellings of one class, and the
+  translator added the protected target step `map_target_labels <30 -> >30`, so the model never
+  saw the class `<30`. Open problem; a fix is a method change and needs the user's agreement.
+- **Leaks:** `full` dropped the titanic leaks (naive = deployment score) but kept bank `duration`
+  (deployment ROC AUC 0.449 vs naive 0.951), hotels `ReservationStatus` (0.672 vs 1.000) and
+  student `G1`/`G2` (RMSE 4.60 vs 0.95): the leak-review weakness known since P15.
+- **airbnb-austin:** AutoGluon's RMSE of 11.2 (others about 50) most likely comes from the suspected
+  leak `price_quote_price_per_night`, which stays in the deployment file.
+- Without diabetes130, the mean normalized score of `full` is 0.739 and of AutoGluon 0.977.

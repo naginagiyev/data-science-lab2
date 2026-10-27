@@ -1,7 +1,7 @@
 {
   "totals": {
     "dev": 0.4037259000000002,
-    "experiments": 3.9241552999999936
+    "experiments": 4.054689699999994
   },
   "calls": [
     {
@@ -16878,6 +16878,105 @@
       "input_tokens": 57204,
       "output_tokens": 18197,
       "cost_usd": 0.051996799999999996
+    },
+    {
+      "time": "2026-10-27T20:56:54+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-titanic-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 37511,
+      "output_tokens": 11722,
+      "cost_usd": 0.03375960000000001
+    },
+    {
+      "time": "2026-10-27T20:56:56+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-bank-additional-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 29892,
+      "output_tokens": 7653,
+      "cost_usd": 0.024201599999999997
+    },
+    {
+      "time": "2026-10-27T21:00:05+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-diabetes130-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1145,
+      "output_tokens": 833,
+      "cost_usd": 0.0017908000000000002
+    },
+    {
+      "time": "2026-10-27T21:00:07+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-student-performance-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 15417,
+      "output_tokens": 2819,
+      "cost_usd": 0.010677200000000003
+    },
+    {
+      "time": "2026-10-27T21:03:14+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-hotels-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 15985,
+      "output_tokens": 6743,
+      "cost_usd": 0.0171828
+    },
+    {
+      "time": "2026-10-27T21:03:17+00:00",
+      "category": "experiments",
+      "source": "aide /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/aide-airbnb-austin-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 25184,
+      "output_tokens": 10667,
+      "cost_usd": 0.027140799999999996
+    },
+    {
+      "time": "2026-10-27T21:06:29+00:00",
+      "category": "experiments",
+      "source": "mlzero /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/mlzero-coupon-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 2852,
+      "output_tokens": 569,
+      "cost_usd": 0.0020512
+    },
+    {
+      "time": "2026-10-27T21:07:17+00:00",
+      "category": "experiments",
+      "source": "mlzero /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/mlzero-beers-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3810,
+      "output_tokens": 1028,
+      "cost_usd": 0.0031688000000000003
+    },
+    {
+      "time": "2026-10-27T21:10:39+00:00",
+      "category": "experiments",
+      "source": "mlzero /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/mlzero-hr-analytics-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1286,
+      "output_tokens": 322,
+      "cost_usd": 0.0010296
+    },
+    {
+      "time": "2026-10-27T21:13:20+00:00",
+      "category": "experiments",
+      "source": "mlzero /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/mlzero-titanic-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 8071,
+      "output_tokens": 2248,
+      "cost_usd": 0.0068252
+    },
+    {
+      "time": "2026-10-27T21:14:49+00:00",
+      "category": "experiments",
+      "source": "mlzero /home/nagi/bench/repo/cache/benchmark/outputs/agentic-natural/mlzero-student-performance-l0-s0-b300",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3043,
+      "output_tokens": 931,
+      "cost_usd": 0.0027068000000000005
     }
   ]
 }

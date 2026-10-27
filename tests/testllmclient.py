@@ -110,7 +110,7 @@ def test_run_budget(tmp_path):
 
 # the client refuses a call that would cross total_cap_usd
 def test_total_cap_refusal(tmp_path):
-    ledger = {"totals": {"dev": 0.0, "experiments": 4.9999}, "calls": []}
+    ledger = {"totals": {"dev": 0.0, "experiments": 5.7299}, "calls": []}
     client, provider, folder = make_client(tmp_path, [{"city": "Paris", "confidence": 1}], ledger=ledger)
     assert client.ask("capital", {"country": "France"}, Capital, "test") is None
     assert provider.calls == []
