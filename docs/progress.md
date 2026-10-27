@@ -227,7 +227,17 @@ calls of an old test, five calls of the grid checks). Not done: the pilot re-run
 ## P16. Next steps from the supervisor meeting
 - [x] P16.1 Natural mess and leaks: research · 2026-10-24 · 27d2efd · first proposal (7 datasets in 3 tiers, measures M1-M4 and leak measures with reliability)
 - [x] P16.2 Natural datasets downloaded and checked · 2026-10-26 · (this commit) · `benchmark/natural.py` downloads 9 datasets (3 mess, 3 leak, 3 both; free licences, no login) to `cache/natural/`, manifest `benchmark/results/natural.json`; documented mess and leaks checked on the files (beers 16.45% erroneous cells, published 16%); leak labels documented/proven/suspected; `docs/natural-data.md` rewritten as the practical reference, research notes moved to `DS LAB II/RESEARCH/`
-- [ ] P16.3 Natural data measures · M1, M2, M4, leak strength and inflation in a script independent of `audit/`
+- [x] P16.3 Natural data measures · 2026-10-27 · 36b7e20 · `benchmark/messmeasures.py`, `benchmark/results/natural-measures.json`, table in `docs/natural-data.md`
+- [x] P16.4 Agentic adapters · 2026-10-27 · 068291e · AIDE and MLZero adapters, loopback LLM proxy (`benchmark/llmproxy.py`), Linux paths
+- [x] P16.5 Protocol section 7 and grids · 2026-10-27 · 38169af · `agentic-main`, `agentic-leaks`, `agentic-natural` (300 s, `gpt-4.1-mini`, all systems in WSL)
+- [~] P16.6 Agentic comparison run · 2026-10-27 · (this commit) · paused by the user. Done: `agentic-main` dummy, lightgbm, autogluon, full 16/16 ok each, aide 16 (4 ok), mlzero 3 (0 ok); `agentic-leaks` dummy 3, lightgbm 5. Ledger $3.07 of $5.73.
+
+  Resume (P16.6): the run lives in the WSL clone `~/bench/repo` (Linux env, cell files, `.env` link).
+  1. Delete the `aide` rows of `agentic-main` that started before 2026-10-27T13:17:56 UTC (AIDE env
+     got catboost and xgboost then; deviation) from `~/bench/repo/benchmark/results/runs.csv`.
+  2. In WSL: `cd ~/bench/repo && UV_PYTHON=3.12 PATH=$HOME/bench/bin:$PATH uv run python -m benchmark.runner --grid <g>`
+     for `agentic-main`, `agentic-leaks`, `agentic-natural` (finished cells are skipped).
+  3. Copy `runs.csv` and `spend.json` back to this repo, run `uv run python -m benchmark.agenticreport`.
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
