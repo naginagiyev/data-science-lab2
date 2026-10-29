@@ -244,6 +244,9 @@ P16 results (`docs/agentic.md`, one seed):
   scored without output); MLZero 30 (18 its own environment script, 12 time limit before any model
   code).
 
+## P17. Local LLM (next step 3)
+- [x] P17.1 Local models tested on CPU, NPU and GPU · 2026-10-29 · (this commit) · none usable (details in `docs/decisions.md`); the user decided to keep the API only; steps 2-3 of next step 3 are dropped
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)

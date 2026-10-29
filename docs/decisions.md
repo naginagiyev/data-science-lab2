@@ -1303,3 +1303,21 @@ Findings from the decision logs of the worst cells:
   practical part.
 - Alternatives: 2/2/2 with Airbnb as mess (wrong: it has a proven leak); keep Movies (licence risk);
   TidyTuesday hotels (a re-export).
+
+## 2026-10-29 · P17 · Local LLM: tested, not used
+
+- Decision: the project keeps the OpenAI API (`gpt-4.1-mini`); no local model is used.
+- Reason: on this laptop (Snapdragon X X1-26-100, 8 cores, 16 GB shared memory, Adreno X1-45 GPU,
+  Hexagon NPU, NPU driver 30.0.222) no local model was both usable and fast enough. Test: 17
+  recorded calls of the `full` runs with the pipeline's JSON schemas.
+  - CPU (Ollama 0.40.12): Qwen3.5 4B gave 17/17 valid answers but needed about 14 minutes of model
+    time per run (about 23 tokens/s to read a prompt) and blocked the laptop; Phi-4-mini 3.8B got
+    stuck writing JSON for 20 minutes. The user does not run models on the CPU.
+  - NPU (Foundry Local 0.12.1): Qwen2.5-7B crashed the NPU firmware ("NPU crashed. SSR detected");
+    Phi-3.5-mini accepts only about 4k tokens; Qwen2.5-1.5B ran but gave 1/17 valid answers in 65
+    minutes and still used about 60% CPU (its attention layers run on the CPU).
+  - GPU (Foundry Local, WebGPU): Qwen3-4B ran with 6-14% CPU, but read prompts at about 16
+    tokens/s (420 s for 6.8k tokens), and Foundry Local did not enforce the JSON schema: 0/4 valid
+    answers on real prompts, even with thinking switched off.
+- Alternatives: a newer NPU driver (none offered by Windows Update or found for the UX3480QA); a
+  stronger machine with a discrete GPU.
