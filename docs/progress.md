@@ -247,6 +247,9 @@ P16 results (`docs/agentic.md`, one seed):
 ## P17. Local LLM (next step 3)
 - [x] P17.1 Local models tested on CPU, NPU and GPU · 2026-10-29 · (this commit) · none usable (details in `docs/decisions.md`); the user decided to keep the API only; steps 2-3 of next step 3 are dropped
 
+## P18. Live trace of a run (next step 4)
+- [x] P18.1 Trace: live view, trace.jsonl, trace.html, replay · 2026-10-29 · (this commit) · `tools/trace.py`, `tools/traceview.py`, `tools/tracehtml.py`, `main.py run --view`, `main.py trace`; tests `tests/testtrace.py`; checked on a rules run (ibmchurn) and a full run with gpt-4.1-mini (winequality, $0.004)
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)
@@ -322,6 +325,8 @@ re-check the projection; add AIDE if time allows; write the thesis from the gene
 
 - Found in P16.6 (not fixed, method change): audit check F03 took the diabetes130 classes `<30` and `>30` for one class written two ways; the protected `map_target_labels` step merged them and `full` lost a class (log loss 4.66). Possible fix: F03 must not pair labels that differ in a comparison sign or number.
 - Found in P16.6 (not fixed): the leak review missed the documented natural leaks bank `duration`, hotels `ReservationStatus` and student `G1`/`G2` (deployment scores collapse); only titanic `boat`/`body` were dropped.
+
+- Found in P18.1 (not fixed): OpenAI answers `gpt-4.1-nano` with 404 "model deprecated"; it is still the development default in `configuration/settings.json` (`llm.model`), so development runs fall back to rules until the default changes (the pilot model `gpt-4.1-mini` works).
 
 ## Phase summaries
 - **P0 (2026-10-11).** Created: `.gitattributes`, `CLAUDE.md`, `progress.md`, `docs/decisions.md`,

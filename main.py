@@ -4,6 +4,7 @@ import questionary
 from pathlib import Path
 from schemas import TASK_ALIASES
 from settings import load_settings
+from tools.trace import VIEWS, replay
 from tools.runfolder import prepare_console
 from modelling.fittedmodel import FittedModel
 from orchestrator import VARIANTS, StopRun, run
@@ -25,12 +26,17 @@ def build_parser():
     run_parser.add_argument("--out", help="folder for run folders (default runs/)")
     run_parser.add_argument("--settings", help="JSON file merged over configuration/settings.json")
     run_parser.add_argument("--set", action="append", default=[], metavar="KEY=VALUE", help="dotted override, e.g. gate.enabled=false")
+    run_parser.add_argument("--view", default="detailed", choices=VIEWS, help="live view: stage lines only, detailed (default) or everything")
     predict_parser = commands.add_parser("predict", help="predict new rows with a saved model")
     predict_parser.add_argument("model", help="path of model.joblib")
     predict_parser.add_argument("data", help="path of the new data")
     predict_parser.add_argument("--out", default="predictions.csv")
     report_parser = commands.add_parser("report", help="print the report of a run folder")
     report_parser.add_argument("run_dir", help="path of the run folder")
+    trace_parser = commands.add_parser("trace", help="replay the trace of a finished run and write trace.html")
+    trace_parser.add_argument("run_dir", help="path of the run folder")
+    trace_parser.add_argument("--view", default="detailed", choices=VIEWS)
+    trace_parser.add_argument("--html", action="store_true", help="only write trace.html, no replay on screen")
     return parser
 
 # turns the run arguments into settings: file, --set overrides and the short flags
@@ -49,7 +55,7 @@ def run_command(arguments):
     settings = run_settings(arguments)
     task = TASK_ALIASES.get(arguments.task, arguments.task)
     options = {"ask": arguments.ask}
-    context = run(arguments.data, settings, arguments.target, task, arguments.mode, arguments.variant, arguments.out, options=options)
+    context = run(arguments.data, settings, arguments.target, task, arguments.mode, arguments.variant, arguments.out, options=options, view=arguments.view)
     return 0 if context is not None else 1
 
 # predicts new rows with a saved model and writes the predictions to a CSV file
@@ -68,6 +74,12 @@ def report_command(arguments):
         return 1
     print(report_file.read_text(encoding="utf-8"))
     return 0
+
+# replays the trace of a run folder on screen and (re)writes its trace.html
+def trace_command(arguments):
+    path = replay(arguments.run_dir, None if arguments.html else arguments.view)
+    print(f"Wrote {path}" if path is not None else f"No trace.jsonl in {arguments.run_dir}.")
+    return 0 if path is not None else 1
 
 # asks for the inputs of one run with questionary and starts it
 def interactive():
@@ -88,7 +100,7 @@ def main():
     if len(sys.argv) == 1:
         return interactive()
     arguments = parser.parse_args()
-    commands = {"run": run_command, "predict": predict_command, "report": report_command}
+    commands = {"run": run_command, "predict": predict_command, "report": report_command, "trace": trace_command}
     if arguments.command not in commands:
         parser.print_help()
         return 1

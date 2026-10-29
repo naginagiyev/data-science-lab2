@@ -1321,3 +1321,19 @@ Findings from the decision logs of the worst cells:
     answers on real prompts, even with thinking switched off.
 - Alternatives: a newer NPU driver (none offered by Windows Update or found for the UX3480QA); a
   stronger machine with a discrete GPU.
+
+## 2026-10-29 · P18 · A live trace of every run
+
+- Decision: one event stream per run (`tools/trace.py`) with three outputs: a live `rich` terminal
+  view (`tools/traceview.py`; views compact, detailed, full), `trace.jsonl` (every event,
+  structured) and a self-contained `trace.html` (`tools/tracehtml.py`), plus `trace.txt`;
+  `main.py trace` replays a run. New dependency: `rich`.
+- How the events are collected: `run_stage` sends the stage start and end; `RunFolder.append`
+  gives every decision, LLM call and error to its listeners, so the agents, `decide()` and the LLM
+  client stay unchanged; the stage details are read from the run state at the end of each stage.
+- Shown "thinking": `gpt-4.1-mini` has no hidden reasoning, so the view shows the reasons the model
+  writes in its answers (labelled "reasoning"), its plan steps with their reasons, and invalid
+  answers with the feedback that was sent back.
+- Benchmark runs write `trace.jsonl` only (no live view, no HTML), so the grids are not slowed down.
+- Alternatives: a full-screen terminal app (cannot be scrolled back or saved as easily); HTML only
+  (nothing to watch while the run is going).

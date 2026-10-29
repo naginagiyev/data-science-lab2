@@ -47,6 +47,15 @@ Every stage has a time limit from the run budget; every decision goes to `decisi
 LLM call goes to `llm.jsonl` and the global spend ledger (`benchmark/results/spend.json`), which
 enforces the caps.
 
+## The trace (`tools/trace.py`, `tools/traceview.py`, `tools/tracehtml.py`)
+
+One event stream per run: `run_stage` sends the start and end of every stage, the run folder sends
+every decision, LLM call and error it writes (its `listeners`), and `stage_details` turns each
+stage's results (audit issues, plan and its changes, gate scores, model search, test score) into
+detail events. Every event goes to `trace.jsonl`; with a console the `rich` view shows it live, and
+at the end `trace.txt` and the self-contained `trace.html` are written. `main.py trace` replays a
+run from `trace.jsonl`.
+
 ## The audit codes
 
 | Group | Codes | Checks (file) |

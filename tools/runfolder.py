@@ -50,11 +50,12 @@ def to_json_value(value):
     return str(value)
 
 # one run folder: creates it, writes JSON and JSONL files, saves the context...
-# and records errors
+# and records errors; listeners receive every appended JSONL record (the trace)
 class RunFolder:
     def __init__(self, path):
         self.path = Path(path)
         self.path.mkdir(parents=True, exist_ok=True)
+        self.listeners = []
 
     @classmethod
     def create(cls, data_path, out_dir):
@@ -75,6 +76,8 @@ class RunFolder:
         line = json.dumps(record, ensure_ascii=False, default=to_json_value)
         with self.file(name).open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(line + "\n")
+        for listener in self.listeners:
+            listener(name, record)
 
     def read_lines(self, name):
         path = self.file(name)
@@ -107,7 +110,7 @@ def setup_logging(folder, verbose=False, console=True):
         handlers.append(console_handler)
     for handler in handlers:
         root.addHandler(handler)
-    for name in ["httpx", "openai", "urllib3", "LiteLLM"]:
+    for name in ["httpx", "httpx2", "httpcore", "httpcore2", "openai", "urllib3", "LiteLLM"]:
         logging.getLogger(name).setLevel(logging.WARNING)
     return handlers
 

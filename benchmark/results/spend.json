@@ -1,6 +1,6 @@
 {
   "totals": {
-    "dev": 0.4037259000000002,
+    "dev": 0.4078515000000002,
     "experiments": 4.054689699999994
   },
   "calls": [
@@ -16977,6 +16977,60 @@
       "input_tokens": 3043,
       "output_tokens": 931,
       "cost_usd": 0.0027068000000000005
+    },
+    {
+      "time": "2026-10-29T09:32:58+00:00",
+      "category": "dev",
+      "source": "frame/framer",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1033,
+      "output_tokens": 65,
+      "cost_usd": 0.0005172
+    },
+    {
+      "time": "2026-10-29T09:33:02+00:00",
+      "category": "dev",
+      "source": "leakguard/leakreview",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 616,
+      "output_tokens": 5,
+      "cost_usd": 0.0002544
+    },
+    {
+      "time": "2026-10-29T09:33:04+00:00",
+      "category": "dev",
+      "source": "plan/cleaner",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 3629,
+      "output_tokens": 137,
+      "cost_usd": 0.0016708000000000003
+    },
+    {
+      "time": "2026-10-29T09:33:25+00:00",
+      "category": "dev",
+      "source": "gate/refine",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 1801,
+      "output_tokens": 45,
+      "cost_usd": 0.0007924000000000001
+    },
+    {
+      "time": "2026-10-29T09:33:36+00:00",
+      "category": "dev",
+      "source": "model/modeller",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 408,
+      "output_tokens": 74,
+      "cost_usd": 0.0002816
+    },
+    {
+      "time": "2026-10-29T09:34:52+00:00",
+      "category": "dev",
+      "source": "report/summary",
+      "model": "gpt-4.1-mini",
+      "input_tokens": 863,
+      "output_tokens": 165,
+      "cost_usd": 0.0006092000000000001
     }
   ]
 }

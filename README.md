@@ -38,14 +38,25 @@ Train on one CSV file, Excel sheet, JSON or parquet file:
 uv run python main.py run data/ibmchurn.csv --target Churn --variant full --budget 120
 ```
 
-The run prints one line per stage and writes a run folder in `runs/`: `report.md` (task, split, top
-audit issues, leak decisions, the plan with each step's gate effect, scores next to a dummy model,
-permutation importance, time and LLM cost per stage), `audit.json`, `decisions.jsonl`, `llm.jsonl`,
-`plans.json`, `model.joblib` and more. Predict new rows from the raw file format:
+The run shows a live trace in the terminal: one section per stage with what it does, every
+decision with its reason and source (rules, checks, gate, LLM), every LLM call (prompt, model,
+tokens, cost, the answer and the reasons the model wrote, invalid answers and retries), the audit
+issues, the plan and its changes, the gate scores, the model search and the test score, with a
+status line (stage, time left, LLM cost). `--view compact` shows only the stage lines, `--view full`
+also the whole prompts and answers.
+
+The run folder in `runs/` keeps the same story: `trace.html` (open it in a browser: stage timeline,
+collapsible prompts and answers, search and filters), `trace.txt` (the terminal view as text) and
+`trace.jsonl` (every event, structured), next to `report.md` (task, split, top audit issues, leak
+decisions, the plan with each step's gate effect, scores next to a dummy model, permutation
+importance, time and LLM cost per stage), `audit.json`, `decisions.jsonl`, `llm.jsonl`,
+`plans.json`, `model.joblib` and more. Predict new rows from the raw file format, print the report,
+or replay the trace of a finished run:
 
 ```
 uv run python main.py predict runs/<run folder>/model.joblib new_rows.csv --out predictions.csv
 uv run python main.py report runs/<run folder>
+uv run python main.py trace runs/<run folder>
 ```
 
 Without arguments, `uv run python main.py` starts an interactive mode. A demo that compares
@@ -60,8 +71,10 @@ uv run python -m benchmark.showcase
 `main.py run <data>` options: `--target`, `--task` (binary, multiclass, regression), `--variant`,
 `--budget` (seconds, default 300), `--seed`, `--backend` (own, autogluon, flaml), `--ask` (confirm
 the target when the framer is unsure), `--mode` (demo or benchmark), `--out`, `--settings` (a JSON
-file merged over `configuration/settings.json`) and `--set key=value` (for example
-`--set gate.enabled=false`).
+file merged over `configuration/settings.json`), `--set key=value` (for example
+`--set gate.enabled=false`) and `--view` (compact, detailed or full live trace).
+`main.py trace <run folder>` replays a run's trace (`--view`) and rewrites `trace.html` (`--html` writes
+only the page). Benchmark runs write `trace.jsonl` only.
 
 ## The pipeline
 
@@ -131,7 +144,7 @@ main.py, orchestrator.py   CLI and the 12-stage pipeline (one function for demo 
 settings.py, schemas.py    settings (configuration/settings.json) and typed records
 paths.py                   every path of the project
 configuration/             settings, metrics, audit catalog and thresholds, tokens
-tools/                     reader, column types, glance, splitter, run folder, metrics, report, sandbox
+tools/                     reader, column types, glance, splitter, run folder, metrics, report, sandbox, trace (live view, HTML)
 audit/                     the code-only audit of the training rows
 operations/                the typed cleaning operations, translator, compiler
 checks/                    data checks, leak guard, validation gate

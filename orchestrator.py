@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from paths import runs_dir
 from modelling import engine
+from tools.trace import Trace
 from llms.client import LlmClient
 from settings import settings_hash
 from tools.metrics import oriented
@@ -78,6 +79,7 @@ class RunState:
         self.client = client
         self.options = options or dict(BASE)
         self.objects = {"row_notes": []}
+        self.trace = None
 
 # writes one decision line to decisions.jsonl
 def decide(state, stage, kind, subject, accepted, reason, source, proposal=None, evidence=None):
@@ -85,8 +87,12 @@ def decide(state, stage, kind, subject, accepted, reason, source, proposal=None,
     state.folder.append("decisions.jsonl", decision.model_dump())
 
 # runs one stage: times it, catches any exception (written to errors.jsonl...
-# and run.log), applies the fallback, records a StageStatus and saves the context
+# and run.log), applies the fallback, records a StageStatus, saves the context...
+# and tells the trace (start, end and the stage's details)
 def run_stage(state, name, function, fallback=None):
+    number = STAGES.index(name) + 1 if name in STAGES else 0
+    if state.trace is not None:
+        state.trace.stage_start(name, number, state.budget.remaining())
     start = time.perf_counter()
     status = StageStatus(name=name, ok=True, seconds=0.0)
     note = None
@@ -110,7 +116,9 @@ def run_stage(state, name, function, fallback=None):
     state.context.stages.append(status)
     state.folder.save_context(state.context)
     text = (note or "ok") if status.ok else f"failed -> {status.fallback or 'no fallback'}"
-    logger.info(f"  {STAGES.index(name) + 1 if name in STAGES else 0:02d} {name:<10} {text[:50]:<50} {status.seconds:6.1f} s")
+    logger.info(f"  {number:02d} {name:<10} {text[:50]:<50} {status.seconds:6.1f} s")
+    if state.trace is not None:
+        state.trace.stage_end(name, status, note or "ok", state)
     return status
 
 # stage 01: reads the file as the raw text view (the only hard stops of the run)
@@ -516,14 +524,30 @@ def stage_table(state):
     }
     return [(name, *table[name]) for name in STAGES]
 
+# the summary of a finished run for the trace: outcome, time and scores
+def run_summary(context, budget, outcome, folder):
+    scores = context.scores if context is not None else {}
+    cv = (scores.get("cv") or {}).get("score")
+    test = scores.get("test") or {}
+    return {
+        "outcome": outcome, "seconds": round(budget.elapsed(), 1) if budget is not None else 0.0,
+        "cv": f"{cv:.4f} ({scores.get('metric')})" if isinstance(cv, (int, float)) else None,
+        "test": f"{test['test']:.4f} (dummy {test['dummy_test']:.4f})" if test.get("test") is not None else None,
+        "trace": str(folder.file("trace.html")),
+    }
+
 # runs the whole pipeline on one file and returns the RunContext; demo and...
-# benchmark use this same function
-def run(data_path, settings, target=None, task=None, mode="demo", variant="full", out_dir=None, folder=None, provider=None, console=True, options=None):
+# benchmark use this same function; with console the live trace view (compact,...
+# detailed or full) replaces the plain console lines
+def run(data_path, settings, target=None, task=None, mode="demo", variant="full", out_dir=None, folder=None, provider=None, console=True, options=None, view="detailed", screen=None):
     if variant not in VARIANT_OPTIONS:
         raise ValueError(f"Unknown variant '{variant}'. Choose one of: {', '.join(VARIANTS)}.")
     is_frame = isinstance(data_path, pd.DataFrame)
     folder = folder or RunFolder.create("dataframe" if is_frame else data_path, out_dir or runs_dir)
-    handlers = setup_logging(folder, console=console)
+    handlers = setup_logging(folder, console=False)
+    trace = Trace(folder, view if console else None, screen)
+    folder.listeners.append(trace.listen)
+    context, budget, outcome = None, None, "crashed"
     try:
         run_hash = settings_hash(settings)
         folder.write_json("settings.json", {"hash": run_hash, "settings": settings.model_dump()})
@@ -531,15 +555,24 @@ def run(data_path, settings, target=None, task=None, mode="demo", variant="full"
         budget = Budget(settings.budget.total_seconds, settings.budget.stage_seconds, settings.budget.min_model_seconds)
         state = RunState(settings, folder, context, budget, LlmClient(settings, folder, provider), VARIANT_OPTIONS[variant])
         state.objects.update(data=data_path, target=target, task=task, options=options or {})
+        state.trace = trace
         folder.save_context(context)
+        options_used = VARIANT_OPTIONS[variant]
+        uses_llm = options_used["cleaner"] or options_used["leakreview"] or options_used["freecode"] or options_used["modeller"]
+        trace.run_start({"run_id": context.run_id, "data": context.data_path, "variant": variant, "mode": mode, "budget": f"{settings.budget.total_seconds:.0f} s",
+                         "model": settings.llm.model if uses_llm else "", "folder": str(folder.path)})
         logger.info(f"Run {context.run_id} | {variant} | {mode} | budget {settings.budget.total_seconds:.0f} s")
         for name, function, fallback in stage_table(state):
             run_stage(state, name, function, fallback)
         logger.info(f"Done in {budget.elapsed():.1f} s | run folder: {folder.path}")
+        outcome = "done"
         return context
     except StopRun as error:
         logger.error(f"Stopped: {error}")
         folder.append("errors.jsonl", {"stage": "stop", "error": str(error)})
+        outcome = f"stopped: {error}"
         raise
     finally:
+        trace.close(run_summary(context, budget, outcome, folder))
+        folder.listeners.remove(trace.listen)
         close_logging(handlers)
