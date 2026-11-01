@@ -250,6 +250,13 @@ P16 results (`docs/agentic.md`, one seed):
 ## P18. Live trace of a run (next step 4)
 - [x] P18.1 Trace: live view, trace.jsonl, trace.html, replay · 2026-10-29 · (this commit) · `tools/trace.py`, `tools/traceview.py`, `tools/tracehtml.py`, `main.py run --view`, `main.py trace`; tests `tests/testtrace.py`; checked on a rules run (ibmchurn) and a full run with gpt-4.1-mini (winequality, $0.004)
 
+## P19. All methods in one comparison (asked by the user, 2026-11-01)
+- [x] P19.1 Grids extended to 11 systems, level 2, `agentic-ablations` · 2026-11-01 · d04acc4 · backend path fixed on Linux
+- [ ] P19.2 Run the 244 missing cells · paused 2026-11-01 15:10 · (this commit) · 208 done, 36 left, no crash and no skip; `benchmark/agenticreport.py` already handles all systems, level 2 and the ablations; `docs/agentic.md` and the study page are not rebuilt yet
+- [ ] P19.3 Rebuild `docs/agentic.md` and the study page "Benchmark results" with every chart on the unified results
+
+> **Resume P19.2.** The WSL clone `~/bench/repo` holds the live `runs.csv` and `spend.json` (same content as this commit). Run in WSL, in the background: `export PATH=$HOME/bench/bin:$PATH UV_PYTHON=3.12; cd ~/bench/repo; for g in agentic-natural agentic-ablations; do uv run python -m benchmark.runner --grid $g; done`. Do not pipe it into `head`. Finished cells are skipped: 28 cells of `agentic-natural` (airbnb-austin of `flaml`, then `generic`, `rules`, `full+ag`) and 8 of `agentic-ablations` are left, about 1 hour. Then copy `benchmark/results/runs.csv`, `spend.json` and `cache/benchmark/outputs/agentic-*/*` to Windows. To pause: kill the loop script first, then `benchmark.runner`, then `benchmark.systems`; delete the output folders of the cells that were running. Spend at the pause: $4.90; about $5.00 expected at the end (cap $5.73).
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)

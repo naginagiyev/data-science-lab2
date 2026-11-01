@@ -1,13 +1,14 @@
 import sys
 import json
 import pandas as pd
-from benchmark import analysis
+from benchmark import analysis, figures
 from benchmark.resultsdoc import markdown
 from paths import benchmark_outputs_dir, docs_dir, results_dir
 
 GRIDS = ["agentic-main", "agentic-leaks", "agentic-natural"]
+ABLATIONS = "agentic-ablations"
 AGENTIC = ["aide", "mlzero"]
-SYSTEMS = ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"]
+SYSTEMS = ["dummy", "lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag", "full-nogate", "freecode", "aide", "mlzero"]
 NATURAL_LEAKS = ["bank-additional", "titanic", "student-performance", "hotels", "airbnb-austin"]
 REPORT = docs_dir / "agentic.md"
 
@@ -28,15 +29,43 @@ def cost_table(frame):
     )
     return table.reindex([name for name in SYSTEMS if name in table.index])
 
-# the bootstrap intervals of full against each agentic tool and AutoGluon on...
-# the given frame and levels (H6, H8)
-def differences(frame, levels, label, baselines):
+# the bootstrap intervals and Holm-corrected Wilcoxon tests of one system against...
+# the baselines on the given frame and levels (H6, H8)
+def differences(frame, levels, label, baselines, system="full"):
+    present = [baseline for baseline in baselines if baseline in set(frame["system"])]
+    tests = analysis.wilcoxon_table(frame, system, present, levels).set_index("baseline")
     rows = []
-    for baseline in baselines:
-        if baseline in set(frame["system"]):
-            value = analysis.bootstrap_difference(frame, "full", baseline, levels)
-            rows.append({"cells": label, "comparison": f"full vs {baseline}", "mean": value["mean"], "low": value["low"], "high": value["high"], "datasets": value["datasets"]})
+    for baseline in present:
+        value = analysis.bootstrap_difference(frame, system, baseline, levels)
+        test = tests.loc[baseline]
+        rows.append({"cells": label, "comparison": f"{system} vs {baseline}", "mean": value["mean"], "low": value["low"], "high": value["high"], "datasets": value["datasets"], "wins": test["wins"], "losses": test["losses"], "p_holm": test["p_holm"]})
     return pd.DataFrame(rows).round(3)
+
+# Friedman p-value and Nemenyi critical difference per level of one grid
+def rank_tests(frame):
+    rows = [analysis.friedman_nemenyi(frame, level) for level in sorted(frame["level"].unique())]
+    return pd.DataFrame([{"level": row["level"], "datasets": row["datasets"], "systems": len(row["systems"]), "p_value": row["p_value"], "critical_difference": row["cd"]} for row in rows])
+
+# the ablation variants next to the agentic-main rows of the same level 3 cells,...
+# so that one best and one dummy hold for all systems: normalized per dataset
+def ablation_table(frame):
+    cells = frame[frame["grid"] == ABLATIONS]
+    main = frame[(frame["grid"] == "agentic-main") & (frame["level"] == 3) & frame["dataset"].isin(set(cells["dataset"]))]
+    table = analysis.normalized(pd.concat([main, cells], ignore_index=True)).pivot_table(index="system", columns="dataset", values="normalized")
+    table["mean"] = table.mean(axis=1)
+    return table.reindex([name for name in SYSTEMS if name in table.index])
+
+# the normalized score per dataset and system of one grid and level
+def dataset_table(frame, level):
+    data = analysis.normalized(frame[frame["level"] == level])
+    table = data.pivot_table(index="dataset", columns="system", values="normalized")
+    return table[[name for name in SYSTEMS if name in table.columns]]
+
+# the leak recall of the systems with a run folder; run_dir holds the Linux path...
+# of the WSL run, the copied folder is under benchmark_outputs_dir
+def leak_detection(frame):
+    local = frame["run_dir"].map(lambda text: str(benchmark_outputs_dir / text.split("outputs/", 1)[1]) if isinstance(text, str) and "outputs/" in text else None)
+    return analysis.leak_metrics(frame.assign(run_dir=local), figures.cell_truth)
 
 # the cause of one failed agentic run, read from the tool files kept next to...
 # its predictions (stderr of MLZero's scripts, AIDE's journal)
@@ -78,7 +107,7 @@ def leak_scores(frame):
 
 # writes docs/agentic.md from the agentic grids in runs.csv
 def build():
-    frame = analysis.load_results(GRIDS)
+    frame = analysis.load_results(GRIDS + [ABLATIONS])
     if frame.empty:
         raise SystemExit("no agentic results in runs.csv")
     lines = [
@@ -94,15 +123,25 @@ def build():
         normalized_table, ranks = score_tables(part)
         lines += [f"## `{grid}`", "", "Mean normalized score:", "", markdown(normalized_table), "", "Average rank (1 = best):", "", markdown(ranks), ""]
     main, natural = frame[frame["grid"] == "agentic-main"], frame[frame["grid"] == "agentic-natural"]
-    tests = [differences(main, [3], "agentic-main level 3", AGENTIC + ["autogluon"]), differences(main, [0], "agentic-main level 0", AGENTIC + ["autogluon"]),
-             differences(natural, [0], "agentic-natural", AGENTIC + ["autogluon"])]
+    rivals = AGENTIC + ["autogluon", "flaml", "skrub", "lightgbm", "generic", "rules"]
+    tests = [differences(main, [2, 3], "agentic-main levels 2, 3", rivals), differences(main, [3], "agentic-main level 3", rivals), differences(main, [0], "agentic-main level 0", rivals),
+             differences(main, [2, 3], "agentic-main levels 2, 3", ["autogluon"], "full+ag"), differences(natural, [0], "agentic-natural", rivals)]
     tests = [table for table in tests if not table.empty]
     if tests:
-        lines += ["## Differences (bootstrap 95% interval over datasets, normalized score)", "", markdown(pd.concat(tests, ignore_index=True), index=False), ""]
-    lines += ["## Cost, time and tokens per run (all three grids)", "", markdown(cost_table(frame)), ""]
+        lines += ["## Differences (bootstrap 95% interval over datasets, Wilcoxon with Holm, normalized score)", "", markdown(pd.concat(tests, ignore_index=True), index=False), ""]
+    lines += ["## Rank tests on `agentic-main` (Friedman, Nemenyi)", "", markdown(rank_tests(main), index=False), ""]
+    lines += ["## `agentic-main`: difference full minus AutoGluon per dataset, levels 2 and 3", "",
+              markdown(analysis.paired(main, "full", "autogluon", [2, 3]).assign(difference=lambda table: table["full"] - table["autogluon"])["difference"].groupby("dataset").mean().sort_values().to_frame().round(3)), ""]
+    if (frame["grid"] == ABLATIONS).any():
+        lines += ["## Ablations: level 3, 4 datasets, normalized score", "", markdown(ablation_table(frame)), ""]
+    lines += ["## `agentic-natural`: normalized score per dataset", "", markdown(dataset_table(natural, 0)), ""]
+    lines += ["## Cost, time and tokens per run (all grids)", "", markdown(cost_table(frame)), ""]
     failed = failures(frame)
     if not failed.empty:
         lines += ["## Why the agentic runs failed", "", markdown(failed, index=False), ""]
+    leaks = frame[frame["grid"] == "agentic-leaks"]
+    lines += ["## Planted leaks (`agentic-leaks`)", "", "Mean normalized score with the leak in the test file (naive) and with the leak empty (deployment):", "",
+              markdown(figures.leak_summary(leaks).reindex([name for name in SYSTEMS if name in set(leaks["system"])])), "", "Leak columns dropped by the variants:", "", markdown(leak_detection(leaks)), ""]
     lines += ["## Leak cells: deployment score (leak empty) and naive score (leak kept)", "",
               "The agentic tools predict only the deployment file.", "", markdown(leak_scores(frame)), ""]
     REPORT.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8", newline="\n")
