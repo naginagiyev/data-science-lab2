@@ -1,3 +1,4 @@
+import os
 import json
 import secrets
 import subprocess
@@ -10,7 +11,8 @@ from operations.generic import TypingStep
 from operations.compiler import AgentSteps
 from paths import backend_models_dir, root_dir
 
-PYTHONS = {"autogluon": root_dir / "benchmark" / "envs" / "autogluon" / ".venv" / "Scripts" / "python.exe", "flaml": root_dir / "benchmark" / "envs" / "flaml" / ".venv" / "Scripts" / "python.exe"}
+ENV_PYTHON = "Scripts/python.exe" if os.name == "nt" else "bin/python"
+PYTHONS = {name: root_dir / "benchmark" / "envs" / name / ".venv" / ENV_PYTHON for name in ["autogluon", "flaml"]}
 WORKER = root_dir / "modelling" / "backendworker.py"
 
 # raised when a backend cannot fit or predict

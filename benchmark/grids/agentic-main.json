@@ -1,9 +1,9 @@
 {
   "name": "agentic-main",
-  "systems": ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"],
+  "systems": ["dummy", "lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag", "aide", "mlzero"],
   "datasets": ["credit-g", "Bank_Customer_Churn", "E-CommereShippingData", "maternal_health_risk", "students_dropout_and_academic_success", "concrete_compressive_strength", "Another-Dataset-on-used-Fiat-500", "diamonds"],
   "group": "A",
-  "levels": [0, 3],
+  "levels": [0, 2, 3],
   "seeds": [0],
   "budget": 300,
   "workers": 2,

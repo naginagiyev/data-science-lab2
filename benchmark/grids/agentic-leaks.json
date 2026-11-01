@@ -1,6 +1,6 @@
 {
   "name": "agentic-leaks",
-  "systems": ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"],
+  "systems": ["dummy", "lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag", "aide", "mlzero"],
   "datasets": ["credit-g", "Bank_Customer_Churn", "maternal_health_risk", "concrete_compressive_strength", "healthcare_insurance_expenses"],
   "group": "D",
   "levels": [0],

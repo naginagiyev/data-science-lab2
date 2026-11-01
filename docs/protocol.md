@@ -124,6 +124,12 @@ cell runs twice.
   - **H7** `full` succeeds more often than both agentic tools and costs less per run.
   - **H8** on the natural leak datasets, the deployment score of `full` is at least as good as that
     of `autogluon`.
+- **Extension (2026-11-01, before the extra runs):** every method now goes through the same tests
+  in this one setup. The grids run 11 systems (`dummy`, `lightgbm`, `skrub`, `flaml`, `autogluon`,
+  `generic`, `rules`, `full`, `full+ag`, `aide`, `mlzero`); `agentic-main` adds level 2; the new grid
+  `agentic-ablations` runs `freecode` and `full-nogate` on the 4 ablation datasets at level 3 (the
+  other systems' cells are in `agentic-main`). 418 runs plus 8; finished cells are not repeated.
+  The older Windows pilot (120 s) stays in `runs.csv` as history and is not mixed with these grids.
 - **Known limits written before the runs:** one seed; 300 s is short for agentic tools that call an
   LLM at every step; in 3 test runs MLZero's generated environment script failed (`pip install
   --prerelease`, an option only `uv pip` has) and MLZero judged the run a success; this is kept as

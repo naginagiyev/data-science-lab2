@@ -1,6 +1,6 @@
 {
   "name": "agentic-natural",
-  "systems": ["dummy", "lightgbm", "autogluon", "full", "aide", "mlzero"],
+  "systems": ["dummy", "lightgbm", "skrub", "flaml", "autogluon", "generic", "rules", "full", "full+ag", "aide", "mlzero"],
   "datasets": ["beers", "coupon", "hr-analytics", "bank-additional", "titanic", "student-performance", "diabetes130", "hotels", "airbnb-austin"],
   "group": "N",
   "levels": [0],
