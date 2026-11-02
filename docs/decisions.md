@@ -1349,3 +1349,12 @@ Findings from the decision logs of the worst cells:
 - The P14 chart stays without the agentic tools: it compares two code versions, not methods.
 - Alternatives: copy the old pilot rows next to the agentic rows (unfair to the libraries); run the two ablation variants on all
   cells (about 3 more hours for variants that only measure one part).
+
+## 2026-11-02 · P20: what the cleanup keeps
+- Removed: what comes back free, from a download or from `runs.csv`. `runs/` demo folders went too.
+- Kept in git although they are generated: `tables.md`, `docs/results.md`, `docs/agentic.md`. Their leak tables and failure causes
+  read the run folders, so they are not rebuilt from `runs.csv` alone.
+- Kept: `.venv` and `benchmark/envs` (no cache, and a new install takes minutes), `data/` (Kaggle files need a login), `docs/background/`
+  and the unused full grids (planned work, not dead code).
+- Found on the way: `run_dir` in `runs.csv` holds the place of the run (`test-v2`, WSL), so `figures.py` silently gave leak recall 0.
+  `analysis.local_run_dir` maps it to `benchmark_outputs_dir` for both reports.

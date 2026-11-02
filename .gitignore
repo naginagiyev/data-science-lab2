@@ -32,4 +32,6 @@ AutogluonModels/
 *.json.lock
 *.json.tmp
 study/
+benchmark/results/figures/
+benchmark/results/agentic-cost.csv
 .claude/

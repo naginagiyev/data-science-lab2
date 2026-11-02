@@ -267,6 +267,9 @@ P19 results (`docs/agentic.md`, one seed, 300 s, 11 systems on the same 38 cells
   `student-performance` is left out: no system beats the dummy there.
 - Cost per run: `full` $0.010, 100%; AIDE $0.032, 58%; MLZero $0.012, 0%. Ledger $4.95 (dev $0.41, experiments $4.53).
 
+## P20. Cleanup (asked by the user, 2026-11-02)
+- [x] P20.1 Generated files and caches removed · 2026-11-02 · (this commit) · 6.4 GB: saved AutoGluon models (`cache/b`), OpenML downloads, benchmark files, splits, logs, demo runs, tool caches; `benchmark/results/figures/` and `agentic-cost.csv` leave git; no dead code found; `local_run_dir` fixes reports that lost the leak results after the project folder was renamed (new test)
+
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
 - [ ] S2 LLM swap (RQ6)

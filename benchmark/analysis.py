@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from pathlib import Path
-from paths import results_dir
+from paths import benchmark_outputs_dir, results_dir
 
 LOWER_IS_BETTER = {"rmse", "log_loss"}
 CELL = ["dataset", "level", "seed", "budget_s"]
@@ -115,6 +115,12 @@ def reliability(frame):
     spread = normalized(frame).groupby(["system", "dataset", "level"])["normalized"].std().groupby("system").mean()
     return table.join(spread.rename("seed_std"))
 
+# the run folder of a result row on this machine: run_dir holds the path of the...
+# place where the run was made, the folder itself is under benchmark_outputs_dir
+def local_run_dir(run_dir):
+    text = str(run_dir).replace("\\", "/")
+    return benchmark_outputs_dir / text.split("outputs/", 1)[1] if "outputs/" in text else Path(text)
+
 # leak detection of one run folder against the truth of its cell: the leak...
 # column dropped or not, and the other non-id columns dropped as leaks
 def leak_outcome(run_dir, truth):
@@ -134,7 +140,7 @@ def leak_metrics(frame, cell_truth):
         truth = cell_truth(row)
         if not truth or not truth.get("leak"):
             continue
-        outcome = leak_outcome(Path(str(row["run_dir"])), truth)
+        outcome = leak_outcome(local_run_dir(row["run_dir"]), truth)
         rows.append({"system": row["system"], "dataset": row["dataset"], **outcome})
     if not rows:
         return pd.DataFrame()

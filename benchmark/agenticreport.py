@@ -61,12 +61,6 @@ def dataset_table(frame, level):
     table = data.pivot_table(index="dataset", columns="system", values="normalized")
     return table[[name for name in SYSTEMS if name in table.columns]]
 
-# the leak recall of the systems with a run folder; run_dir holds the Linux path...
-# of the WSL run, the copied folder is under benchmark_outputs_dir
-def leak_detection(frame):
-    local = frame["run_dir"].map(lambda text: str(benchmark_outputs_dir / text.split("outputs/", 1)[1]) if isinstance(text, str) and "outputs/" in text else None)
-    return analysis.leak_metrics(frame.assign(run_dir=local), figures.cell_truth)
-
 # the cause of one failed agentic run, read from the tool files kept next to...
 # its predictions (stderr of MLZero's scripts, AIDE's journal)
 def failure_cause(row):
@@ -141,7 +135,7 @@ def build():
         lines += ["## Why the agentic runs failed", "", markdown(failed, index=False), ""]
     leaks = frame[frame["grid"] == "agentic-leaks"]
     lines += ["## Planted leaks (`agentic-leaks`)", "", "Mean normalized score with the leak in the test file (naive) and with the leak empty (deployment):", "",
-              markdown(figures.leak_summary(leaks).reindex([name for name in SYSTEMS if name in set(leaks["system"])]).round(3)), "", "Leak columns dropped by the variants:", "", markdown(leak_detection(leaks)), ""]
+              markdown(figures.leak_summary(leaks).reindex([name for name in SYSTEMS if name in set(leaks["system"])]).round(3)), "", "Leak columns dropped by the variants:", "", markdown(analysis.leak_metrics(leaks, figures.cell_truth)), ""]
     lines += ["## Leak cells: deployment score (leak empty) and naive score (leak kept)", "",
               "The agentic tools predict only the deployment file.", "", markdown(leak_scores(frame)), ""]
     REPORT.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8", newline="\n")

@@ -127,6 +127,15 @@ four local files in `data/` (git-ignored): `ibmchurn.csv` (IBM Telco Customer Ch
 `creditcardfraud.csv` (Credit Card Fraud Detection), all public Kaggle datasets; the smoke grid uses
 ibmchurn. Every other dataset comes from OpenML.
 
+`benchmark/results/figures/` and `benchmark/results/agentic-cost.csv` are not in git: `python -m benchmark.figures`
+and `python -m benchmark.agenticreport` write them from `runs.csv` in seconds. The leak tables in `tables.md`,
+`docs/results.md` and `docs/agentic.md` also read the run folders in `cache/benchmark/outputs/` and the Group D truth
+files, so write those files first (25 s):
+
+```
+uv run python -m benchmark.materialize --datasets Bank_Customer_Churn credit-g maternal_health_risk concrete_compressive_strength healthcare_insurance_expenses --levels 0 --seeds 0 --group D
+```
+
 The full grids `main` (1,440 cells), `leaks` (180) and `ablations` (160) are written and checked but
 not run; start one with `uv run python -m benchmark.reproduce --grid main`.
 

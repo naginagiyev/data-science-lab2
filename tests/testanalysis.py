@@ -3,6 +3,12 @@ import numpy as np
 import pandas as pd
 from benchmark import analysis, figures
 
+# a run folder is found again wherever the run was made (old folder name, WSL)
+def test_local_run_dir_finds_moved_runs():
+    expected = analysis.benchmark_outputs_dir / "pilot-leaks" / "full" / "run"
+    assert analysis.local_run_dir("C:\\old\\cache\\benchmark\\outputs\\pilot-leaks\\full\\run") == expected
+    assert analysis.local_run_dir("/home/user/repo/cache/benchmark/outputs/pilot-leaks/full/run") == expected
+
 # a synthetic results table: 3 systems on 6 datasets at levels 0 and 3; "good"...
 # is best everywhere, "weak" is between dummy and good, one weak run failed
 def synthetic():
