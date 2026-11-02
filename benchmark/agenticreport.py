@@ -134,14 +134,14 @@ def build():
               markdown(analysis.paired(main, "full", "autogluon", [2, 3]).assign(difference=lambda table: table["full"] - table["autogluon"])["difference"].groupby("dataset").mean().sort_values().to_frame().round(3)), ""]
     if (frame["grid"] == ABLATIONS).any():
         lines += ["## Ablations: level 3, 4 datasets, normalized score", "", markdown(ablation_table(frame)), ""]
-    lines += ["## `agentic-natural`: normalized score per dataset", "", markdown(dataset_table(natural, 0)), ""]
+    lines += ["## `agentic-natural`: normalized score per dataset", "", "A dataset where no system beats the dummy has no normalized score and is not listed.", "", markdown(dataset_table(natural, 0)), ""]
     lines += ["## Cost, time and tokens per run (all grids)", "", markdown(cost_table(frame)), ""]
     failed = failures(frame)
     if not failed.empty:
         lines += ["## Why the agentic runs failed", "", markdown(failed, index=False), ""]
     leaks = frame[frame["grid"] == "agentic-leaks"]
     lines += ["## Planted leaks (`agentic-leaks`)", "", "Mean normalized score with the leak in the test file (naive) and with the leak empty (deployment):", "",
-              markdown(figures.leak_summary(leaks).reindex([name for name in SYSTEMS if name in set(leaks["system"])])), "", "Leak columns dropped by the variants:", "", markdown(leak_detection(leaks)), ""]
+              markdown(figures.leak_summary(leaks).reindex([name for name in SYSTEMS if name in set(leaks["system"])]).round(3)), "", "Leak columns dropped by the variants:", "", markdown(leak_detection(leaks)), ""]
     lines += ["## Leak cells: deployment score (leak empty) and naive score (leak kept)", "",
               "The agentic tools predict only the deployment file.", "", markdown(leak_scores(frame)), ""]
     REPORT.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8", newline="\n")

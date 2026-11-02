@@ -252,10 +252,20 @@ P16 results (`docs/agentic.md`, one seed):
 
 ## P19. All methods in one comparison (asked by the user, 2026-11-01)
 - [x] P19.1 Grids extended to 11 systems, level 2, `agentic-ablations` · 2026-11-01 · d04acc4 · backend path fixed on Linux
-- [ ] P19.2 Run the 244 missing cells · paused 2026-11-01 15:10 · (this commit) · 208 done, 36 left, no crash and no skip; `benchmark/agenticreport.py` already handles all systems, level 2 and the ablations; `docs/agentic.md` and the study page are not rebuilt yet
-- [ ] P19.3 Rebuild `docs/agentic.md` and the study page "Benchmark results" with every chart on the unified results
+- [x] P19.2 The 244 missing cells run · 2026-11-02 · dde39fc, (this commit) · 426 runs in the four agentic grids, no crash, no skipped cell; only AIDE (16) and MLZero (38) failed
+- [x] P19.3 `docs/agentic.md` and the study page "Benchmark results" rebuilt · 2026-11-02 · (this commit) · every chart shows all methods; the first pilot stays as history
 
-> **Resume P19.2.** The WSL clone `~/bench/repo` holds the live `runs.csv` and `spend.json` (same content as this commit). Run in WSL, in the background: `export PATH=$HOME/bench/bin:$PATH UV_PYTHON=3.12; cd ~/bench/repo; for g in agentic-natural agentic-ablations; do uv run python -m benchmark.runner --grid $g; done`. Do not pipe it into `head`. Finished cells are skipped: 28 cells of `agentic-natural` (airbnb-austin of `flaml`, then `generic`, `rules`, `full+ag`) and 8 of `agentic-ablations` are left, about 1 hour. Then copy `benchmark/results/runs.csv`, `spend.json` and `cache/benchmark/outputs/agentic-*/*` to Windows. To pause: kill the loop script first, then `benchmark.runner`, then `benchmark.systems`; delete the output folders of the cells that were running. Spend at the pause: $4.90; about $5.00 expected at the end (cap $5.73).
+P19 results (`docs/agentic.md`, one seed, 300 s, 11 systems on the same 38 cells):
+- Mean normalized at levels 0, 2, 3: `full` 0.962, 0.975, 0.982; `rules` 0.959, 0.991, 0.989; AutoGluon 0.973, 0.834, 0.840;
+  AIDE 0.594, 0.454, 0.360; MLZero 0 at all levels.
+- `full` beats every outside system at levels 2 and 3 (Holm p <= 0.015); vs `rules` -0.011 (p = 0.252).
+- RQ2 still not shown: `full` vs `generic` at level 0 is -0.024 [-0.081, 0.009]. E2: `full+ag` vs AutoGluon +0.119, p = 0.025.
+- Group D deployment: `full` 0.956, `full+ag` 0.920, AIDE 0.792, AutoGluon 0.758; 3 of 5 leaks dropped again.
+- Ablations (level 3, 4 datasets): `full` 0.993, `rules` 0.992, `full-nogate` 0.971, `freecode` 0.917, `generic` 0.897.
+- Natural data: AutoGluon 0.976, `generic` 0.915; `rules`, `full`, `full+ag` about -3.7 because of diabetes130 (without it 0.842,
+  0.736, 0.787); H6 not shown on natural data, H8 not supported (`full` beats AutoGluon on 2 of 5 natural leak files).
+  `student-performance` is left out: no system beats the dummy there.
+- Cost per run: `full` $0.010, 100%; AIDE $0.032, 58%; MLZero $0.012, 0%. Ledger $4.95 (dev $0.41, experiments $4.53).
 
 ## Stretch goals (only after P12)
 - [ ] S1 Feature ideas in the CAAFE style
@@ -331,6 +341,7 @@ re-check the projection; add AIDE if time allows; write the thesis from the gene
 - Found in P16.2 (not fixed): Group C `employee_salaries` has `2016_gross_pay_received` and `2016_overtime_pay` next to the target `current_annual_salary` (r = 0.889), a suspected natural leak. It is in no pilot grid.
 
 - Found in P16.6 (not fixed, method change): audit check F03 took the diabetes130 classes `<30` and `>30` for one class written two ways; the protected `map_target_labels` step merged them and `full` lost a class (log loss 4.66). Possible fix: F03 must not pair labels that differ in a comparison sign or number.
+- Found in P19 (not fixed): the merge of the diabetes classes and the kept bank `duration` also hit `rules` and `full+ag`, so they do not come from the LLM alone. On bank-additional `rules`, `full` and `full+ag` have roc_auc 0.59, 0.45, 0.48 against `generic` 0.79 (cause not checked). `rules` has rmse 2.5 on airbnb-austin (others 10 to 161), probably the suspected `price_quote_price_per_night` (not checked).
 - Found in P16.6 (not fixed): the leak review missed the documented natural leaks bank `duration`, hotels `ReservationStatus` and student `G1`/`G2` (deployment scores collapse); only titanic `boat`/`body` were dropped.
 
 - Found in P18.1 (not fixed): OpenAI answers `gpt-4.1-nano` with 404 "model deprecated"; it is still the development default in `configuration/settings.json` (`llm.model`), so development runs fall back to rules until the default changes (the pilot model `gpt-4.1-mini` works).

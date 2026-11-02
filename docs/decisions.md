@@ -1337,3 +1337,15 @@ Findings from the decision logs of the worst cells:
 - Benchmark runs write `trace.jsonl` only (no live view, no HTML), so the grids are not slowed down.
 - Alternatives: a full-screen terminal app (cannot be scrolled back or saved as easily); HTML only
   (nothing to watch while the run is going).
+
+## 2026-11-02 · P19: all methods in one comparison
+- Context: the user asked that all methods go through the same tests and appear in every result chart.
+- Decision: the 11 systems run the same 38 cells in the Linux setup at 300 s. The 120 s Windows pilot is not mixed in, because
+  the platform is 2.9 times slower and the budget differs; it stays as history. Cells that already existed were kept.
+- `freecode` and `full-nogate` run only on the 4 ablation datasets: they are `full` with a part switched off, and they are
+  compared with the `agentic-main` rows of the same cells (one best and one dummy for all systems).
+- `student-performance` has no normalized score (no system beats the dummy), by the existing rule of `normalized`; the page says so.
+- The natural means are shown with and without diabetes130, because one class-merge result (-34.9) hides everything else.
+- The P14 chart stays without the agentic tools: it compares two code versions, not methods.
+- Alternatives: copy the old pilot rows next to the agentic rows (unfair to the libraries); run the two ablation variants on all
+  cells (about 3 more hours for variants that only measure one part).
